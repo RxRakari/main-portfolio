@@ -1,26 +1,85 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { Sidebar } from '../components/layout/dashboard/sidebar';
+import Navbar from '../components/layout/dashboard/navbar';
 
-export const DashboardLayout: React.FC = () => {
+interface DashboardLayoutProps {
+  children: ReactNode;
+}
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if viewport is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Close sidebar when navigating on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
+    }
+  }, [isMobile]);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="min-h-screen bg-white text-black flex">
-      <aside className="w-64 bg-gray-100 border-r border-gray-200 p-4">
-        <div className="text-xl font-bold mb-6">Admin Dashboard</div>
-        <nav>
-          <ul className="space-y-2">
-            <li><Link to="/dashboard" className="block hover:bg-gray-200 p-2 rounded">Overview</Link></li>
-            <li><Link to="/dashboard/blogs" className="block hover:bg-gray-200 p-2 rounded">Blogs</Link></li>
-            <li><Link to="/dashboard/projects" className="block hover:bg-gray-200 p-2 rounded">Projects</Link></li>
-            <li><Link to="/dashboard/testimonials" className="block hover:bg-gray-200 p-2 rounded">Testimonials</Link></li>
-            <li><Link to="/dashboard/gallery" className="block hover:bg-gray-200 p-2 rounded">Gallery</Link></li>
-            <li><Link to="/dashboard/contacts" className="block hover:bg-gray-200 p-2 rounded">Contact Submissions</Link></li>
-            <li><Link to="/" className="block hover:bg-gray-200 p-2 rounded">Back to Site</Link></li>
-          </ul>
-        </nav>
-      </aside>
-      <main className="flex-1 p-6">
-        <Outlet />
-      </main>
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Mobile sidebar overlay */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        ></div>
+      )}
+
+      {/* Sidebar */}
+      <div 
+        className={`${
+          isMobile 
+            ? `fixed inset-y-0 left-0 z-30 transition-transform duration-300 transform ${
+                sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+              }`
+            : 'relative'
+        }`}
+      >
+        <Sidebar />
+      </div>
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Navbar */}
+        <div className={isMobile ? "sticky top-0 z-10 shadow-sm" : ""}>
+          <Navbar toggleSidebar={toggleSidebar} isMobile={isMobile} sidebarOpen={sidebarOpen} />
+        </div>
+        
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="container mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
+
+export default DashboardLayout;

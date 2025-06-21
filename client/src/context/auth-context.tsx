@@ -1,0 +1,100 @@
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+
+interface Admin {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+}
+
+interface AuthContextType {
+  admin: Admin | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('auth_token');
+    const storedAdmin = localStorage.getItem('admin');
+    
+    if (storedToken && storedAdmin) {
+      setToken(storedToken);
+      setAdmin(JSON.parse(storedAdmin));
+    }
+    
+    setIsLoading(false);
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+
+      const data = await response.json();
+      
+      // Store auth data
+      setToken(data.token);
+      setAdmin(data.data.admin);
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('admin', JSON.stringify(data.data.admin));
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setAdmin(null);
+    setToken(null);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('admin');
+  };
+
+  const value = {
+    admin,
+    token,
+    isAuthenticated: !!admin,
+    isLoading,
+    login,
+    logout,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
