@@ -29,8 +29,8 @@ mongoose
         console.log('Admin already exists');
       } else {
         // Create new admin
-        const admin = await Admin.create(adminData);
-        console.log('Admin created successfully:', admin.username);
+        const admin = await Admin.deleteOne(adminData);
+        console.log('Admin deleted successfully:', admin);
       }
       
       // Disconnect from MongoDB
