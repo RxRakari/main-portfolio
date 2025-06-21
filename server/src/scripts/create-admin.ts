@@ -5,7 +5,7 @@ import Admin from '../schema/admin.schema';
 // Load environment variables
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/monochrome-portfolio';
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 // Admin credentials
 const adminData = {
