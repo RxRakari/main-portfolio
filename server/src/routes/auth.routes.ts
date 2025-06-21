@@ -1,6 +1,7 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { catchAsync } from '../middleware/error.middleware';
+import * as authController from '../controllers/auth.controller';
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
  * @swagger
  * /api/auth/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Register a new admin (development only)
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -23,30 +24,28 @@ const router = express.Router();
  *             properties:
  *               username:
  *                 type: string
- *                 description: User's username
+ *                 description: Admin's username
  *               email:
  *                 type: string
  *                 format: email
- *                 description: User's email
+ *                 description: Admin's email
  *               password:
  *                 type: string
  *                 format: password
- *                 description: User's password
+ *                 description: Admin's password
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: Admin registered successfully
  *       400:
  *         description: Invalid input data
  */
-router.post('/register', (req, res) => {
-  res.status(200).json({ message: 'Registration endpoint' });
-});
+router.post('/register', catchAsync(authController.register));
 
 /**
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login a user
+ *     summary: Login as admin
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -61,11 +60,11 @@ router.post('/register', (req, res) => {
  *               email:
  *                 type: string
  *                 format: email
- *                 description: User's email
+ *                 description: Admin's email
  *               password:
  *                 type: string
  *                 format: password
- *                 description: User's password
+ *                 description: Admin's password
  *     responses:
  *       200:
  *         description: Login successful
@@ -77,7 +76,7 @@ router.post('/register', (req, res) => {
  *                 token:
  *                   type: string
  *                   description: JWT token
- *                 user:
+ *                 admin:
  *                   type: object
  *                   properties:
  *                     id:
@@ -89,26 +88,61 @@ router.post('/register', (req, res) => {
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', (req, res) => {
-  res.status(200).json({ message: 'Login endpoint' });
-});
+router.post('/login', catchAsync(authController.login));
 
 /**
  * @swagger
  * /api/auth/profile:
  *   get:
- *     summary: Get user profile
+ *     summary: Get admin profile
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User profile retrieved successfully
+ *         description: Admin profile retrieved successfully
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile', authMiddleware, (req, res) => {
-  res.status(200).json({ message: 'Profile endpoint', user: req.user });
-});
+router.get('/profile', authMiddleware, catchAsync(authController.getProfile));
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Update admin profile
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: Admin's new username
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Admin's new email
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Admin's current password (required for password change)
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Admin's new password
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       404:
+ *         description: Admin not found
+ */
+router.put('/profile', authMiddleware, catchAsync(authController.updateProfile));
 
 export default router; 

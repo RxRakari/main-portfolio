@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppError } from './error.middleware';
+import Admin from '../schema/admin.schema';
 
 // Extend Express Request interface to include user
 declare global {
@@ -16,7 +17,7 @@ interface JwtPayload {
   role: string;
 }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get token from header
     const authHeader = req.headers.authorization;
@@ -29,8 +30,18 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as JwtPayload;
     
-    // Add user from payload
-    req.user = decoded;
+    // Check if admin exists
+    const admin = await Admin.findById(decoded.id);
+    if (!admin) {
+      return next(new AppError('Admin not found', 401));
+    }
+    
+    // Add admin from payload
+    req.user = {
+      id: decoded.id,
+      role: decoded.role
+    };
+    
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);

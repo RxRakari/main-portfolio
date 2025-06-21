@@ -71,22 +71,39 @@ A sleek, minimalist portfolio website with a black and white theme, featuring an
    - Cloudinary credentials
    - Email service credentials
 
-5. Start the development server:
+5. Create the initial admin user:
+   ```
+   npm run create-admin
+   ```
+   This will create an admin user with:
+   - Email: admin@example.com
+   - Password: admin123
+
+6. Start the development server:
    ```
    npm run dev
    ```
 
-6. Access the API documentation:
+7. Access the API documentation:
    ```
    http://localhost:5000/api-docs
    ```
 
+## Admin Dashboard Access
+
+After setting up the backend, you can log in to the admin dashboard with:
+- Email: admin@example.com
+- Password: admin123
+
+It's recommended to change the default password after your first login.
+
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login a user
-- `GET /api/auth/profile` - Get user profile (protected)
+- `POST /api/auth/register` - Register a new admin (development only)
+- `POST /api/auth/login` - Login as admin
+- `GET /api/auth/profile` - Get admin profile (protected)
+- `PUT /api/auth/profile` - Update admin profile (protected)
 
 ### Blogs
 - `GET /api/blogs` - Get all blogs

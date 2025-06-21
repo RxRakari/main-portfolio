@@ -1,15 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-export interface IUser extends Document {
+export interface IAdmin extends Document {
   username: string;
   email: string;
   password: string;
-  role: 'admin' | 'user';
+  role: 'admin';
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const UserSchema = new Schema(
+const AdminSchema = new Schema(
   {
     username: {
       type: String,
@@ -29,15 +29,15 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
-      default: 'user',
+      default: 'admin',
+      enum: ['admin'],
     },
   },
   { timestamps: true }
 );
 
 // Hash password before saving
-UserSchema.pre('save', async function (next) {
+AdminSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   
   try {
@@ -50,8 +50,8 @@ UserSchema.pre('save', async function (next) {
 });
 
 // Method to compare password
-UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+AdminSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.model<IUser>('User', UserSchema); 
+export default mongoose.model<IAdmin>('Admin', AdminSchema); 
