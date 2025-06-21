@@ -11,6 +11,7 @@ A sleek, minimalist portfolio website with a black and white theme, featuring an
 - Gallery with image uploads via Cloudinary
 - Contact form with email notifications
 - Responsive monochrome design
+- API documentation with Swagger
 
 ## Tech Stack
 
@@ -26,6 +27,7 @@ A sleek, minimalist portfolio website with a black and white theme, featuring an
 - Cloudinary for image storage
 - Nodemailer for email functionality
 - JWT for authentication
+- Swagger for API documentation
 
 ## Setup Instructions
 
@@ -72,6 +74,11 @@ A sleek, minimalist portfolio website with a black and white theme, featuring an
 5. Start the development server:
    ```
    npm run dev
+   ```
+
+6. Access the API documentation:
+   ```
+   http://localhost:5000/api-docs
    ```
 
 ## API Endpoints
