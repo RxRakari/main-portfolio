@@ -43,7 +43,7 @@ const Login = () => {
         {/* Logo */}
         <div className="flex justify-center mb-12">
           <Link to="/">
-            <img src={""} alt="SRAL Engineering Services Limited" className="h-16" />
+            <img src={""} alt="Caleb Official Portfolio Logo" className="h-16" />
           </Link>
         </div>
         

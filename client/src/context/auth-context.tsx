@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { API_URL } from '../helpers/api_url';
 
 interface Admin {
   id: string;
@@ -19,8 +20,6 @@ interface AuthContextType {
 interface AuthProviderProps {
   children: ReactNode;
 }
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

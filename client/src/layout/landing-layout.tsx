@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Footer } from '../components/layout/landing/footer';
+import Footer from '../components/layout/landing/footer';
 import Navbar from '../components/layout/landing/navbar';
 
 export const LandingLayout: React.FC = () => {
