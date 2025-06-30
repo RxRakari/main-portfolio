@@ -3,6 +3,7 @@ import logo from "../../../../public/vite.svg";
 import { Link } from "react-router-dom";
 import { Icons } from "../../ui/icons";
 import { FaGithub } from "react-icons/fa";
+import { bio } from "../../../static/constants";
 
 const navLinks = [
   { name: "About", href: "#features" },
@@ -37,7 +38,7 @@ export default function Navbar() {
       >
         <button className="p-3.5 flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
           <img src={logo} alt="logo" width={24} />
-          <h4 className="text-[#e5e5e5] text-[20px] leading-[16px]">Caleb</h4>
+          <h4 className="text-[#e5e5e5] text-[20px] leading-[16px]">{bio.FirstName}</h4>
         </button>
 
         <nav

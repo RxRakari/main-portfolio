@@ -44,8 +44,15 @@ Blogs
 Login
 Dashboard
 Contact
-Skills Matrix
-Testimonials
-Case Studies
-Newsletter
-Resources/Downloads
+
+# -- Sections -- #
+
+Hero section
+About section
+Projects section
+Skills/Techs/Skills Matrix section
+Experience section
+Gallery section section
+Testimonials section
+Newsletter section - If a client subscribes they get notifications for my new project uploads
+Footer section

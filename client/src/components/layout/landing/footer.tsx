@@ -2,6 +2,7 @@ import { staggerContainer, textVariant2 } from "../../../lib/motion";
 import { motion } from "framer-motion";
 import { Icons } from "../../ui/icons";
 import { Link } from "react-router-dom";
+import { bio } from "../../../static/constants";
 
 const navLinks = [
   { name: "Projects", href: "#features" },
@@ -26,7 +27,7 @@ const Footer = () => {
             className="lg:text-[277px] text-6xl sm:text-[80px] text-[#e5e5e580] font-bold leading-none tracking-tight select-none"
             variants={textVariant2}
           >
-            Caleb
+            {bio.FirstName}
           </motion.p>
         </div>
 
@@ -90,7 +91,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <h5 className="text-[#a3a3a3] md:text-[18px] text-[14px] text-center md:mt-0 mt-6">
-            © 2025 Caleb. All rights reserved.
+            © 2025 {bio.FirstName}. All rights reserved.
           </h5>
         </div>
 
