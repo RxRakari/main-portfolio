@@ -31,3 +31,15 @@ a, button {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-500;
 }
+
+.text-gradient {
+    background: linear-gradient(to bottom, #0046FF, #00B7FF, #00FFE0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+}
+
+.bg-gradient {
+  background: linear-gradient(to bottom, #0046FF, #00B7FF, #00FFE0);
+}

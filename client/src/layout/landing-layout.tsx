@@ -7,7 +7,7 @@ export const LandingLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-      <main className="w-full pt-[100px] px-[80px]">
+      <main className="w-full px-[80px]">
         <Outlet />
       </main>
       <Footer />
