@@ -5,10 +5,6 @@ import {
   FaPaperPlane, 
   FaCheckCircle, 
   FaExclamationTriangle,
-  FaCode,
-  FaRocket,
-  FaBrain,
-  FaLightbulb
 } from "react-icons/fa";
 import { 
   SiReact, 
@@ -22,28 +18,28 @@ import {
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-const benefits = [
-  {
-    icon: <FaCode className="text-blue-400" />,
-    title: "Latest Development Tips",
-    description: "Get cutting-edge coding techniques and best practices delivered weekly"
-  },
-  {
-    icon: <FaRocket className="text-purple-400" />,
-    title: "Project Updates",
-    description: "Be the first to know about new projects and behind-the-scenes insights"
-  },
-  {
-    icon: <FaBrain className="text-green-400" />,
-    title: "Tech Insights",
-    description: "Deep dives into emerging technologies and industry trends"
-  },
-  {
-    icon: <FaLightbulb className="text-yellow-400" />,
-    title: "Exclusive Content",
-    description: "Access to tutorials, resources, and content not available anywhere else"
-  }
-];
+// const benefits = [
+//   {
+//     icon: <FaCode className="text-blue-400" />,
+//     title: "Latest Development Tips",
+//     description: "Get cutting-edge coding techniques and best practices delivered weekly"
+//   },
+//   {
+//     icon: <FaRocket className="text-purple-400" />,
+//     title: "Project Updates",
+//     description: "Be the first to know about new projects and behind-the-scenes insights"
+//   },
+//   {
+//     icon: <FaBrain className="text-green-400" />,
+//     title: "Tech Insights",
+//     description: "Deep dives into emerging technologies and industry trends"
+//   },
+//   {
+//     icon: <FaLightbulb className="text-yellow-400" />,
+//     title: "Exclusive Content",
+//     description: "Access to tutorials, resources, and content not available anywhere else"
+//   }
+// ];
 
 const techStack = [
   { icon: <SiReact className="text-[#61DAFB]" />, name: "React" },
@@ -281,7 +277,7 @@ export default function NewsletterSection() {
         </div>
 
         {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {benefits.map((benefit, index) => (
             <div
               key={benefit.title}
@@ -299,7 +295,7 @@ export default function NewsletterSection() {
               </p>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Newsletter Form */}
         <div 
@@ -307,7 +303,7 @@ export default function NewsletterSection() {
           className="max-w-2xl mx-auto p-8 backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] relative"
         >
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold mb-2">Ready to Get Started?</h3>
+            <h3 className="text-2xl font-bold mb-2">Subscribe to my Newsletter</h3>
             <p className="text-gray-400">No spam, unsubscribe at any time.</p>
           </div>
 
