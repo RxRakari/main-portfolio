@@ -18,6 +18,7 @@ import { Dashboard } from './pages/dashboard/index';
 
 // Protected Route
 import ProtectedRoute from './routes/protected';
+import NotFound from './routes/404';
 
 const App = () => {
   return (
@@ -51,7 +52,8 @@ const App = () => {
         } />
         
         {/* 404 route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path='/not-found' element={<NotFound /> } />
+        <Route path="*" element={<Navigate to="/not-found" replace />} />
       </Routes>
     </BrowserRouter>
   );

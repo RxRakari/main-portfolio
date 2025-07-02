@@ -6,9 +6,9 @@ import { FaGithub } from "react-icons/fa";
 import { bio } from "../../../static/constants";
 
 const navLinks = [
-  { name: "Projects", href: "#features" },
-  { name: "Contact", href: "#faqs" },
-  { name: "Blog", href: "#roadmap" },
+  { name: "Projects", href: "/projects" },
+  { name: "Contact", href: "/contact" },
+  { name: "Blog", href: "/blogs" },
 ];
 
 export default function Navbar() {

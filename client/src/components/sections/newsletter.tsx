@@ -56,7 +56,7 @@ const techStack = [
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+  const [status, setStatus] = useState("idle"); 
   const [message, setMessage] = useState("");
   
   const sectionRef = useRef<HTMLElement>(null);
@@ -233,7 +233,7 @@ export default function NewsletterSection() {
   return (
     <section 
       ref={sectionRef}
-      className="min-h-screen bg-black text-white py-20 px-4 md:px-10 relative overflow-hidden"
+      className="min-h-screen bg-gray-900 text-white py-20 px-4 md:px-10 relative overflow-hidden w-full"
     >
       {/* Background Tech Icons */}
       <div className="absolute inset-0 opacity-5">
@@ -264,7 +264,7 @@ export default function NewsletterSection() {
           </p>
           
           {/* Stats */}
-          <div ref={statsRef} className="flex justify-center gap-8 mb-12">
+          {/* <div ref={statsRef} className="flex justify-center gap-8 mb-12">
             <div className="text-center">
               <div className="text-2xl md:text-3xl font-bold text-blue-400">5K+</div>
               <div className="text-sm text-gray-500">Subscribers</div>
@@ -277,7 +277,7 @@ export default function NewsletterSection() {
               <div className="text-2xl md:text-3xl font-bold text-green-400">100%</div>
               <div className="text-sm text-gray-500">Free</div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Benefits Grid */}
