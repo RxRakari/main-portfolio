@@ -12,7 +12,7 @@ export default {
       keyframes: {
         scroll: {
           to: {
-            transform: 'translate(calc(-50% - 0.5rem))',
+            transform: 'translateX(-50%)',
           },
         },
       },

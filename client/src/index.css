@@ -43,3 +43,17 @@ a, button {
 .bg-gradient {
   background: linear-gradient(to bottom, #0046FF, #00B7FF, #00FFE0);
 }
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll var(--animation-duration, 40s) linear infinite;
+  animation-direction: var(--animation-direction, forwards);
+}
+
+html, body {
+  overflow-x: hidden !important;
+}

@@ -66,6 +66,7 @@ import {
   SiJupyter,
 } from "react-icons/si";
 import { DiJava } from "react-icons/di";
+import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -421,110 +422,81 @@ export default function ProjectsSection() {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, index) => (
-            <div
-              key={project.id}
-              ref={(el) => { projectsRef.current[index] = el; }}
-              data-project-id={project.id}
-              className="group relative backdrop-blur-[10px] rounded-[20px] border border-[#fafafa0d] overflow-hidden transition-all duration-300 hover:border-[#fafafa15] cursor-pointer"
-              onMouseEnter={() => handleProjectHover(project.id, true)}
-              onMouseLeave={() => handleProjectHover(project.id, false)}
-            >
-              {/* Project Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                
-                {/* Hover Overlay */}
-                <div 
-                  className={`absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center gap-4 transition-all duration-300 ${
-                    hoveredProject === project.id ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 backdrop-blur-[10px] rounded-full border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:scale-110"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <FaGithub className="text-white text-lg" />
-                  </a>
-                  <a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 backdrop-blur-[10px] rounded-full border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:scale-110"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <FaExternalLinkAlt className="text-white text-lg" />
-                  </a>
+        {/* Infinite Moving Cards */}
+        <div className="my-12">
+          <InfiniteMovingCards
+            items={filteredProjects}
+            direction="left"
+            speed="normal"
+            pauseOnHover={true}
+            className=""
+            renderItem={(project) => (
+              <div className="group relative backdrop-blur-[10px] rounded-[20px] border border-[#fafafa0d] overflow-hidden transition-all duration-300 hover:border-[#fafafa15] cursor-pointer flex flex-col h-full bg-black text-white">
+                {/* Project Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  {/* Featured Badge */}
+                  {project.featured && (
+                    <div className="absolute top-4 left-4 px-3 py-1 backdrop-blur-[10px] rounded-full border border-[#fafafa0d] text-xs font-medium">
+                      Featured
+                    </div>
+                  )}
                 </div>
-
-                {/* Featured Badge */}
-                {project.featured && (
-                  <div className="absolute top-4 left-4 px-3 py-1 backdrop-blur-[10px] rounded-full border border-[#fafafa0d] text-xs font-medium">
-                    Featured
-                  </div>
-                )}
-              </div>
-
-              {/* Project Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors duration-300">
-                  {project.title}
-                </h3>
-                <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                  {project.description}
-                </p>
-
-                {/* Technologies */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="flex items-center gap-1.5 px-3 py-1 text-xs backdrop-blur-[10px] rounded-full border border-[#fafafa0d] text-gray-300 hover:border-[#fafafa15] transition-all duration-200"
-                      title={tech}
-                    >
-                      <span className="text-sm">
-                        {techIcons[tech] || <span className="text-gray-400">•</span>}
+                {/* Project Content */}
+                <div className="p-6 flex flex-col h-full">
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors duration-300">
+                    {project.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                    {project.description}
+                  </p>
+                  {/* Technologies */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.technologies.map((tech: any) => (
+                      <span
+                        key={tech}
+                        className="flex items-center gap-1.5 px-3 py-1 text-xs backdrop-blur-[10px] rounded-full border border-[#fafafa0d] text-gray-300 hover:border-[#fafafa15] transition-all duration-200"
+                        title={tech}
+                      >
+                        <span className="text-sm">
+                          {techIcons[tech] || <span className="text-gray-400">•</span>}
+                        </span>
+                        {tech}
                       </span>
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Links */}
-                <div className="flex gap-3">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 text-sm backdrop-blur-[10px] rounded-full border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:bg-white/5"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <FaGithub />
-                    Code
-                  </a>
-                  <a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-black rounded-full hover:bg-gray-200 transition-all duration-300"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <FaExternalLinkAlt />
-                    Live Demo
-                  </a>
+                    ))}
+                  </div>
+                  {/* Links */}
+                  <div className="flex gap-3 mt-auto">
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 text-sm backdrop-blur-[10px] rounded-full border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:bg-white/5"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FaGithub />
+                      Code
+                    </a>
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 text-sm bg-white text-black rounded-full hover:bg-gray-200 transition-all duration-300"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FaExternalLinkAlt />
+                      Live Demo
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )}
+          />
         </div>
 
         {/* Load More Button */}
