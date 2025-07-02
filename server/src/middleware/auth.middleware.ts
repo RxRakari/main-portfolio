@@ -6,7 +6,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Extend Express Request interface to include user
 declare global {
   namespace Express {
     interface Request {
@@ -22,7 +21,6 @@ interface JwtPayload {
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Get token from header
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -30,7 +28,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return next(new AppError('No token, authorization denied', 401));
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
     
     // Check if admin exists

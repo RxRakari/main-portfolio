@@ -6,7 +6,7 @@ import { FaGithub } from "react-icons/fa";
 import { bio } from "../../../static/constants";
 
 const navLinks = [
-  { name: "About", href: "#features" },
+  { name: "Projects", href: "#features" },
   { name: "Contact", href: "#faqs" },
   { name: "Blog", href: "#roadmap" },
 ];

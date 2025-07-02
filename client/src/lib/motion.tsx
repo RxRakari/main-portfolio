@@ -89,8 +89,8 @@ export const navVariants = {
       opacity: 1,
       y: 0,
       transition: {
-        type: "tween",
-        ease: "easeIn",
+        type: "tween" as const,
+        ease: "easeIn" as const,
       },
     },
   };
