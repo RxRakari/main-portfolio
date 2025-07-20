@@ -2,7 +2,7 @@ import { staggerContainer, textVariant2 } from "../../../lib/motion";
 import { motion } from "framer-motion";
 import { Icons } from "../../ui/icons";
 import { Link } from "react-router-dom";
-import { bio } from "../../../static/constants";
+import { bio } from "../../../static/bio";
 
 const navLinks = [
   { name: "Projects", href: "#features" },

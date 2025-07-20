@@ -6,7 +6,7 @@
 
 /* Custom styles for monochrome theme */
 body {
-  @apply bg-white text-black;
+  @apply bg-black text-white;
   font-family: "Poppins", sans-serif;
 }
 
@@ -21,15 +21,21 @@ a, button {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  @apply bg-gray-900;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-400 rounded-full;
+  @apply bg-purple-500 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-500;
+  @apply bg-purple-400;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(168 85 247) rgb(17 24 39);
 }
 
 .text-gradient {

@@ -3,7 +3,7 @@ import logo from "../../../../public/vite.svg";
 import { Link } from "react-router-dom";
 import { Icons } from "../../ui/icons";
 import { FaGithub } from "react-icons/fa";
-import { bio } from "../../../static/constants";
+import { bio } from "../../../static/bio";
 
 const navLinks = [
   { name: "Projects", href: "/projects" },

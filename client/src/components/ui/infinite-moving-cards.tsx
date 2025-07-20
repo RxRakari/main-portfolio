@@ -71,21 +71,21 @@ export const InfiniteMovingCards = ({
     <div
       ref={containerRef}
       className={
-        "scroller relative z-20 max-w-7xl overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] " +
+        "scroller relative z-20 max-w-7xl overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" +
         (className || "")
       }
     >
       <ul
         ref={scrollerRef}
         className={
-          "flex w-max min-w-full shrink-0 flex-nowrap gap-8 py-4 " +
+          "flex w-max shrink-0 flex-nowrap gap-4 py-4 " +
           (start ? "animate-scroll " : "") +
           (pauseOnHover ? "hover:[animation-play-state:paused] " : "")
         }
       >
         {items.map((item, idx) => (
           <li
-            className="relative w-[350px] max-w-full shrink-0 rounded-2xl border border-b-0 border-zinc-200 bg-[linear-gradient(180deg,#fafafa,#f5f5f5)] px-8 py-6 md:w-[450px] dark:border-zinc-700 dark:bg-[linear-gradient(180deg,#27272a,#18181b)]"
+            className="relative w-[350px] max-w-full shrink-0 rounded-2xl px-8 py-6 md:w-[450px]"
             key={item.id || item.name || idx}
           >
             {renderItem ? renderItem(item, idx) : (
@@ -115,14 +115,3 @@ export const InfiniteMovingCards = ({
     </div>
   );
 };
-
-// Add animation keyframes for scroll
-// You should add this to your global CSS or Tailwind config:
-// @keyframes scroll {
-//   0% { transform: translateX(0); }
-//   100% { transform: translateX(-50%); }
-// }
-// .animate-scroll {
-//   animation: scroll var(--animation-duration, 40s) linear infinite;
-//   animation-direction: var(--animation-direction, forwards);
-// }

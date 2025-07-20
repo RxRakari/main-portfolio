@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { gsap } from "gsap";
-import { bio } from "../../static/constants";
+import { bio } from "../../static/bio";
 
 export const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -119,7 +119,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <div ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden w-full">
       {/* Floating background elements */}
       <div 
         ref={(el) => { floatingElementsRef.current[0] = el; }}
@@ -134,7 +134,7 @@ export const HeroSection = () => {
         className="absolute bottom-32 left-40 w-20 h-20 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
       />
 
-      <div className="flex items-center justify-between w-full max-w-7xl mx-auto px-4 md:px-10">
+      <div className="flex items-center justify-between w-full px-4 md:px-0">
         {/* Content Section */}
         <div className="flex flex-col gap-6 max-w-2xl">
           <h1 
@@ -147,7 +147,7 @@ export const HeroSection = () => {
           
           <p 
             ref={nameRef}
-            className="text-4xl md:text-5xl text-gradient bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+            className="text-4xl md:text-5xl font-semibold text-purple-500"
             style={{
               backgroundSize: "200% 100%",
               backgroundPosition: "0% center"
@@ -158,7 +158,7 @@ export const HeroSection = () => {
           
           <span 
             ref={bioRef}
-            className="text-base md:text-lg text-gray-300 max-w-lg leading-relaxed"
+            className="text-base md:text-[1.4rem] text-gray-300 max-w-[650px] leading-relaxed"
           >
             {bio.ShortBio}
           </span>
@@ -181,7 +181,7 @@ export const HeroSection = () => {
         >
           <div className="relative">
             {/* Glass effect frame */}
-            <div className="w-80 h-80 rounded-[33px] backdrop-blur-[10px] border border-[#fafafa0d] flex items-center justify-center relative overflow-hidden">
+            <div className="w-[400px] h-[400px] rounded-full backdrop-blur-[10px] border-4 border-purple-500 flex items-center justify-center relative overflow-hidden">
               {/* Placeholder for image */}
               <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-[33px] flex items-center justify-center">
                 <div className="text-6xl">👨‍💻</div>

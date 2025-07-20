@@ -54,5 +54,5 @@ Skills/Techs/Skills Matrix section
 Experience section
 Gallery section section
 Testimonials section
-Newsletter section - If a client subscribes they get notifications for my new project uploads
+Newsletter section - If a client subscribes they get notifications for my new project, blogs, new skill, new experience uploads
 Footer section

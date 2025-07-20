@@ -67,76 +67,13 @@ import {
 } from "react-icons/si";
 import { DiJava } from "react-icons/di";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
+import Heading from "../ui/heading";
+import { projects } from "../../static/projects";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-// Mock project data - replace with your actual projects
-const projects = [
-  {
-    id: 1,
-    title: "E-Commerce Platform",
-    description: "A full-stack e-commerce solution with real-time inventory management, secure payment processing, and admin dashboard.",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop",
-    technologies: ["React", "TypeScript", "Node.js", "Express", "MongoDB", "Stripe", "TailwindCSS", "Redux"],
-    github: "https://github.com",
-    live: "https://example.com",
-    featured: true
-  },
-  {
-    id: 2,
-    title: "AI Chat Application",
-    description: "Real-time chat application with AI-powered responses, message encryption, and multimedia support.",
-    image: "https://images.unsplash.com/photo-1587560699334-cc4ff634909a?w=600&h=400&fit=crop",
-    technologies: ["Next.js", "TypeScript", "Firebase", "OpenAI", "Socket.io", "TailwindCSS", "Zustand"],
-    github: "https://github.com",
-    live: "https://example.com",
-    featured: true
-  },
-  {
-    id: 3,
-    title: "Portfolio Dashboard",
-    description: "Interactive dashboard for tracking investment portfolios with real-time data visualization and analytics.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
-    technologies: ["React", "Python", "Django", "PostgreSQL", "Chart.js", "D3.js", "TailwindCSS"],
-    github: "https://github.com",
-    live: "https://example.com",
-    featured: false
-  },
-  {
-    id: 4,
-    title: "Task Management App",
-    description: "Collaborative task management tool with drag-and-drop functionality, team collaboration, and progress tracking.",
-    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop",
-    technologies: ["Vue.js", "Node.js", "NestJS", "MongoDB", "Socket.io", "Vuetify", "JWT"],
-    github: "https://github.com",
-    live: "https://example.com",
-    featured: false
-  },
-  {
-    id: 5,
-    title: "Weather Analytics",
-    description: "Weather forecasting application with historical data analysis, interactive maps, and detailed climate insights.",
-    image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=400&fit=crop",
-    technologies: ["JavaScript", "HTML5", "CSS3", "Chart.js", "OpenWeatherAPI", "Leaflet", "Bootstrap"],
-    github: "https://github.com",
-    live: "https://example.com",
-    featured: false
-  },
-  {
-    id: 6,
-    title: "Fitness Tracker",
-    description: "Mobile-responsive fitness tracking app with workout plans, progress monitoring, and social features.",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop",
-    technologies: ["React", "Firebase", "TailwindCSS", "PWA", "Framer Motion", "React Query"],
-    github: "https://github.com",
-    live: "https://example.com",
-    featured: false
-  }
-];
-
-// Real tech icons mapping
-const techIcons: { [key: string]: React.JSX.Element } = {
+export const techIcons: { [key: string]: React.JSX.Element } = {
   // Frontend Frameworks & Libraries
   "React": <FaReact className="text-[#61DAFB]" />,
   "Next.js": <SiNextdotjs className="text-white" />,
@@ -234,7 +171,6 @@ const techIcons: { [key: string]: React.JSX.Element } = {
 
 export default function ProjectsSection() {
   const [filter, setFilter] = useState("all");
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -358,7 +294,6 @@ export default function ProjectsSection() {
 
   const handleProjectHover = (projectId: number, isEntering: boolean) => {
     if (isEntering) {
-      setHoveredProject(projectId);
       const projectCard = projectsRef.current.find(ref => 
         ref && ref.getAttribute('data-project-id') === projectId.toString()
       );
@@ -370,7 +305,6 @@ export default function ProjectsSection() {
         });
       }
     } else {
-      setHoveredProject(null);
       const projectCard = projectsRef.current.find(ref => 
         ref && ref.getAttribute('data-project-id') === projectId.toString()
       );
@@ -384,6 +318,8 @@ export default function ProjectsSection() {
     }
   };
 
+  console.log(handleProjectHover)
+
   return (
     <section 
       ref={sectionRef}
@@ -392,15 +328,7 @@ export default function ProjectsSection() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div ref={headerRef} className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-            Featured Projects
-          </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            A collection of projects that showcase my skills in modern web development, 
-            from concept to deployment.
-          </p>
-        </div>
+        <Heading heading={"Featured Projects"} paragraph={"A collection of projects that showcase my skills in modern web development, from concept to deployment."} />
 
         {/* Filter Buttons */}
         <div ref={filterRef} className="flex justify-center mb-12">
@@ -422,7 +350,6 @@ export default function ProjectsSection() {
         </div>
 
         {/* Projects Grid */}
-        {/* Infinite Moving Cards */}
         <div className="my-12">
           <InfiniteMovingCards
             items={filteredProjects}
@@ -431,7 +358,7 @@ export default function ProjectsSection() {
             pauseOnHover={true}
             className=""
             renderItem={(project) => (
-              <div className="group relative backdrop-blur-[10px] rounded-[20px] border border-[#fafafa0d] overflow-hidden transition-all duration-300 hover:border-[#fafafa15] cursor-pointer flex flex-col h-full bg-black text-white">
+              <div className="group relative backdrop-blur-[10px] rounded-[20px] overflow-hidden transition-all duration-300 hover:border-[#fafafa15] cursor-pointer flex flex-col h-full text-white bg-white/5 border border-white/10 shadow-xl">
                 {/* Project Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -449,7 +376,7 @@ export default function ProjectsSection() {
                 </div>
                 {/* Project Content */}
                 <div className="p-6 flex flex-col h-full">
-                  <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors duration-300">
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-purple-500 transition-colors duration-300">
                     {project.title}
                   </h3>
                   <p className="text-gray-400 text-sm mb-4 line-clamp-3">
@@ -460,7 +387,7 @@ export default function ProjectsSection() {
                     {project.technologies.map((tech: any) => (
                       <span
                         key={tech}
-                        className="flex items-center gap-1.5 px-3 py-1 text-xs backdrop-blur-[10px] rounded-full border border-[#fafafa0d] text-gray-300 hover:border-[#fafafa15] transition-all duration-200"
+                        className="flex items-center gap-1.5 px-3 py-1 text-xs backdrop-blur-[10px] rounded-full border border-gray-600 text-gray-300 hover:border-[#fafafa15] transition-all duration-200"
                         title={tech}
                       >
                         <span className="text-sm">
