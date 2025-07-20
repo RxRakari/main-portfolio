@@ -7,7 +7,7 @@ import { bio } from "../../../static/bio";
 
 const navLinks = [
   { name: "Projects", href: "/projects" },
-  { name: "Contact", href: "/contact" },
+  { name: "Gallery", href: "/gallery" },
   { name: "Blog", href: "/blogs" },
 ];
 

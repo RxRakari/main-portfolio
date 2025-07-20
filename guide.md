@@ -39,20 +39,19 @@
 # --- Pages --- #
 
 Home
-About
+Gallery
 Blogs
 Login
 Dashboard
-Contact
+Projects
 
 # -- Sections -- #
 
 Hero section
 About section
-Projects section
+Featured Projects section
 Skills/Techs/Skills Matrix section
-Experience section
-Gallery section section
+Experience section 
 Testimonials section
-Newsletter section - If a client subscribes they get notifications for my new project, blogs, new skill, new experience uploads
+Newsletter section - If a client subscribes they get notifications for my new project, blogs, new skill, new uploads
 Footer section
