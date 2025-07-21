@@ -13,10 +13,8 @@ const Login = () => {
   const location = useLocation();
   const { login, isAuthenticated } = useAuth();
   
-  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      // Navigate to the original page the user was trying to access (if any)
       const from = location.state?.from || '/dashboard';
       navigate(from, { replace: true });
     }
@@ -29,7 +27,6 @@ const Login = () => {
     
     try {
       await login(email, password);
-      // No need to navigate here since the useEffect will handle it
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     } finally {
@@ -38,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center px-4 pt-16 md:py-28">
+    <div className="min-h-screen bg-[#000] flex flex-col justify-center items-center px-4 pt-16 md:py-28">
       <div className="max-w-md w-full mx-auto">
         {/* Logo */}
         <div className="flex justify-center mb-12">
@@ -50,7 +47,7 @@ const Login = () => {
         {/* Login Form */}
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-bold mb-2">Log in to your Account</h1>
-          <p className="text-gray-600">Create new Admin Profile</p>
+          <p className="text-gray-200">Create new Admin Profile</p>
         </div>
         
         {error && (
@@ -62,7 +59,7 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-1">
               Email
             </label>
             <input
@@ -74,14 +71,14 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
-              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               disabled={isLoading}
             />
           </div>
           
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-1">
               Password
             </label>
             <div className="relative">
@@ -94,7 +91,7 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 8 characters..."
-                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 disabled={isLoading}
               />
               <button
@@ -114,7 +111,7 @@ const Login = () => {
               </button>
             </div>
             <div className="mt-1 text-right">
-              <Link to="/forgot-password" className="text-sm text-blue-700 hover:text-blue-800">
+              <Link to="/forgot-password" className="text-sm text-gray-200 hover:text-blue-800">
                 Forgot password?
               </Link>
             </div>
@@ -124,7 +121,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full py-3 bg-purple-700 hover:bg-purple-800 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Log In'}
@@ -143,7 +140,7 @@ const Login = () => {
         <div>
           <button
             type="button"
-            className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-transparent hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-[#000}"
             disabled={isLoading}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -177,7 +174,7 @@ const Login = () => {
               checked={staySignedIn}
               onChange={() => setStaySignedIn(!staySignedIn)}
             />
-            <span className="ml-2 text-sm text-gray-600">Stay signed in</span>
+            <span className="ml-2 text-sm text-gray-200">Stay signed in</span>
           </label>
         </div>
       </div>
