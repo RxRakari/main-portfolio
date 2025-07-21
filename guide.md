@@ -45,13 +45,15 @@ Login
 Dashboard
 Projects
 
+note: add limit to make response faster and use aggressive Caching (The Biggest Win)
+
 # -- Sections -- #
 
 Hero section
 About section
 Featured Projects section
-Skills/Techs/Skills Matrix section
 Experience section 
 Testimonials section
+Contact section
 Newsletter section - If a client subscribes they get notifications for my new project, blogs, new skill, new uploads
 Footer section 

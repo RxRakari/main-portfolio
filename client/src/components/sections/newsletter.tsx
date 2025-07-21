@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FiSend } from "react-icons/fi";
+import { doodle } from "../../assets";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -71,9 +72,16 @@ export default function NewsletterSection() {
     <section
       ref={sectionRef}
       id="newsletter"
-      className="bg-black text-white py-20 px-4 md:px-10"
+      className="bg-black text-white py-20 px-4 md:px-10 relative"
+      style={{
+        backgroundImage: `url(${doodle})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      <div className="max-w-3xl mx-auto text-center">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/95 z-0" />
+      <div className="max-w-3xl mx-auto text-center relative z-10">
         <h2 className="newsletter-title text-4xl md:text-5xl font-bold mb-6 text-purple-500">
           Stay Updated
         </h2>

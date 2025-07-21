@@ -36,10 +36,10 @@ export default function Navbar() {
           transition: "all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)",
         }}
       >
-        <button className="p-3.5 flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
+        <Link to={"/"} className="p-3.5 flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
           <img src={logo} alt="logo" width={24} />
           <h4 className="text-[#e5e5e5] text-[20px] leading-[16px]">{bio.FirstName}</h4>
-        </button>
+        </Link>
 
         <nav
           className="p-4 px-[20px] backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] h-full flex items-center transition-all duration-500"

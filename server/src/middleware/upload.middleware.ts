@@ -3,15 +3,13 @@ import multer from 'multer';
 import cloudinary from '../config/cloudinary';
 import { AppError } from './error.middleware';
 
-// Configure multer for memory storage
 const storage = multer.memoryStorage();
 export const upload = multer({ 
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 5 * 1024 * 1024, 
   },
   fileFilter: (req, file, cb) => {
-    // Accept images only
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
       return cb(null, false);
     }
@@ -19,23 +17,19 @@ export const upload = multer({
   }
 });
 
-// Middleware to handle Cloudinary upload
 export const cloudinaryUpload = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       return next(new AppError('No file uploaded', 400));
     }
 
-    // Convert buffer to base64
     const fileStr = `data:${req.file.mimetype};base64,${Buffer.from(req.file.buffer).toString('base64')}`;
     
-    // Upload to cloudinary
     const uploadResult = await cloudinary.uploader.upload(fileStr, {
       folder: 'monochrome-portfolio',
       resource_type: 'auto',
     });
     
-    // Add upload info to request for use in route handlers
     req.body.imageUrl = uploadResult.secure_url;
     req.body.cloudinaryId = uploadResult.public_id;
     

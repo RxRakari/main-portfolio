@@ -134,7 +134,7 @@ export const HeroSection = () => {
         className="absolute bottom-32 left-40 w-20 h-20 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
       />
 
-      <div className="flex items-center justify-between w-full px-4 md:px-0">
+      <div className="flex items-center justify-between w-full max-w-7xl px-4 md:px-0">
         {/* Content Section */}
         <div className="flex flex-col gap-6 max-w-2xl">
           <h1 

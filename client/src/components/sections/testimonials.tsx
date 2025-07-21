@@ -3,6 +3,7 @@ import Heading from "../ui/heading";
 
 
 export function Testimonials() {
+  
   const testimonials = [
     {
       quote:

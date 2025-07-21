@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ScrollToTop from './components/ui/ScrollToTop';
 
 // Layouts
 import { LandingLayout } from './layout/landing-layout';
@@ -6,8 +7,7 @@ import DashboardLayout from './layout/dashboard-layout';
 
 // Landing pages
 import { Home } from './pages/landing/home';
-import { Projects } from './pages/landing/projects';
-import { Blogs } from './pages/landing/blogs';
+import { Blogs } from './pages/landing/blogs/blogs';
 import { Gallery } from './pages/landing/gallery';
 
 // Auth pages
@@ -19,10 +19,12 @@ import { Dashboard } from './pages/dashboard/index';
 // Protected Route
 import ProtectedRoute from './routes/protected';
 import NotFound from './routes/404';
+import Projects  from './pages/landing/projects/projects';
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Auth routes without layout */}
         <Route path="/login" element={<Login />} />
