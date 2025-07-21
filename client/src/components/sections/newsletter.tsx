@@ -1,5 +1,5 @@
-export default function NewsletterSection() {
-  return(
+export const NewsletterSection = () => {
+  return (
     <></>
   )
 }

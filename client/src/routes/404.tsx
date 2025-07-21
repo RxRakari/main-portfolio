@@ -1,6 +1,6 @@
 const NotFound = () => {
   return (
-    <div>
+    <div className="justify-center items-center flex">
       Page not found, come back next time!
     </div>
   )
