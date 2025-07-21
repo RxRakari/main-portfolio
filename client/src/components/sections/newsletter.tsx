@@ -1,5 +1,125 @@
-export const NewsletterSection = () => {
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FiSend } from "react-icons/fi";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function NewsletterSection() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+  const [message, setMessage] = useState("");
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+    setMessage("");
+
+    // Replace with your actual newsletter subscription logic
+    try {
+      // Fake API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      if (email.includes("@")) {
+        setStatus("success");
+        setMessage("Thank you for subscribing!");
+        setEmail("");
+      } else {
+        throw new Error("Please enter a valid email.");
+      }
+    } catch (error: any) {
+      setStatus("error");
+      setMessage(error.message || "Something went wrong. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      timeline
+        .fromTo(
+          ".newsletter-title",
+          { opacity: 0, y: 50 },
+          { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+        )
+        .fromTo(
+          ".newsletter-description",
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+          "-=0.6"
+        )
+        .fromTo(
+          ".newsletter-form",
+          { opacity: 0, scale: 0.9 },
+          { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)" },
+          "-=0.5"
+        );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <></>
-  )
+    <section
+      ref={sectionRef}
+      id="newsletter"
+      className="bg-black text-white py-20 px-4 md:px-10"
+    >
+      <div className="max-w-3xl mx-auto text-center">
+        <h2 className="newsletter-title text-4xl md:text-5xl font-bold mb-6 text-purple-500">
+          Stay Updated
+        </h2>
+        <p className="newsletter-description text-lg text-gray-400 mb-12">
+          Subscribe to my newsletter to get the latest updates on my projects, articles, and more.
+        </p>
+
+        <form
+          onSubmit={handleSubmit}
+          className="newsletter-form relative max-w-lg mx-auto"
+        >
+          <div className="relative">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="w-full pl-6 pr-32 py-4 text-base bg-white/5 border border-white/10 rounded-full backdrop-blur-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all duration-300"
+            />
+            <button
+              type="submit"
+              disabled={status === "loading"}
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              {status === "loading" ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <FiSend />
+                  <span>Subscribe</span>
+                </>
+              )}
+            </button>
+          </div>
+          {message && (
+            <p
+              className={`mt-4 text-sm ${
+                status === "success" ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {message}
+            </p>
+          )}
+        </form>
+      </div>
+    </section>
+  );
 }
