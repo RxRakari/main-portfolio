@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const About: React.FC = () => {
+export const Projects: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-black">
       <h1 className="text-4xl font-bold">About</h1>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Contact: React.FC = () => {
+export const Gallery: React.FC = () => {
   return (
     <div className="min-h-screen text-white">
       <h1 className="text-4xl font-bold">Contact</h1>

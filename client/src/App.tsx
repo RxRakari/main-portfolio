@@ -6,9 +6,9 @@ import DashboardLayout from './layout/dashboard-layout';
 
 // Landing pages
 import { Home } from './pages/landing/home';
-import { About } from './pages/landing/aboutme';
+import { Projects } from './pages/landing/projects';
 import { Blogs } from './pages/landing/blogs';
-import { Contact } from './pages/landing/contact';
+import { Gallery } from './pages/landing/gallery';
 
 // Auth pages
 import Login from './pages/auth/login';
@@ -30,9 +30,9 @@ const App = () => {
         {/* Public routes with landing layout */}
         <Route element={<LandingLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
           <Route path="/blogs" element={<Blogs />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/gallery" element={<Gallery />} />
         </Route>
         
         {/* Protected dashboard routes */}
