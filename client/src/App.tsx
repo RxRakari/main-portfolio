@@ -21,6 +21,7 @@ import ProtectedRoute from './routes/protected';
 import NotFound from './routes/404';
 import Projects  from './pages/landing/projects/projects';
 import BlogDetails from './pages/landing/blogs/blog-details';
+import ProjectDetails from './pages/landing/projects/project-details';
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
         <Route element={<LandingLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blogs/details/:id" element={<BlogDetails />} />
           <Route path="/gallery" element={<Gallery />} />
