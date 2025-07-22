@@ -54,8 +54,8 @@ export const TextInput: React.FC<TextInputProps> = ({
         className={`block w-full px-4 py-3 rounded-md shadow-sm ${
           error
             ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
-            : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
-        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
+            : 'border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500'
+        } placeholder:text-gray-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       />
       {helperText && !error && (
         <p className="mt-2 text-sm text-gray-500">{helperText}</p>
@@ -116,8 +116,8 @@ export const TextArea: React.FC<TextAreaProps> = ({
         className={`block w-full px-4 py-3 rounded-md shadow-sm ${
           error
             ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
-            : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
-        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
+            : 'border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500'
+        } placeholder:text-gray-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       />
       {helperText && !error && (
         <p className="mt-2 text-sm text-gray-500">{helperText}</p>
@@ -181,7 +181,7 @@ export const Select: React.FC<SelectProps> = ({
         className={`block w-full px-4 py-3 rounded-md shadow-sm ${
           error
             ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500'
-            : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
+            : 'border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500'
         } ${value ? 'text-gray-900' : 'text-gray-500'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       >
         {placeholder && (
