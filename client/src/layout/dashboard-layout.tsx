@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/layout/dashboard/sidebar';
 import Navbar from '../components/layout/dashboard/navbar';
+import { BottomNavigation } from '../components/layout/dashboard/bottom-navigation';
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
-
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -72,11 +69,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
         
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className={`flex-1 overflow-y-auto p-4 md:p-6 ${isMobile ? 'pb-24' : ''}`}>
           <div className="container mx-auto">
-            {children}
+            <Outlet />
           </div>
         </main>
+        
+        {/* Bottom Navigation for Mobile */}
+        {isMobile && <BottomNavigation />}
       </div>
     </div>
   );
