@@ -36,8 +36,8 @@ export const TextInput: React.FC<TextInputProps> = ({
   max
 }) => {
   return (
-    <div className={`mb-4 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+    <div className={`mb-6 ${className}`}>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
@@ -51,17 +51,17 @@ export const TextInput: React.FC<TextInputProps> = ({
         required={required}
         min={min}
         max={max}
-        className={`block w-full rounded-md shadow-sm ${
+        className={`block w-full px-4 py-3 rounded-md shadow-sm ${
           error
             ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
             : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
-        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed sm:text-sm`}
+        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       />
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
       )}
       {error && (
-        <p className="mt-1 text-sm text-red-600 flex items-center">
+        <p className="mt-2 text-sm text-red-600 flex items-center">
           <FiAlertCircle className="mr-1" /> {error}
         </p>
       )}
@@ -100,8 +100,8 @@ export const TextArea: React.FC<TextAreaProps> = ({
   helperText,
 }) => {
   return (
-    <div className={`mb-4 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+    <div className={`mb-6 ${className}`}>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <textarea
@@ -113,17 +113,17 @@ export const TextArea: React.FC<TextAreaProps> = ({
         disabled={disabled}
         required={required}
         rows={rows}
-        className={`block w-full rounded-md shadow-sm ${
+        className={`block w-full px-4 py-3 rounded-md shadow-sm ${
           error
             ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
             : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
-        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed sm:text-sm`}
+        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       />
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
       )}
       {error && (
-        <p className="mt-1 text-sm text-red-600 flex items-center">
+        <p className="mt-2 text-sm text-red-600 flex items-center">
           <FiAlertCircle className="mr-1" /> {error}
         </p>
       )}
@@ -167,8 +167,8 @@ export const Select: React.FC<SelectProps> = ({
   placeholder,
 }) => {
   return (
-    <div className={`mb-4 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+    <div className={`mb-6 ${className}`}>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
@@ -178,11 +178,11 @@ export const Select: React.FC<SelectProps> = ({
         onChange={onChange}
         disabled={disabled}
         required={required}
-        className={`block w-full rounded-md shadow-sm ${
+        className={`block w-full px-4 py-3 rounded-md shadow-sm ${
           error
             ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500'
             : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
-        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed sm:text-sm`}
+        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       >
         {placeholder && (
           <option value="" disabled>
@@ -196,10 +196,10 @@ export const Select: React.FC<SelectProps> = ({
         ))}
       </select>
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
       )}
       {error && (
-        <p className="mt-1 text-sm text-red-600 flex items-center">
+        <p className="mt-2 text-sm text-red-600 flex items-center">
           <FiAlertCircle className="mr-1" /> {error}
         </p>
       )}
@@ -230,7 +230,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   helperText,
 }) => {
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className={`mb-6 ${className}`}>
       <div className="flex items-center">
         <input
           id={id}
@@ -239,14 +239,14 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           checked={checked}
           onChange={onChange}
           disabled={disabled}
-          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
         />
-        <label htmlFor={id} className="ml-2 block text-sm text-gray-700">
+        <label htmlFor={id} className="ml-3 block text-base text-gray-700">
           {label}
         </label>
       </div>
       {helperText && (
-        <p className="mt-1 text-sm text-gray-500 ml-6">{helperText}</p>
+        <p className="mt-2 text-sm text-gray-500 ml-8">{helperText}</p>
       )}
     </div>
   );
@@ -286,11 +286,11 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   helperText,
 }) => {
   return (
-    <div className={`mb-4 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+    <div className={`mb-6 ${className}`}>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {options.map((option) => (
           <div key={option.value} className="flex items-center">
             <input
@@ -301,19 +301,19 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
               checked={value === option.value}
               onChange={onChange}
               disabled={disabled}
-              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <label htmlFor={`${id}-${option.value}`} className="ml-2 block text-sm text-gray-700">
+            <label htmlFor={`${id}-${option.value}`} className="ml-3 block text-base text-gray-700">
               {option.label}
             </label>
           </div>
         ))}
       </div>
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
       )}
       {error && (
-        <p className="mt-1 text-sm text-red-600 flex items-center">
+        <p className="mt-2 text-sm text-red-600 flex items-center">
           <FiAlertCircle className="mr-1" /> {error}
         </p>
       )}
@@ -336,14 +336,14 @@ export const FormSection: React.FC<FormSectionProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`mb-8 ${className}`}>
+    <div className={`mb-10 ${className}`}>
       {title && (
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
+        <h3 className="text-xl font-medium text-gray-900 mb-2">{title}</h3>
       )}
       {description && (
         <p className="text-sm text-gray-500 mb-4">{description}</p>
       )}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-8">
         {children}
       </div>
     </div>
@@ -369,12 +369,12 @@ export const FormActions: React.FC<FormActionsProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex items-center justify-end space-x-3 ${className}`}>
+    <div className={`flex items-center justify-end space-x-4 mt-8 ${className}`}>
       {onCancel && (
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+          className="px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
         >
           {cancelLabel}
         </button>
@@ -383,11 +383,11 @@ export const FormActions: React.FC<FormActionsProps> = ({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
