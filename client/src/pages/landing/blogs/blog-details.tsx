@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 const BlogDetails = () => {
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('Setup');
+  const [activeSection, setActiveSection] = useState('');
   const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
   
   // Placeholder blog data
@@ -29,8 +29,8 @@ const BlogDetails = () => {
         id: 'Problem',
         heading: 'Problem',
         content:
-          'Can you construct an efficient algorithm for sampling from q(tk |t1, ... ,tk-1), that minimizes calls to the original language model? A description of the algorithm is great. An actual implementation is excellent.',
-        additionalContent: 'Feel free to email me your solutions at problems@cursor.com.'
+          'Can you construct an efficient algorithm for sampling from q(tₖ |t₁, ... ,tₖ₋₁), that minimizes calls to the original language model? A description of the algorithm is great. An actual implementation is excellent.',
+        additionalContent: true
       },
     ],
   };
@@ -78,11 +78,11 @@ const BlogDetails = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Sidebar navigation */}
-      <div className="fixed top-0 left-0 w-[200px] pt-24 pl-8 h-screen">
+      <div className="fixed top-[100px] left-0 w-[200px] pt-24 pl-8 h-screen">
         {blog.sections.map((section) => (
           <div 
             key={section.id}
-            className={`mb-4 text-lg cursor-pointer ${activeSection === section.id ? 'text-white' : 'text-gray-500'}`}
+            className={`mb-4 text-[1.5rem] cursor-pointer ${activeSection === section.id ? 'text-white' : 'text-gray-500'}`}
             onClick={() => scrollToSection(section.id)}
           >
             {section.heading}
@@ -91,18 +91,18 @@ const BlogDetails = () => {
       </div>
       
       {/* Main content */}
-      <div className="ml-[200px] flex justify-center">
-        <div className="w-full py-24 px-4 max-w-[1000px]">
+      <div className="ml-[200px] flex justify-center mt-[100px]">
+        <div className="w-full py-24 px-4 max-w-[1200px]">
           <button
-            className="text-gray-400 text-sm mb-16 hover:text-gray-300 flex items-center gap-2"
+            className="text-gray-400 text-[1.5rem] tracking-wider mb-16 hover:text-gray-300 flex items-center gap-2"
             onClick={() => navigate('/blogs')}
           >
             <span>←</span> BACK TO THE MAIN BLOG
           </button>
           
-          <div className="mb-6 text-gray-400 text-sm tracking-wider">{blog.date}</div>
+          <div className="mb-6 text-gray-400 text-[1.5rem] tracking-wider">{blog.date}</div>
           
-          <h1 className="text-7xl font-bold mb-6">{blog.title}</h1>
+          <h1 className="text-7xl font-medium mb-6">{blog.title}</h1>
           <div className="text-2xl text-gray-300 mb-12">{blog.subtitle}</div>
           
           <div className="flex items-center gap-4 mb-10">
@@ -128,11 +128,15 @@ const BlogDetails = () => {
                 ref={(el) => { sectionRefs.current[section.id] = el; }}
                 className="pb-8"
               >
-                <h2 className="text-5xl font-semibold mb-8">{section.heading}</h2>
-                <p className="text-2xl text-gray-300 leading-relaxed mb-6">{section.content}</p>
-                {section.additionalContent && (
-                  <p className="text-2xl text-gray-300 leading-relaxed">{section.additionalContent}</p>
-                )}
+                <h2 className="text-5xl font-semibold mb-12">{section.heading}</h2>
+                <div className="max-w-[900px]">
+                  <p className="text-2xl text-gray-300 leading-relaxed mb-6 font-light">{section.content}</p>
+                  {section.additionalContent && (
+                    <p className="text-2xl text-gray-300 leading-relaxed font-light">
+                      Feel free to email me your solutions at <a href="mailto:problems@cursor.com" className="underline">problems@cursor.com</a>.
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
