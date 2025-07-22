@@ -1,5 +1,6 @@
 import React from 'react';
 import { PageHeader } from '../../../components/ui/page-header';
+import BlogList from '../../../components/lists/blog-list';
 
 export const Blogs: React.FC = () => {
   return (
@@ -8,7 +9,7 @@ export const Blogs: React.FC = () => {
         heading="Blog Posts"
         paragraph="Read my latest articles and thoughts"
       />
-      {/* Blog list or content goes here */}
+      <BlogList />
     </div>
   );
 };

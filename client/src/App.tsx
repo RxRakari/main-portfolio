@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import ScrollToTop from './components/ui/ScrollToTop';
+import ScrollToTop from './components/ui/scroll-to-top';
 
 // Layouts
 import { LandingLayout } from './layout/landing-layout';
@@ -20,6 +20,7 @@ import { Dashboard } from './pages/dashboard/index';
 import ProtectedRoute from './routes/protected';
 import NotFound from './routes/404';
 import Projects  from './pages/landing/projects/projects';
+import BlogDetails from './pages/landing/blogs/blog-details';
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blogs/details/:id" element={<BlogDetails />} />
           <Route path="/gallery" element={<Gallery />} />
         </Route>
         

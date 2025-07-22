@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FiSend } from "react-icons/fi";
 import { doodle } from "../../assets";
+import Heading from "../ui/heading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -82,12 +83,13 @@ export default function NewsletterSection() {
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/95 z-0" />
       <div className="max-w-3xl mx-auto text-center relative z-10">
-        <h2 className="newsletter-title text-4xl md:text-5xl font-bold mb-6 text-purple-500">
+        <Heading heading={"Stay Updated"} paragraph={"Subscribe to my newsletter to get the latest updates on my projects, articles, and more."} />
+        {/* <h2 className="newsletter-title text-4xl md:text-5xl font-bold mb-6 text-purple-500">
           Stay Updated
         </h2>
         <p className="newsletter-description text-lg text-gray-400 mb-12">
           Subscribe to my newsletter to get the latest updates on my projects, articles, and more.
-        </p>
+        </p> */}
 
         <form
           onSubmit={handleSubmit}

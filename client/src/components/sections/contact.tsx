@@ -59,16 +59,13 @@ export default function ContactSection() {
           <button
             type="submit"
             disabled={status === "loading"}
-            className="w-full py-4 rounded-2xl font-semibold text-lg flex items-center justify-center transition-all duration-300 mt-2"
+            className="w-full py-4 rounded-2xl font-medium text-lg flex items-center justify-center transition-all duration-300 mt-2 border border-gray-600 text-gray-300"
             style={{
-              backgroundImage: `url(${doodle})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundColor: "rgba(0,0,0,0.6)", // dark overlay
-              backgroundBlendMode: "darken",      // blend the overlay with the doodle
-              color: "white",
-              border: "none",
-              boxShadow: "0 4px 24px 0 rgba(0,0,0,0.15)",
+                backgroundImage: `url(${doodle})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundColor: "rgba(0,0,0,0.88)", 
+                backgroundBlendMode: "darken",
             }}
           >
             {status === "loading" ? (

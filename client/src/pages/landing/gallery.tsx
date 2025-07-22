@@ -1,10 +1,14 @@
 import React from 'react';
+import { PageHeader } from '../../components/ui/page-header';
 
 export const Gallery: React.FC = () => {
   return (
-    <div className="min-h-screen text-white flex flex-col items-center justify-center">
-      <h1 className="text-[3rem] font-bold">Gallery</h1>
-      <p className='text-[1rem]'>Some of the memories i've shared</p>
+    <div className="min-h-screen text-white flex flex-col">
+      <PageHeader
+        heading="Gallery"
+        paragraph="Some of the memories I've shared"
+      />
+      {/* Gallery content goes here */}
     </div>
   );
 };
