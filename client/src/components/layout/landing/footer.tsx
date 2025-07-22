@@ -5,24 +5,28 @@ import { Link } from "react-router-dom";
 import { bio } from "../../../static/bio";
 
 const navLinks = [
-  { name: "Projects", href: "#features" },
-  { name: "Blog", href: "#faqs" },
-  { name: "Contact", href: "#roadmap" },
+  { name: "Projects", href: "/projects" },
+  { name: "Blog", href: "/blogs" },
+  { name: "Contact", href: "#contact" },
 ];
 
 const Footer = () => {
   return (
-    <motion.div
+    <motion.footer
       variants={staggerContainer(0.1, 0.1)}
       initial="hidden"
       whileInView="show"
       viewport={{ once: false, amount: 0.25 }}
-      id="contact-us"
-      className="text-white w-full bg-black relative overflow-hidden"
+      id="footer"
+      className="text-white w-full bg-black relative overflow-hidden border-t border-white/10"
     >
-      <div className="max-w-7xl mx-auto custom-padding-x">
+      {/* Background Decoration */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#e5e5e510] to-transparent rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-32 bg-gradient-to-tr from-[#e5e5e505] to-transparent rounded-full blur-2xl"></div>
+      
+      <div className="w-full">
         {/* Large Whisper Text - Main Visual Element */}
-        <div className="text-center py-16">
+        <div className="text-center py-16 w-full">
           <motion.p
             className="lg:text-[277px] text-6xl sm:text-[80px] text-[#e5e5e580] font-bold leading-none tracking-tight select-none"
             variants={textVariant2}
@@ -32,9 +36,9 @@ const Footer = () => {
         </div>
 
         {/* Content Container */}
-        <div className="max-w-[1140px] w-full mx-auto pb-20">
+        <div className="max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
           {/* Navigation Links */}
-          <div className="py-[62px] border-b border-white/20 flex lg:flex-row flex-col justify-between items-center">
+          <div className="py-[62px] border-b border-white/20 flex lg:flex-row flex-col justify-between items-center w-full">
             <nav className="flex flex-wrap justify-center sm:gap-14 gap-10 items-center uppercase text-xs tracking-[2.4px]">
               {navLinks.map((link) => (
                 <Link
@@ -74,7 +78,7 @@ const Footer = () => {
           </div>
 
           {/* Legal Links Section */}
-          <div className="flex justify-between items-center mt-[30px]">
+          <div className="flex justify-between items-center mt-[30px] w-full">
             <Link
               to="#"
               className="text-[#d4d4d4] md:text-[18px] text-[14px] hover:text-white transition-colors duration-300"
@@ -91,15 +95,11 @@ const Footer = () => {
 
           {/* Copyright */}
           <h5 className="text-[#a3a3a3] md:text-[18px] text-[14px] text-center md:mt-0 mt-6">
-            © 2025 {bio.FirstName}. All rights reserved.
+            © {new Date().getFullYear()} {bio.FirstName}. All rights reserved.
           </h5>
         </div>
-
-        {/* Background Decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#e5e5e510] to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-32 bg-gradient-to-tr from-[#e5e5e505] to-transparent rounded-full blur-2xl"></div>
       </div>
-    </motion.div>
+    </motion.footer>
   );
 };
 
