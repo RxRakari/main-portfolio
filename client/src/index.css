@@ -4,18 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles for monochrome theme */
 body {
   @apply bg-black text-white;
   font-family: "Poppins", sans-serif;
 }
 
-/* Smooth transitions */
 a, button {
   @apply transition-all duration-200;
 }
 
-/* Custom scrollbar for a more modern look */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -32,22 +29,9 @@ a, button {
   @apply bg-purple-400;
 }
 
-/* Firefox scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgb(168 85 247) rgb(17 24 39);
-}
-
-.text-gradient {
-    background: linear-gradient(to bottom, #0046FF, #00B7FF, #00FFE0);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    display: inline-block;
-}
-
-.bg-gradient {
-  background: linear-gradient(to bottom, #0046FF, #00B7FF, #00FFE0);
 }
 
 @keyframes scroll {
