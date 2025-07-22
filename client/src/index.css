@@ -39,9 +39,34 @@ a, button {
   100% { transform: translateX(-50%); }
 }
 
+@keyframes progress {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+@keyframes skeleton-wave {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
 .animate-scroll {
   animation: scroll var(--animation-duration, 40s) linear infinite;
   animation-direction: var(--animation-direction, forwards);
+}
+
+.animate-progress {
+  animation: progress 5s linear;
+  width: 0;
+}
+
+.skeleton-wave {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 37%, rgba(255, 255, 255, 0.03) 63%);
+  background-size: 400px 100%;
+  animation: skeleton-wave 1.5s ease infinite;
 }
 
 html, body {

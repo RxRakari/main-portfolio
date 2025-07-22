@@ -1,10 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaCalendarAlt, FaMapMarkerAlt, FaAward, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 export const ExperienceSection = () => {
   const [activeExperience, setActiveExperience] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
   
   const experiences = [
     {
@@ -51,6 +53,30 @@ export const ExperienceSection = () => {
     }
   ];
 
+  // Autoplay functionality
+  useEffect(() => {
+    const startAutoplay = () => {
+      autoplayRef.current = setInterval(() => {
+        if (!isHovering) {
+          setActiveExperience(prev => (prev + 1) % experiences.length);
+        }
+      }, 5000); // Change tab every 5 seconds
+    };
+
+    const stopAutoplay = () => {
+      if (autoplayRef.current) {
+        clearInterval(autoplayRef.current);
+        autoplayRef.current = null;
+      }
+    };
+
+    // Start autoplay
+    startAutoplay();
+
+    // Clean up on unmount
+    return () => stopAutoplay();
+  }, [experiences.length, isHovering]);
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -73,7 +99,13 @@ export const ExperienceSection = () => {
   };
 
   return (
-    <section id="experience" ref={sectionRef} className="py-36 pb-[250px] relative overflow-hidden">
+    <section 
+      id="experience" 
+      ref={sectionRef} 
+      className="py-36 relative overflow-hidden"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       {/* Background elements */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px] -z-10"></div>
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] -z-10"></div>
@@ -103,7 +135,7 @@ export const ExperienceSection = () => {
                   viewport={{ once: true }}
                   key={index}
                   onClick={() => setActiveExperience(index)}
-                  className={`w-full text-left py-5 px-8 text-[1.5rem] transition-all duration-300 rounded-r-lg ${
+                  className={`w-full text-left py-5 px-8 text-[1.5rem] transition-all duration-300 rounded-r-lg relative overflow-hidden ${
                     activeExperience === index 
                       ? "bg-white/5 text-white border-l-4 border-purple-500" 
                       : "text-gray-400 hover:text-gray-200 border-l-4 border-transparent hover:bg-white/5 hover:pl-10"
@@ -115,6 +147,11 @@ export const ExperienceSection = () => {
                       <FaArrowRight className="text-purple-400" />
                     )}
                   </div>
+                  
+                  {/* Progress indicator for active tab */}
+                  {activeExperience === index && !isHovering && (
+                    <div className="absolute bottom-0 left-0 h-1 bg-purple-500 animate-progress"></div>
+                  )}
                 </motion.button>
               ))}
             </div>
