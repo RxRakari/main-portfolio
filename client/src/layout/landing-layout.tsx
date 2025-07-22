@@ -6,7 +6,7 @@ import NewsletterSection from '../components/sections/newsletter';
 
 export const LandingLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white overflow-hidden w-full">
       <Navbar />
       <main className="w-full">
         <Outlet />

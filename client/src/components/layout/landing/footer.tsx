@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Icons } from "../../ui/icons";
 import { Link } from "react-router-dom";
 import { bio } from "../../../static/bio";
+import { useEffect } from "react";
 
 const navLinks = [
   { name: "Projects", href: "/projects" },
@@ -11,6 +12,16 @@ const navLinks = [
 ];
 
 const Footer = () => {
+  // Force a reflow to ensure the footer takes full width
+  useEffect(() => {
+    const footer = document.getElementById('footer');
+    if (footer) {
+      footer.style.width = '100vw';
+      // Force a reflow
+      void footer.offsetWidth;
+    }
+  }, []);
+
   return (
     <motion.footer
       variants={staggerContainer(0.1, 0.1)}
@@ -18,7 +29,14 @@ const Footer = () => {
       whileInView="show"
       viewport={{ once: false, amount: 0.25 }}
       id="footer"
-      className="text-white w-full bg-black relative overflow-hidden border-t border-white/10"
+      className="text-white bg-black relative overflow-hidden border-t border-white/10"
+      style={{ 
+        width: '100vw', 
+        maxWidth: '100vw',
+        marginLeft: 'calc(50% - 50vw)',
+        marginRight: 'calc(50% - 50vw)',
+        boxSizing: 'border-box'
+      }}
     >
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#e5e5e510] to-transparent rounded-full blur-3xl"></div>
@@ -35,7 +53,7 @@ const Footer = () => {
           </motion.p>
         </div>
 
-        {/* Content Container */}
+        {/* Content Container - Use max width for content but not for the footer itself */}
         <div className="max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
           {/* Navigation Links */}
           <div className="py-[62px] border-b border-white/20 flex lg:flex-row flex-col justify-between items-center w-full">

@@ -122,7 +122,7 @@ const ProjectDetails: React.FC = () => {
           
           {/* Project header */}
           <div className="mb-12">
-            <div className="flex flex-wrap items-center gap-4 mb-6">
+            <div className="flex flex-col flex-wrap items-start gap-4 mb-6">
               {project.featured && (
                 <span className="px-4 py-1 bg-white/10 border border-white/20 rounded-full text-sm">
                   Featured Project
