@@ -73,7 +73,7 @@ const ContactsManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [activeMessage, setActiveMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   // Filter contact messages based on search query and filters
   const filteredMessages = mockContactMessages.filter((message) => {
