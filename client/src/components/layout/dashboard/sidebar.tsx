@@ -124,14 +124,15 @@ export const Sidebar = () => {
   return (
     <div className="h-full w-64 bg-white border-r border-gray-200 flex flex-col">
       {/* Logo */}
-      <div className="flex items-center justify-center h-16 border-b border-gray-200">
-        <Link to="/" className="text-2xl font-bold text-purple-600">
+      <div className="flex flex-col items-center justify-center py-6 border-b border-gray-200 bg-gray-50">
+        <Link to="/" className="text-2xl font-bold text-purple-600 mb-1">
           Caleb Kalejaiye
         </Link>
+        <span className="text-xs text-gray-500 font-medium">Portfolio Dashboard</span>
       </div>
       
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
+      <nav className="flex-1 overflow-y-auto py-6 px-3">
         <ul className="space-y-1">
           {menuItems.map((item) => (
             <li key={item.title}>

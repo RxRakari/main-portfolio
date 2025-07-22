@@ -182,15 +182,15 @@ export const Select: React.FC<SelectProps> = ({
           error
             ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500'
             : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
-        } disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
+        } ${value ? 'text-gray-900' : 'text-gray-500'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
       >
         {placeholder && (
-          <option value="" disabled>
+          <option value="" disabled className="text-gray-500">
             {placeholder}
           </option>
         )}
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} className="text-gray-900">
             {option.label}
           </option>
         ))}
