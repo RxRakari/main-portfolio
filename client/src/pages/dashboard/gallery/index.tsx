@@ -74,7 +74,6 @@ const GalleryManagement: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [isLoading] = useState(false);
 
   // Filter gallery items based on search query and filters
   const filteredItems = mockGalleryItems.filter((item) => {
@@ -130,35 +129,23 @@ const GalleryManagement: React.FC = () => {
         icon={<FiImage size={24} />}
         actionLabel="Add New Image"
         actionPath="/dashboard/gallery/form"
-      >
-        {selectedItems.length > 0 && (
-          <button
-            onClick={handleBulkDelete}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            <FiTrash2 className="mr-2" />
-            Delete Selected ({selectedItems.length})
-          </button>
-        )}
-      </SectionHeader>
+      />
 
       {/* Filters and View Toggle */}
       <Card className="mb-6">
-        <div className="flex flex-col md:flex-row md:items-end gap-4">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
               id="search"
-              label="Search Gallery"
+              label="Search Images"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by title, description or tags..."
-              type="text"
+              placeholder="Search by title, description, or tags"
             />
-          </div>
-          <div className="w-full md:w-64">
+            
             <Select
               id="category"
-              label="Category"
+              label="Filter by Category"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               options={[
@@ -167,155 +154,171 @@ const GalleryManagement: React.FC = () => {
               ]}
             />
           </div>
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-md ${
-                viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:bg-gray-100'
-              }`}
-              title="Grid View"
-            >
-              <FiGrid size={20} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-md ${
-                viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:bg-gray-100'
-              }`}
-              title="List View"
-            >
-              <FiList size={20} />
-            </button>
+          
+          <div className="flex flex-col justify-end">
+            <label className="block text-sm font-medium text-white mb-2">View Mode</label>
+            <div className="inline-flex rounded-md shadow-sm">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`px-4 py-2 text-sm font-medium rounded-l-lg border ${
+                  viewMode === 'grid'
+                    ? 'bg-white/10 text-white border-white/20'
+                    : 'bg-black/20 text-gray-400 border-white/10 hover:bg-white/5'
+                }`}
+                aria-label="Grid View"
+              >
+                <FiGrid className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-2 text-sm font-medium rounded-r-lg border ${
+                  viewMode === 'list'
+                    ? 'bg-white/10 text-white border-white/20'
+                    : 'bg-black/20 text-gray-400 border-white/10 hover:bg-white/5'
+                }`}
+                aria-label="List View"
+              >
+                <FiList className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </Card>
 
-      {/* Gallery Items */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="animate-pulse bg-white rounded-lg overflow-hidden shadow">
-              <div className="h-48 bg-gray-200"></div>
-              <div className="p-4">
-                <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-              </div>
-            </div>
-          ))}
+      {/* Bulk Actions */}
+      {selectedItems.length > 0 && (
+        <div className="mb-4 p-2 bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg flex items-center justify-between">
+          <span className="text-sm text-white">
+            {selectedItems.length} {selectedItems.length === 1 ? 'item' : 'items'} selected
+          </span>
+          <button
+            onClick={handleBulkDelete}
+            className="px-3 py-1 bg-red-500/80 hover:bg-red-600/80 text-white text-sm rounded-md flex items-center"
+          >
+            <FiTrash2 className="mr-1" /> Delete Selected
+          </button>
         </div>
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      )}
+
+      {/* Grid View */}
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className={`bg-white rounded-lg overflow-hidden shadow transition-all duration-200 ${
-                selectedItems.includes(item.id) ? 'ring-2 ring-purple-500' : ''
-              }`}
-            >
-              <div className="relative group">
+            <Card key={item.id} className={selectedItems.includes(item.id) ? 'ring-2 ring-white/30' : ''}>
+              <div className="relative aspect-square overflow-hidden rounded-t-lg">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="w-full h-48 object-cover"
+                  className="h-full w-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=Image+Not+Found';
                   }}
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <Link
-                    to={`/dashboard/gallery/form/${item.id}`}
-                    className="p-2 rounded-full bg-white text-blue-600 hover:bg-blue-100"
-                    title="Edit"
-                  >
-                    <FiEdit size={18} />
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="p-2 rounded-full bg-white text-red-600 hover:bg-red-100"
-                    title="Delete"
-                  >
-                    <FiTrash2 size={18} />
-                  </button>
-                </div>
-                {item.featured && (
-                  <div className="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded-full">
-                    Featured
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-between p-4">
+                  <div>
+                    <h3 className="text-white font-medium">{item.title}</h3>
+                    <p className="text-gray-300 text-sm">{item.category}</p>
                   </div>
-                )}
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-medium text-gray-900 truncate">{item.title}</h3>
+                  <div className="flex space-x-2">
+                    <Link
+                      to={`/dashboard/gallery/form/${item.id}`}
+                      className="p-1.5 bg-black/50 rounded-full text-blue-400 hover:text-blue-300"
+                    >
+                      <FiEdit size={16} />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="p-1.5 bg-black/50 rounded-full text-red-400 hover:text-red-300"
+                    >
+                      <FiTrash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+                <div className="absolute top-2 right-2 flex space-x-1">
+                  {item.featured && (
+                    <span className="bg-white/80 text-black text-xs px-1.5 py-0.5 rounded-md font-medium">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <div className="absolute top-2 left-2">
                   <input
                     type="checkbox"
                     checked={selectedItems.includes(item.id)}
                     onChange={() => toggleItemSelection(item.id)}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 bg-black/30 border-white/20 text-white focus:ring-2 focus:ring-white/20 rounded"
                   />
                 </div>
-                <p className="text-sm text-gray-500 mb-2 line-clamp-2">{item.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+              </div>
+              <div className="p-4">
+                <h3 className="font-medium text-white line-clamp-1">{item.title}</h3>
+                <p className="text-sm text-gray-400 mt-1 line-clamp-2">{item.description}</p>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-black/30 text-white border border-white/10">
                     {item.category}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-400">
                     {new Date(item.date).toLocaleDateString()}
                   </span>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      )}
+
+      {/* List View */}
+      {viewMode === 'list' && (
+        <div className="overflow-x-auto bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg">
+          <table className="min-w-full divide-y divide-white/10">
+            <thead className="bg-black/40">
               <tr>
-                <th className="w-12 px-6 py-3 text-left">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   <input
                     type="checkbox"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedItems(filteredItems.map(item => item.id));
-                      } else {
+                    checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
+                    onChange={() => {
+                      if (selectedItems.length === filteredItems.length) {
                         setSelectedItems([]);
+                      } else {
+                        setSelectedItems(filteredItems.map(item => item.id));
                       }
                     }}
-                    checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 bg-black/30 border-white/20 text-white focus:ring-2 focus:ring-white/20 rounded"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Image
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Details
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-black/20 divide-y divide-white/10">
               {filteredItems.map((item) => (
-                <tr key={item.id} className={selectedItems.includes(item.id) ? 'bg-purple-50' : ''}>
+                <tr key={item.id} className={selectedItems.includes(item.id) ? 'bg-white/5' : ''}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
                       onChange={() => toggleItemSelection(item.id)}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                      className="h-4 w-4 bg-black/30 border-white/20 text-white focus:ring-2 focus:ring-white/20 rounded"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="relative h-16 w-16 rounded overflow-hidden">
+                    <div className="relative h-16 w-16 rounded overflow-hidden border border-white/10">
                       <img
                         src={item.imageUrl}
                         alt={item.title}
@@ -325,35 +328,35 @@ const GalleryManagement: React.FC = () => {
                         }}
                       />
                       {item.featured && (
-                        <div className="absolute top-0 right-0 bg-yellow-500 text-xs text-gray-800 px-1 rounded-bl">
+                        <div className="absolute top-0 right-0 bg-white/80 text-xs text-black px-1 rounded-bl">
                           ★
                         </div>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                    <div className="text-sm text-gray-500 truncate max-w-xs">{item.description}</div>
+                    <div className="text-sm font-medium text-white">{item.title}</div>
+                    <div className="text-sm text-gray-400 truncate max-w-xs">{item.description}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-black/30 text-white border border-white/10">
                       {item.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                     {new Date(item.date).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex space-x-2">
                       <Link
                         to={`/dashboard/gallery/form/${item.id}`}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-blue-400 hover:text-blue-300"
                       >
                         <FiEdit size={18} />
                       </Link>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-400 hover:text-red-300"
                       >
                         <FiTrash2 size={18} />
                       </button>
@@ -368,10 +371,10 @@ const GalleryManagement: React.FC = () => {
 
       {/* Empty State */}
       {filteredItems.length === 0 && (
-        <div className="bg-white rounded-lg shadow p-6 text-center">
+        <div className="bg-black/30 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg p-6 text-center">
           <FiImage className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900">No images found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <h3 className="mt-2 text-lg font-medium text-white">No images found</h3>
+          <p className="mt-1 text-sm text-gray-400">
             {searchQuery || categoryFilter
               ? "Try adjusting your search or filter to find what you're looking for."
               : 'Get started by adding a new image to your gallery.'}
@@ -379,7 +382,7 @@ const GalleryManagement: React.FC = () => {
           <div className="mt-6">
             <Link
               to="/dashboard/gallery/form"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700"
+              className="inline-flex items-center px-4 py-2 border border-white/20 rounded-lg text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-150"
             >
               <FiPlus className="mr-2" />
               Add New Image

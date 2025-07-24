@@ -17,7 +17,7 @@ export const BottomNavigation = () => {
     };
     
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 md:hidden z-10">
+        <nav className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-lg border-t border-white/10 py-2 px-4 md:hidden z-10">
             <div className="flex justify-between items-center">
                 {navItems.map((item) => (
                     <Link
@@ -25,8 +25,8 @@ export const BottomNavigation = () => {
                         to={item.path}
                         className={`flex flex-col items-center px-3 py-2 rounded-md ${
                             isActive(item.path)
-                                ? 'text-purple-600 bg-purple-50'
-                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                ? 'text-white bg-white/10'
+                                : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
                         }`}
                     >
                         <span className="inline-block">{item.icon}</span>

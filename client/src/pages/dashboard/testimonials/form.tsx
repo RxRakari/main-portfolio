@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUsers, FiSave, FiX, FiStar } from 'react-icons/fi';
+import { FiUsers, FiStar } from 'react-icons/fi';
 import SectionHeader from '../../../components/ui/dashboard/section-header';
 import { 
   TextInput, 
@@ -10,6 +10,8 @@ import {
   FormSection, 
   FormActions 
 } from '../../../components/ui/dashboard/form-elements';
+import ImageUpload from '../../../components/ui/dashboard/image-upload';
+import { uploadImage } from '../../../services/upload-service';
 
 // Mock testimonial data for editing
 const mockTestimonials = [
@@ -103,6 +105,25 @@ const TestimonialForm: React.FC = () => {
     }));
   };
 
+  // Handle image upload
+  const handleImageUpload = async (file: File): Promise<string> => {
+    try {
+      const imageUrl = await uploadImage(file);
+      return imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  };
+
+  // Handle avatar change
+  const handleAvatarChange = (url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      avatar: url
+    }));
+  };
+
   // Validate form
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -120,8 +141,8 @@ const TestimonialForm: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     if (!validateForm()) {
       return;
@@ -165,12 +186,12 @@ const TestimonialForm: React.FC = () => {
           >
             <FiStar
               className={`w-6 h-6 ${
-                star <= formData.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                star <= formData.rating ? 'text-white fill-current' : 'text-gray-500'
               }`}
             />
           </button>
         ))}
-        <span className="ml-2 text-sm text-gray-500">{formData.rating} of 5</span>
+        <span className="ml-2 text-sm text-gray-300">{formData.rating} of 5</span>
       </div>
     );
   };
@@ -200,6 +221,7 @@ const TestimonialForm: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
               id="name"
+              name="name"
               label="Client Name"
               value={formData.name}
               onChange={handleChange}
@@ -208,14 +230,14 @@ const TestimonialForm: React.FC = () => {
               error={errors.name}
             />
             
-            <TextInput
+            <ImageUpload
               id="avatar"
-              label="Avatar URL"
+              label="Client Avatar"
               value={formData.avatar}
-              onChange={handleChange}
-              placeholder="https://example.com/avatar.jpg"
-              type="url"
-              helperText="URL to client's profile picture"
+              onChange={handleAvatarChange}
+              onUpload={handleImageUpload}
+              helperText="Upload a profile picture (square image recommended)"
+              maxSizeMB={2}
             />
           </div>
           
@@ -251,7 +273,7 @@ const TestimonialForm: React.FC = () => {
           />
           
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Rating
             </label>
             <StarRatingInput />
@@ -285,21 +307,11 @@ const TestimonialForm: React.FC = () => {
         </FormSection>
 
         <FormActions
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          submitLabel={
-            <>
-              <FiSave className="mr-2" />
-              {isEditMode ? 'Update Testimonial' : 'Save Testimonial'}
-            </>
-          }
-          cancelLabel={
-            <>
-              <FiX className="mr-2" />
-              Cancel
-            </>
-          }
-          isSubmitting={isSubmitting}
+          primaryLabel={isEditMode ? 'Update Testimonial' : 'Save Testimonial'}
+          onPrimaryClick={handleSubmit}
+          secondaryLabel="Cancel"
+          onSecondaryClick={handleCancel}
+          isLoading={isSubmitting}
         />
       </form>
     </div>

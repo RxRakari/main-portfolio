@@ -9,6 +9,8 @@ import {
   Checkbox, 
   FormSection
 } from '../../../components/ui/dashboard/form-elements';
+import ImageUpload from '../../../components/ui/dashboard/image-upload';
+import { uploadImage } from '../../../services/upload-service';
 
 // Mock project data for editing
 const mockProjects = [
@@ -32,6 +34,9 @@ const mockProjects = [
     date: '2023-08-15',
     client: 'Self',
     duration: '3 months',
+    approach: 'We used a modern full-stack architecture with React for the frontend, Node.js and Express for the backend, and MongoDB for data storage. We implemented secure authentication, product management, and payment processing with Stripe integration.',
+    challenges: 'Scaling the application, handling large amounts of data, and ensuring high availability during peak traffic.',
+    features: ['Product listings with images and descriptions', 'Search and filtering functionality', 'Shopping cart and checkout', 'User authentication and authorization', 'Secure payment processing with Stripe'],
     seo: {
       metaTitle: 'E-Commerce Platform - Full-Stack Web Development Project',
       metaDescription: 'A full-featured e-commerce platform built with React, Node.js, and MongoDB.',
@@ -57,6 +62,9 @@ const mockProjects = [
     date: '2023-07-22',
     client: 'Tech Startup',
     duration: '4 months',
+    approach: 'We developed a scalable chat application using React for the frontend, Flask for the backend, and TensorFlow for natural language processing. We implemented real-time communication using WebSockets and secured user data with authentication.',
+    challenges: 'Ensuring accurate and contextually relevant responses, managing large volumes of user messages, and maintaining high availability.',
+    features: ['Real-time chat interface', 'Conversation history', 'User authentication', 'Contextual responses', 'Scalable architecture'],
     seo: {
       metaTitle: 'AI Chat Application - Machine Learning Project',
       metaDescription: 'An AI-powered chat application built with TensorFlow and React.',
@@ -65,6 +73,7 @@ const mockProjects = [
   }
 ];
 
+// Add new fields to the interface
 interface ProjectFormData {
   title: string;
   slug: string;
@@ -82,6 +91,10 @@ interface ProjectFormData {
   repoUrl: string;
   client: string;
   duration: string;
+  approach: string;
+  challenges: string;
+  features: string[];
+  newFeature: string;
   seo: {
     metaTitle: string;
     metaDescription: string;
@@ -113,6 +126,10 @@ const ProjectForm: React.FC = () => {
     repoUrl: '',
     client: '',
     duration: '',
+    approach: '',
+    challenges: '',
+    features: [],
+    newFeature: '',
     seo: {
       metaTitle: '',
       metaDescription: '',
@@ -146,6 +163,10 @@ const ProjectForm: React.FC = () => {
             repoUrl: project.repoUrl,
             client: project.client,
             duration: project.duration,
+            approach: project.approach,
+            challenges: project.challenges,
+            features: project.features,
+            newFeature: '',
             seo: {
               metaTitle: project.seo.metaTitle,
               metaDescription: project.seo.metaDescription,
@@ -239,29 +260,24 @@ const ProjectForm: React.FC = () => {
     }));
   };
 
-  // Add image
-  const addImage = () => {
-    if (formData.newImage.trim() === '') return;
-    
-    if (formData.images.includes(formData.newImage.trim())) {
-      setErrors(prev => ({
+  // Handle single image upload and add to images array
+  const handleSingleImageUpload = async (file: File): Promise<string> => {
+    try {
+      const imageUrl = await uploadImage(file);
+      
+      // Add the new image to the images array
+      setFormData(prev => ({
         ...prev,
-        newImage: 'Image already added'
+        images: [...prev.images, imageUrl],
+        // If no featured image is set, use this as the featured image
+        featuredImage: prev.featuredImage || imageUrl
       }));
-      return;
+      
+      return imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
     }
-    
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, formData.newImage.trim()],
-      newImage: ''
-    }));
-    
-    setErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors.newImage;
-      return newErrors;
-    });
   };
 
   // Remove image
@@ -278,6 +294,36 @@ const ProjectForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       featuredImage: image
+    }));
+  };
+
+  // Add this new function for adding features
+  const addFeature = () => {
+    if (!formData.newFeature.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        newFeature: 'Feature cannot be empty'
+      }));
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      features: [...prev.features, formData.newFeature.trim()],
+      newFeature: ''
+    }));
+
+    setErrors(prev => ({
+      ...prev,
+      newFeature: ''
+    }));
+  };
+
+  // Add this new function for removing features
+  const removeFeature = (feature: string) => {
+    setFormData(prev => ({
+      ...prev,
+      features: prev.features.filter(f => f !== feature)
     }));
   };
 
@@ -409,7 +455,7 @@ const ProjectForm: React.FC = () => {
               <button
                 type="button"
                 onClick={generateSlug}
-                className="mb-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                className="mb-4 px-4 py-2 border border-white/20 rounded-lg text-white bg-black/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors"
               >
                 Generate
               </button>
@@ -452,55 +498,76 @@ const ProjectForm: React.FC = () => {
           <TextArea
             id="content"
             name="content"
-            label="Content"
+            label="Overview"
             value={formData.content}
             onChange={handleChange}
-            placeholder="Write detailed information about your project..."
-            rows={10}
+            placeholder="Enter a detailed overview of the project"
+            rows={6}
             required
             error={errors.content}
           />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+          <TextArea
+            id="approach"
+            name="approach"
+            label="Approach"
+            value={formData.approach}
+            onChange={handleChange}
+            placeholder="Describe your approach to this project"
+            rows={4}
+          />
+
+          <TextArea
+            id="challenges"
+            name="challenges"
+            label="Challenges"
+            value={formData.challenges}
+            onChange={handleChange}
+            placeholder="Describe challenges faced and how you overcame them"
+            rows={4}
+          />
+        </FormSection>
+
+        <FormSection title="Key Features">
+          {formData.features.length > 0 ? (
+            <div className="mb-6 space-y-2">
+              {formData.features.map((feature, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-black/30 border border-white/10 rounded-lg">
+                  <span className="text-white">{feature}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(feature)}
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    <FiTrash2 size={18} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mb-4 p-4 border border-white/10 rounded-lg bg-black/30 text-center">
+              <p className="text-gray-400">No features added yet. Add features below.</p>
+            </div>
+          )}
+
+          <div className="flex items-end gap-2 mb-4">
             <TextInput
-              id="client"
-              name="client"
-              label="Client"
-              value={formData.client}
+              id="newFeature"
+              name="newFeature"
+              label="Add Feature"
+              value={formData.newFeature}
               onChange={handleChange}
-              placeholder="Client name or 'Self' for personal projects"
+              placeholder="Enter a key feature"
+              error={errors.newFeature}
+              className="flex-1"
             />
-            
-            <TextInput
-              id="duration"
-              name="duration"
-              label="Duration"
-              value={formData.duration}
-              onChange={handleChange}
-              placeholder="e.g., '3 months', '2 weeks'"
-            />
-            
-            <TextInput
-              id="liveUrl"
-              name="liveUrl"
-              label="Live URL"
-              value={formData.liveUrl}
-              onChange={handleChange}
-              placeholder="https://example.com"
-              type="url"
-              helperText="URL to the live project (if available)"
-            />
-            
-            <TextInput
-              id="repoUrl"
-              name="repoUrl"
-              label="Repository URL"
-              value={formData.repoUrl}
-              onChange={handleChange}
-              placeholder="https://github.com/username/repo"
-              type="url"
-              helperText="URL to the code repository (if available)"
-            />
+            <button
+              type="button"
+              onClick={addFeature}
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-md border border-white/20 mb-0.5"
+            >
+              <FiPlus size={18} />
+            </button>
           </div>
         </FormSection>
 
@@ -515,13 +582,13 @@ const ProjectForm: React.FC = () => {
             {formData.technologies.map((tech, index) => (
               <div
                 key={index}
-                className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
+                className="flex items-center bg-black/30 text-white border border-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-sm"
               >
                 <span>{tech}</span>
                 <button
                   type="button"
                   onClick={() => removeTechnology(tech)}
-                  className="ml-2 text-purple-800 hover:text-purple-900"
+                  className="ml-2 text-gray-400 hover:text-white"
                 >
                   <FiX size={14} />
                 </button>
@@ -538,12 +605,11 @@ const ProjectForm: React.FC = () => {
               onChange={handleChange}
               placeholder="e.g., React, Node.js, MongoDB"
               error={errors.newTechnology}
-              className="flex-1"
             />
             <button
               type="button"
               onClick={addTechnology}
-              className="mt-7 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center"
+              className="mt-7 px-4 py-3 border border-white/20 rounded-lg text-white bg-white/10 hover:bg-white/20 flex items-center transition-colors"
             >
               <FiPlus className="mr-1" /> Add
             </button>
@@ -559,7 +625,7 @@ const ProjectForm: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             {formData.images.map((image, index) => (
-              <div key={index} className="relative group rounded-lg overflow-hidden border border-gray-200">
+              <div key={index} className="relative group rounded-lg overflow-hidden border border-white/10 bg-black/30">
                 <img
                   src={image}
                   alt={`Project image ${index + 1}`}
@@ -568,13 +634,13 @@ const ProjectForm: React.FC = () => {
                     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Invalid+Image+URL';
                   }}
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     type="button"
                     onClick={() => setAsFeaturedImage(image)}
                     className={`p-2 rounded-full ${
-                      formData.featuredImage === image ? 'bg-yellow-500' : 'bg-white'
-                    } text-gray-800 hover:bg-yellow-400`}
+                      formData.featuredImage === image ? 'bg-white/80' : 'bg-black/50'
+                    } ${formData.featuredImage === image ? 'text-black' : 'text-white'} hover:bg-white/60 hover:text-black`}
                     title={formData.featuredImage === image ? 'Featured Image' : 'Set as Featured Image'}
                   >
                     ★
@@ -582,14 +648,14 @@ const ProjectForm: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => removeImage(image)}
-                    className="p-2 rounded-full bg-white text-red-600 hover:bg-red-100"
+                    className="p-2 rounded-full bg-black/50 text-white hover:bg-red-500/80"
                     title="Remove Image"
                   >
                     <FiTrash2 />
                   </button>
                 </div>
                 {formData.featuredImage === image && (
-                  <div className="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded-full">
+                  <div className="absolute top-2 right-2 bg-white/80 text-xs text-black px-2 py-1 rounded-full">
                     Featured
                   </div>
                 )}
@@ -597,26 +663,15 @@ const ProjectForm: React.FC = () => {
             ))}
           </div>
           
-          <div className="flex gap-2">
-            <TextInput
-              id="newImage"
-              name="newImage"
-              label="Add Image URL"
-              value={formData.newImage}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-              type="url"
-              error={errors.newImage}
-              className="flex-1"
-            />
-            <button
-              type="button"
-              onClick={addImage}
-              className="mt-7 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center"
-            >
-              <FiPlus className="mr-1" /> Add
-            </button>
-          </div>
+          <ImageUpload
+            id="projectImage"
+            label="Add Project Image"
+            onChange={() => {}} // This is handled in onUpload
+            onUpload={handleSingleImageUpload}
+            helperText="Upload images for your project (up to 10MB each)"
+            error={errors.images}
+            maxSizeMB={10}
+          />
         </FormSection>
 
         <FormSection title="Publishing Options">
@@ -685,7 +740,7 @@ const ProjectForm: React.FC = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            className="px-6 py-3 border border-white/20 rounded-lg text-white bg-black/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors duration-150 flex items-center"
           >
             <span className="flex items-center">
               <FiX className="mr-2" />
@@ -695,7 +750,7 @@ const ProjectForm: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 border border-white/20 rounded-lg text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center"
           >
             {isSubmitting ? (
               <>

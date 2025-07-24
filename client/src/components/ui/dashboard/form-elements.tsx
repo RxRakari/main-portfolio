@@ -1,22 +1,20 @@
-import React from 'react';
-import { FiAlertCircle } from 'react-icons/fi';
+import React, { useState } from 'react';
+import { FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 
-// Text Input Component
+// Text Input
 interface TextInputProps {
   id: string;
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  name?: string;
+  type?: string;
   placeholder?: string;
-  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
-  error?: string;
   disabled?: boolean;
-  required?: boolean;
-  className?: string;
+  error?: string;
   helperText?: string;
-  min?: string | number;
-  max?: string | number;
+  required?: boolean;
+  name?: string;
+  className?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -24,65 +22,71 @@ export const TextInput: React.FC<TextInputProps> = ({
   label,
   value,
   onChange,
-  name,
-  placeholder = '',
   type = 'text',
-  error,
+  placeholder,
   disabled = false,
-  required = false,
-  className = '',
+  error,
   helperText,
-  min,
-  max
+  required = false,
+  name,
+  className = '',
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const inputType = type === 'password' ? (showPassword ? 'text' : 'password') : type;
+
   return (
     <div className={`mb-6 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label htmlFor={id} className="block mb-2 text-sm font-medium text-white">
+        {label} {required && <span className="text-red-400">*</span>}
       </label>
-      <input
-        type={type}
-        id={id}
-        name={name || id}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        required={required}
-        min={min}
-        max={max}
-        className={`block w-full px-4 py-3 rounded-md shadow-sm ${
-          error
-            ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
-            : 'border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500'
-        } placeholder:text-gray-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
-      />
+      <div className="relative">
+        <input
+          id={id}
+          name={name || id}
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={`block w-full px-4 py-3 rounded-lg bg-black/30 border text-white placeholder:text-gray-500 text-base focus:ring-2 focus:outline-none ${
+            error
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50'
+              : 'border-white/20 focus:border-white/30 focus:ring-white/20'
+          } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+          required={required}
+        />
+        {type === 'password' && (
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+          </button>
+        )}
+      </div>
       {helperText && !error && (
-        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-xs text-gray-400">{helperText}</p>
       )}
-      {error && (
-        <p className="mt-2 text-sm text-red-600 flex items-center">
-          <FiAlertCircle className="mr-1" /> {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </div>
   );
 };
 
-// Textarea Component
+// Text Area
 interface TextAreaProps {
   id: string;
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  name?: string;
   placeholder?: string;
-  error?: string;
-  disabled?: boolean;
-  required?: boolean;
   rows?: number;
-  className?: string;
+  disabled?: boolean;
+  error?: string;
   helperText?: string;
+  required?: boolean;
+  name?: string;
+  className?: string;
 }
 
 export const TextArea: React.FC<TextAreaProps> = ({
@@ -90,19 +94,19 @@ export const TextArea: React.FC<TextAreaProps> = ({
   label,
   value,
   onChange,
-  name,
-  placeholder = '',
-  error,
-  disabled = false,
-  required = false,
+  placeholder,
   rows = 4,
-  className = '',
+  disabled = false,
+  error,
   helperText,
+  required = false,
+  name,
+  className = '',
 }) => {
   return (
     <div className={`mb-6 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label htmlFor={id} className="block mb-2 text-sm font-medium text-white">
+        {label} {required && <span className="text-red-400">*</span>}
       </label>
       <textarea
         id={id}
@@ -110,28 +114,24 @@ export const TextArea: React.FC<TextAreaProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        disabled={disabled}
-        required={required}
         rows={rows}
-        className={`block w-full px-4 py-3 rounded-md shadow-sm ${
+        disabled={disabled}
+        className={`block w-full px-4 py-3 rounded-lg bg-black/30 border text-white placeholder:text-gray-500 text-base focus:ring-2 focus:outline-none ${
           error
-            ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
-            : 'border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500'
-        } placeholder:text-gray-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
+            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50'
+            : 'border-white/20 focus:border-white/30 focus:ring-white/20'
+        } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+        required={required}
       />
       {helperText && !error && (
-        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-xs text-gray-400">{helperText}</p>
       )}
-      {error && (
-        <p className="mt-2 text-sm text-red-600 flex items-center">
-          <FiAlertCircle className="mr-1" /> {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </div>
   );
 };
 
-// Select Component
+// Select
 interface SelectOption {
   value: string;
   label: string;
@@ -143,13 +143,12 @@ interface SelectProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: SelectOption[];
-  name?: string;
-  error?: string;
   disabled?: boolean;
-  required?: boolean;
-  className?: string;
+  error?: string;
   helperText?: string;
-  placeholder?: string;
+  required?: boolean;
+  name?: string;
+  className?: string;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -158,18 +157,17 @@ export const Select: React.FC<SelectProps> = ({
   value,
   onChange,
   options,
-  name,
-  error,
   disabled = false,
-  required = false,
-  className = '',
+  error,
   helperText,
-  placeholder,
+  required = false,
+  name,
+  className = '',
 }) => {
   return (
     <div className={`mb-6 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label htmlFor={id} className="block mb-2 text-sm font-medium text-white">
+        {label} {required && <span className="text-red-400">*</span>}
       </label>
       <select
         id={id}
@@ -177,46 +175,39 @@ export const Select: React.FC<SelectProps> = ({
         value={value}
         onChange={onChange}
         disabled={disabled}
-        required={required}
-        className={`block w-full px-4 py-3 rounded-md shadow-sm ${
+        className={`block w-full px-4 py-3 rounded-lg bg-black/30 border text-white appearance-none focus:ring-2 focus:outline-none ${
+          value ? 'text-white' : 'text-gray-500'
+        } ${
           error
-            ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500'
-            : 'border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500'
-        } ${value ? 'text-gray-900' : 'text-gray-500'} disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-base`}
+            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50'
+            : 'border-white/20 focus:border-white/30 focus:ring-white/20'
+        } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+        required={required}
       >
-        {placeholder && (
-          <option value="" disabled className="text-gray-500">
-            {placeholder}
-          </option>
-        )}
         {options.map((option) => (
-          <option key={option.value} value={option.value} className="text-gray-900">
+          <option key={option.value} value={option.value} className="bg-gray-900 text-white">
             {option.label}
           </option>
         ))}
       </select>
       {helperText && !error && (
-        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-xs text-gray-400">{helperText}</p>
       )}
-      {error && (
-        <p className="mt-2 text-sm text-red-600 flex items-center">
-          <FiAlertCircle className="mr-1" /> {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </div>
   );
 };
 
-// Checkbox Component
+// Checkbox
 interface CheckboxProps {
   id: string;
   label: string;
   checked: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  name?: string;
   disabled?: boolean;
-  className?: string;
+  error?: string;
   helperText?: string;
+  name?: string;
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
@@ -224,13 +215,13 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   label,
   checked,
   onChange,
-  name,
   disabled = false,
-  className = '',
+  error,
   helperText,
+  name,
 }) => {
   return (
-    <div className={`mb-6 ${className}`}>
+    <div className="mb-6">
       <div className="flex items-center">
         <input
           id={id}
@@ -239,20 +230,23 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           checked={checked}
           onChange={onChange}
           disabled={disabled}
-          className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`h-5 w-5 rounded bg-black/30 border-white/20 text-white focus:ring-2 focus:ring-white/20 ${
+            error ? 'border-red-500' : ''
+          } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
-        <label htmlFor={id} className="ml-3 block text-base text-gray-700">
+        <label htmlFor={id} className="ml-3 block text-sm font-medium text-white">
           {label}
         </label>
       </div>
-      {helperText && (
-        <p className="mt-2 text-sm text-gray-500 ml-8">{helperText}</p>
+      {helperText && !error && (
+        <p className="mt-2 text-xs text-gray-400">{helperText}</p>
       )}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </div>
   );
 };
 
-// Radio Group Component
+// Radio Group
 interface RadioOption {
   value: string;
   label: string;
@@ -264,12 +258,11 @@ interface RadioGroupProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   options: RadioOption[];
-  name?: string;
-  error?: string;
   disabled?: boolean;
-  required?: boolean;
-  className?: string;
+  error?: string;
   helperText?: string;
+  required?: boolean;
+  name?: string;
 }
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
@@ -278,19 +271,18 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   value,
   onChange,
   options,
-  name,
-  error,
   disabled = false,
-  required = false,
-  className = '',
+  error,
   helperText,
+  required = false,
+  name,
 }) => {
   return (
-    <div className={`mb-6 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
+    <div className="mb-6">
+      <label className="block mb-2 text-sm font-medium text-white">
+        {label} {required && <span className="text-red-400">*</span>}
       </label>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {options.map((option) => (
           <div key={option.value} className="flex items-center">
             <input
@@ -301,103 +293,87 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
               checked={value === option.value}
               onChange={onChange}
               disabled={disabled}
-              className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`h-5 w-5 bg-black/30 border-white/20 text-white focus:ring-2 focus:ring-white/20 ${
+                error ? 'border-red-500' : ''
+              } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
             />
-            <label htmlFor={`${id}-${option.value}`} className="ml-3 block text-base text-gray-700">
+            <label
+              htmlFor={`${id}-${option.value}`}
+              className="ml-3 block text-sm font-medium text-white"
+            >
               {option.label}
             </label>
           </div>
         ))}
       </div>
       {helperText && !error && (
-        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-xs text-gray-400">{helperText}</p>
       )}
-      {error && (
-        <p className="mt-2 text-sm text-red-600 flex items-center">
-          <FiAlertCircle className="mr-1" /> {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </div>
   );
 };
 
-// Form Section Component
+// Form Section
 interface FormSectionProps {
   title?: string;
   description?: string;
   children: React.ReactNode;
-  className?: string;
 }
 
 export const FormSection: React.FC<FormSectionProps> = ({
   title,
   description,
   children,
-  className = '',
 }) => {
   return (
-    <div className={`mb-10 ${className}`}>
-      {title && (
-        <h3 className="text-xl font-medium text-gray-900 mb-2">{title}</h3>
-      )}
-      {description && (
-        <p className="text-sm text-gray-500 mb-4">{description}</p>
-      )}
-      <div className="bg-white shadow rounded-lg p-8">
-        {children}
-      </div>
+    <div className="mb-8 p-8 bg-black/30 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg">
+      {title && <h2 className="text-xl font-medium text-white mb-2">{title}</h2>}
+      {description && <p className="text-sm text-gray-400 mb-6">{description}</p>}
+      {children}
     </div>
   );
 };
 
-// Form Actions Component
+// Form Actions
 interface FormActionsProps {
-  onSubmit?: (e: React.FormEvent) => void;
-  onCancel?: () => void;
-  submitLabel?: React.ReactNode;
-  cancelLabel?: React.ReactNode;
-  isSubmitting?: boolean;
-  className?: string;
+  primaryLabel: string;
+  onPrimaryClick?: () => void;
+  secondaryLabel?: string;
+  onSecondaryClick?: () => void;
+  isLoading?: boolean;
+  disabled?: boolean;
 }
 
 export const FormActions: React.FC<FormActionsProps> = ({
-  onSubmit,
-  onCancel,
-  submitLabel = 'Save',
-  cancelLabel = 'Cancel',
-  isSubmitting = false,
-  className = '',
+  primaryLabel,
+  onPrimaryClick,
+  secondaryLabel,
+  onSecondaryClick,
+  isLoading = false,
+  disabled = false,
 }) => {
   return (
-    <div className={`flex items-center justify-end space-x-4 mt-8 ${className}`}>
-      {onCancel && (
+    <div className="flex justify-end space-x-4 mt-8">
+      {secondaryLabel && (
         <button
           type="button"
-          onClick={onCancel}
-          className="px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+          onClick={onSecondaryClick}
+          disabled={isLoading || disabled}
+          className="px-6 py-3 border border-white/20 rounded-lg text-white bg-black/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {cancelLabel}
+          {secondaryLabel}
         </button>
       )}
-      {onSubmit && (
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? (
-            <>
-              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Processing...
-            </>
-          ) : (
-            submitLabel
-          )}
-        </button>
-      )}
+      <button
+        type="submit"
+        onClick={onPrimaryClick}
+        disabled={isLoading || disabled}
+        className="px-6 py-3 border border-white/20 rounded-lg text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+      >
+        {isLoading && <FiLoader className="animate-spin mr-2" size={18} />}
+        {primaryLabel}
+      </button>
     </div>
   );
 }; 

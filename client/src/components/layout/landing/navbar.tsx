@@ -89,7 +89,7 @@ export default function Navbar() {
       <div className="md:hidden flex fixed w-full right-0 top-[3px] mt-8 px-4 transition-all duration-500 ease-spring z-[100000000] justify-between items-center">
         <button className="p-[12px] flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
           <img src={logo} alt="logo" width={24} />
-          <h4 className="text-[#e5e5e5] text-[14px] leading-[16px]">Github</h4>
+          <h4 className="text-[#e5e5e5] text-[14px] leading-[16px]">Caleb</h4>
         </button>
 
         <button className="p-[12px] flex h-full text-sm items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] text-white">

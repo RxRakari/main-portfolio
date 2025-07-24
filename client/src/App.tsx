@@ -22,6 +22,8 @@ import BlogsManagement from './pages/dashboard/blogs/index';
 import BlogForm from './pages/dashboard/blogs/form';
 import ProjectsManagement from './pages/dashboard/projects/index';
 import ProjectForm from './pages/dashboard/projects/form';
+import ExperienceManagement from './pages/dashboard/experience/index';
+import ExperienceForm from './pages/dashboard/experience/form';
 import GalleryManagement from './pages/dashboard/gallery/index';
 import GalleryForm from './pages/dashboard/gallery/form';
 import TestimonialsManagement from './pages/dashboard/testimonials/index';
@@ -34,6 +36,7 @@ import NotFound from './routes/404';
 import Projects  from './pages/landing/projects/projects';
 import BlogDetails from './pages/landing/blogs/blog-details';
 import ProjectDetails from './pages/landing/projects/project-details';
+import SettingsPage from './pages/dashboard/settings';
 
 // Custom logo for loading screen
 const AppLogo = () => (
@@ -113,6 +116,11 @@ const App = () => {
             <Route path="projects/form" element={<ProjectForm />} />
             <Route path="projects/form/:id" element={<ProjectForm />} />
             
+            {/* Experience Management Routes */}
+            <Route path="experience" element={<ExperienceManagement />} />
+            <Route path="experience/form" element={<ExperienceForm />} />
+            <Route path="experience/form/:id" element={<ExperienceForm />} />
+            
             {/* Gallery Management Routes */}
             <Route path="gallery" element={<GalleryManagement />} />
             <Route path="gallery/form" element={<GalleryForm />} />
@@ -125,6 +133,7 @@ const App = () => {
             
             {/* Contact Messages Routes */}
             <Route path="contacts" element={<ContactsManagement />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
           
           {/* 404 route */}

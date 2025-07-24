@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiFileText, FiSave, FiX } from 'react-icons/fi';
+import { FiFileText, FiPlus, FiTrash2 } from 'react-icons/fi';
 import SectionHeader from '../../../components/ui/dashboard/section-header';
 import { 
   TextInput, 
   TextArea, 
   Select, 
   Checkbox, 
-  FormSection
+  FormSection,
+  FormActions
 } from '../../../components/ui/dashboard/form-elements';
+import ImageUpload from '../../../components/ui/dashboard/image-upload';
+import { uploadImage } from '../../../services/upload-service';
 
 // Mock blog data for editing
 const mockBlogs = [
   {
     id: '1',
     title: 'Character Prefix Conditioning',
+    subtitle: 'A clever algorithm for more accurate code completion sampling.',
     slug: 'character-prefix-conditioning',
     excerpt: 'The first in a series of problems that give a glimpse into the work we do at Cursor.',
     content: 'When using a language model for code completion, we typically want the model to produce a completion that begins with what the user has typed.',
@@ -24,8 +28,23 @@ const mockBlogs = [
     status: 'published',
     featured: true,
     author: 'Jacob',
+    readTime: '2 minutes read',
     date: '2023-09-15',
     views: 1245,
+    intro: 'The first in a series of problems that give a glimpse into the work we do at Cursor.',
+    sections: [
+      {
+        id: 'Setup',
+        heading: 'Setup',
+        content: 'When using a language model for code completion, we typically want the model to produce a completion that begins with what the user has typed.'
+      },
+      {
+        id: 'Problem',
+        heading: 'Problem',
+        content: 'Can you construct an efficient algorithm for sampling from q(tₖ |t₁, ... ,tₖ₋₁), that minimizes calls to the original language model? A description of the algorithm is great. An actual implementation is excellent.',
+        additionalContent: true
+      }
+    ],
     seo: {
       metaTitle: 'Character Prefix Conditioning - Advanced AI Techniques',
       metaDescription: 'Learn about character prefix conditioning, a clever algorithm for more accurate code completion sampling.',
@@ -35,6 +54,7 @@ const mockBlogs = [
   {
     id: '2',
     title: 'Building a Modern Portfolio Website',
+    subtitle: 'A comprehensive guide to creating stunning portfolio sites',
     slug: 'building-modern-portfolio-website',
     excerpt: 'A comprehensive guide to building a portfolio website using modern web technologies.',
     content: 'In this article, we will explore how to build a modern portfolio website using React, Tailwind CSS, and Framer Motion.',
@@ -44,8 +64,22 @@ const mockBlogs = [
     status: 'published',
     featured: false,
     author: 'Jacob',
+    readTime: '5 minutes read',
     date: '2023-08-22',
     views: 982,
+    intro: 'Creating a portfolio website is essential for showcasing your work and skills to potential clients or employers.',
+    sections: [
+      {
+        id: 'Introduction',
+        heading: 'Introduction',
+        content: 'In this article, we will explore how to build a modern portfolio website using React, Tailwind CSS, and Framer Motion.'
+      },
+      {
+        id: 'Technologies',
+        heading: 'Technologies Used',
+        content: 'We will be using React for the frontend, Tailwind CSS for styling, and Framer Motion for animations.'
+      }
+    ],
     seo: {
       metaTitle: 'Building a Modern Portfolio Website with React and Tailwind',
       metaDescription: 'Learn how to build a modern portfolio website using React, Tailwind CSS, and Framer Motion.',
@@ -54,8 +88,16 @@ const mockBlogs = [
   }
 ];
 
+interface BlogSection {
+  id: string;
+  heading: string;
+  content: string;
+  additionalContent?: boolean;
+}
+
 interface BlogFormData {
   title: string;
+  subtitle: string;
   slug: string;
   excerpt: string;
   content: string;
@@ -64,6 +106,12 @@ interface BlogFormData {
   coverImage: string;
   status: string;
   featured: boolean;
+  author: string;
+  readTime: string;
+  intro: string;
+  sections: BlogSection[];
+  newSectionHeading: string;
+  newSectionContent: string;
   seo: {
     metaTitle: string;
     metaDescription: string;
@@ -80,6 +128,7 @@ const BlogForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [formData, setFormData] = useState<BlogFormData>({
     title: '',
+    subtitle: '',
     slug: '',
     excerpt: '',
     content: '',
@@ -88,6 +137,12 @@ const BlogForm: React.FC = () => {
     coverImage: '',
     status: 'draft',
     featured: false,
+    author: '',
+    readTime: '',
+    intro: '',
+    sections: [],
+    newSectionHeading: '',
+    newSectionContent: '',
     seo: {
       metaTitle: '',
       metaDescription: '',
@@ -106,6 +161,7 @@ const BlogForm: React.FC = () => {
         if (blog) {
           setFormData({
             title: blog.title,
+            subtitle: blog.subtitle || '',
             slug: blog.slug,
             excerpt: blog.excerpt,
             content: blog.content,
@@ -114,6 +170,12 @@ const BlogForm: React.FC = () => {
             coverImage: blog.coverImage,
             status: blog.status,
             featured: blog.featured,
+            author: blog.author,
+            readTime: blog.readTime || '',
+            intro: blog.intro || '',
+            sections: blog.sections || [],
+            newSectionHeading: '',
+            newSectionContent: '',
             seo: {
               metaTitle: blog.seo.metaTitle,
               metaDescription: blog.seo.metaDescription,
@@ -133,17 +195,15 @@ const BlogForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      if (parent === 'seo') {
-        setFormData(prev => ({
-          ...prev,
-          seo: {
-            ...prev.seo,
-            [child]: value
-          }
-        }));
-      }
+    if (name.startsWith('seo.')) {
+      const seoField = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        seo: {
+          ...prev.seo,
+          [seoField]: value
+        }
+      }));
     } else {
       setFormData(prev => ({
         ...prev,
@@ -161,16 +221,83 @@ const BlogForm: React.FC = () => {
     }));
   };
 
+  // Handle image upload
+  const handleImageUpload = async (file: File): Promise<string> => {
+    try {
+      const imageUrl = await uploadImage(file);
+      return imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  };
+
+  // Handle cover image change
+  const handleCoverImageChange = (url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      coverImage: url
+    }));
+  };
+
   // Generate slug from title
   const generateSlug = () => {
     const slug = formData.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/--+/g, '-')
+      .trim();
     
     setFormData(prev => ({
       ...prev,
       slug
+    }));
+  };
+
+  // Add a new section
+  const addSection = () => {
+    if (!formData.newSectionHeading.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        newSectionHeading: 'Section heading is required'
+      }));
+      return;
+    }
+
+    if (!formData.newSectionContent.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        newSectionContent: 'Section content is required'
+      }));
+      return;
+    }
+
+    const newSection: BlogSection = {
+      id: formData.newSectionHeading.replace(/\s+/g, ''),
+      heading: formData.newSectionHeading,
+      content: formData.newSectionContent
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      sections: [...prev.sections, newSection],
+      newSectionHeading: '',
+      newSectionContent: ''
+    }));
+
+    setErrors(prev => ({
+      ...prev,
+      newSectionHeading: '',
+      newSectionContent: ''
+    }));
+  };
+
+  // Remove a section
+  const removeSection = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sections: prev.sections.filter(section => section.id !== id)
     }));
   };
 
@@ -186,6 +313,10 @@ const BlogForm: React.FC = () => {
       newErrors.slug = 'Slug is required';
     }
     
+    if (!formData.excerpt.trim()) {
+      newErrors.excerpt = 'Excerpt is required';
+    }
+    
     if (!formData.content.trim()) {
       newErrors.content = 'Content is required';
     }
@@ -194,13 +325,29 @@ const BlogForm: React.FC = () => {
       newErrors.category = 'Category is required';
     }
     
+    if (!formData.coverImage) {
+      newErrors.coverImage = 'Cover image is required';
+    }
+
+    if (!formData.author.trim()) {
+      newErrors.author = 'Author is required';
+    }
+
+    if (!formData.intro.trim()) {
+      newErrors.intro = 'Introduction is required';
+    }
+
+    if (formData.sections.length === 0) {
+      newErrors.sections = 'At least one section is required';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     if (!validateForm()) {
       return;
@@ -215,7 +362,7 @@ const BlogForm: React.FC = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Redirect to blog list
+      // Redirect to blogs list
       navigate('/dashboard/blogs');
     } catch (error) {
       console.error('Error saving blog:', error);
@@ -247,7 +394,7 @@ const BlogForm: React.FC = () => {
     <div className="py-6">
       <SectionHeader
         title={isEditMode ? "Edit Blog Post" : "Create New Blog Post"}
-        description={isEditMode ? "Update an existing blog post" : "Create a new blog post for your portfolio"}
+        description={isEditMode ? "Update an existing blog post" : "Create a new blog post for your website"}
         icon={<FiFileText size={24} />}
       />
 
@@ -263,10 +410,9 @@ const BlogForm: React.FC = () => {
               placeholder="Enter blog title"
               required
               error={errors.title}
-              className="md:col-span-2"
             />
             
-            <div className="flex items-end gap-4">
+            <div className="flex items-end gap-2">
               <TextInput
                 id="slug"
                 name="slug"
@@ -276,18 +422,145 @@ const BlogForm: React.FC = () => {
                 placeholder="enter-blog-slug"
                 required
                 error={errors.slug}
-                helperText="URL-friendly version of the title"
                 className="flex-1"
               />
               <button
                 type="button"
                 onClick={generateSlug}
-                className="mb-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-md border border-white/20 mb-0.5"
               >
                 Generate
               </button>
             </div>
+          </div>
+
+          <TextInput
+            id="subtitle"
+            name="subtitle"
+            label="Subtitle"
+            value={formData.subtitle}
+            onChange={handleChange}
+            placeholder="Enter blog subtitle"
+          />
+          
+          <TextArea
+            id="excerpt"
+            name="excerpt"
+            label="Excerpt"
+            value={formData.excerpt}
+            onChange={handleChange}
+            placeholder="Enter a brief excerpt or summary"
+            rows={2}
+            required
+            error={errors.excerpt}
+          />
+          
+          <TextArea
+            id="intro"
+            name="intro"
+            label="Introduction"
+            value={formData.intro}
+            onChange={handleChange}
+            placeholder="Enter the blog introduction"
+            rows={3}
+            required
+            error={errors.intro}
+          />
+        </FormSection>
+
+        <FormSection title="Content">
+          <TextArea
+            id="content"
+            name="content"
+            label="Main Content"
+            value={formData.content}
+            onChange={handleChange}
+            placeholder="Enter the main content of your blog"
+            rows={10}
+            required
+            error={errors.content}
+          />
+        </FormSection>
+
+        <FormSection title="Blog Sections">
+          {formData.sections.length > 0 ? (
+            <div className="mb-6 space-y-4">
+              {formData.sections.map((section, index) => (
+                <div key={index} className="p-4 border border-white/10 rounded-lg bg-black/30">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="text-white font-medium">{section.heading}</h4>
+                    <button
+                      type="button"
+                      onClick={() => removeSection(section.id)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <FiTrash2 size={18} />
+                    </button>
+                  </div>
+                  <p className="text-gray-300 text-sm line-clamp-2">{section.content}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mb-4 p-4 border border-white/10 rounded-lg bg-black/30 text-center">
+              <p className="text-gray-400">No sections added yet. Add sections below.</p>
+            </div>
+          )}
+
+          {errors.sections && (
+            <div className="text-red-500 text-sm mb-4">{errors.sections}</div>
+          )}
+
+          <div className="border border-white/10 rounded-lg p-4 bg-black/20">
+            <h4 className="text-white font-medium mb-4">Add New Section</h4>
             
+            <TextInput
+              id="newSectionHeading"
+              name="newSectionHeading"
+              label="Section Heading"
+              value={formData.newSectionHeading}
+              onChange={handleChange}
+              placeholder="Enter section heading"
+              error={errors.newSectionHeading}
+            />
+            
+            <TextArea
+              id="newSectionContent"
+              name="newSectionContent"
+              label="Section Content"
+              value={formData.newSectionContent}
+              onChange={handleChange}
+              placeholder="Enter section content"
+              rows={4}
+              error={errors.newSectionContent}
+            />
+            
+            <button
+              type="button"
+              onClick={addSection}
+              className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-md border border-white/20 flex items-center"
+            >
+              <FiPlus className="mr-2" /> Add Section
+            </button>
+          </div>
+        </FormSection>
+
+        <FormSection title="Featured Image">
+          <ImageUpload
+            id="coverImage"
+            label="Cover Image"
+            value={formData.coverImage}
+            onChange={handleCoverImageChange}
+            onUpload={handleImageUpload}
+            helperText="Upload a featured image for this blog post"
+            required
+            error={errors.coverImage}
+            maxSizeMB={10}
+          />
+        </FormSection>
+
+        <FormSection title="Metadata">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Select
               id="category"
               name="category"
@@ -298,78 +571,47 @@ const BlogForm: React.FC = () => {
                 { value: '', label: 'Select a category' },
                 { value: 'Technology', label: 'Technology' },
                 { value: 'Web Development', label: 'Web Development' },
-                { value: 'React', label: 'React' },
-                { value: 'CSS', label: 'CSS' },
+                { value: 'Design', label: 'Design' },
+                { value: 'Business', label: 'Business' },
+                { value: 'Marketing', label: 'Marketing' },
               ]}
               required
               error={errors.category}
             />
+            
+            <TextInput
+              id="tags"
+              name="tags"
+              label="Tags"
+              value={formData.tags}
+              onChange={handleChange}
+              placeholder="Enter tags separated by commas"
+              helperText="E.g., React, JavaScript, Web Development"
+            />
           </div>
           
-          <TextInput
-            id="tags"
-            name="tags"
-            label="Tags"
-            value={formData.tags}
-            onChange={handleChange}
-            placeholder="Enter tags separated by commas"
-            helperText="E.g., react, javascript, web development"
-          />
-          
-          <TextArea
-            id="excerpt"
-            name="excerpt"
-            label="Excerpt"
-            value={formData.excerpt}
-            onChange={handleChange}
-            placeholder="Enter a brief summary of your blog post"
-            rows={3}
-            helperText="A short summary that appears in blog listings"
-          />
-        </FormSection>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TextInput
+              id="author"
+              name="author"
+              label="Author"
+              value={formData.author}
+              onChange={handleChange}
+              placeholder="Enter author name"
+              required
+              error={errors.author}
+            />
+            
+            <TextInput
+              id="readTime"
+              name="readTime"
+              label="Read Time"
+              value={formData.readTime}
+              onChange={handleChange}
+              placeholder="E.g., 5 minutes read"
+            />
+          </div>
 
-        <FormSection title="Content">
-          <TextArea
-            id="content"
-            name="content"
-            label="Content"
-            value={formData.content}
-            onChange={handleChange}
-            placeholder="Write your blog post content here..."
-            rows={15}
-            required
-            error={errors.content}
-          />
-        </FormSection>
-
-        <FormSection title="Featured Image">
-          <TextInput
-            id="coverImage"
-            name="coverImage"
-            label="Cover Image URL"
-            value={formData.coverImage}
-            onChange={handleChange}
-            placeholder="Enter image URL"
-            type="url"
-            helperText="URL to the featured image for this blog post"
-          />
-          
-          {formData.coverImage && (
-            <div className="mt-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
-              <img 
-                src={formData.coverImage} 
-                alt="Cover preview" 
-                className="max-h-48 rounded-lg object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Invalid+Image+URL';
-                }}
-              />
-            </div>
-          )}
-        </FormSection>
-
-        <FormSection title="Publishing Options">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Select
               id="status"
@@ -397,15 +639,15 @@ const BlogForm: React.FC = () => {
           </div>
         </FormSection>
 
-        <FormSection title="SEO Settings">
+        <FormSection title="SEO">
           <TextInput
             id="seo.metaTitle"
             name="seo.metaTitle"
             label="Meta Title"
             value={formData.seo.metaTitle}
             onChange={handleChange}
-            placeholder="Enter meta title"
-            helperText="Leave blank to use the post title"
+            placeholder="Enter SEO meta title"
+            helperText="Recommended length: 50-60 characters"
           />
           
           <TextArea
@@ -414,9 +656,9 @@ const BlogForm: React.FC = () => {
             label="Meta Description"
             value={formData.seo.metaDescription}
             onChange={handleChange}
-            placeholder="Enter meta description"
-            rows={3}
-            helperText="Brief description for search engines"
+            placeholder="Enter SEO meta description"
+            rows={2}
+            helperText="Recommended length: 150-160 characters"
           />
           
           <TextInput
@@ -425,43 +667,17 @@ const BlogForm: React.FC = () => {
             label="Keywords"
             value={formData.seo.keywords}
             onChange={handleChange}
-            placeholder="Enter keywords separated by commas"
-            helperText="Keywords for search engines"
+            placeholder="Enter SEO keywords separated by commas"
           />
         </FormSection>
 
-        <div className="flex items-center justify-end space-x-3 mt-6">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-          >
-            <span className="flex items-center">
-              <FiX className="mr-2" />
-              Cancel
-            </span>
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </>
-            ) : (
-              <>
-                <FiSave className="mr-2" />
-                {isEditMode ? 'Update Blog Post' : 'Save Blog Post'}
-              </>
-            )}
-          </button>
-        </div>
+        <FormActions
+          primaryLabel="Save Blog"
+          secondaryLabel="Cancel"
+          onPrimaryClick={handleSubmit}
+          onSecondaryClick={handleCancel}
+          isLoading={isSubmitting}
+        />
       </form>
     </div>
   );

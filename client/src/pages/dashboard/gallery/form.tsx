@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiImage, FiSave, FiX, FiUpload } from 'react-icons/fi';
+import { FiImage } from 'react-icons/fi';
 import SectionHeader from '../../../components/ui/dashboard/section-header';
 import { 
   TextInput, 
@@ -10,6 +10,8 @@ import {
   FormSection, 
   FormActions 
 } from '../../../components/ui/dashboard/form-elements';
+import ImageUpload from '../../../components/ui/dashboard/image-upload';
+import { uploadImage } from '../../../services/upload-service';
 
 // Mock gallery data for editing
 const mockGalleryItems = [
@@ -88,10 +90,19 @@ const GalleryForm: React.FC = () => {
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name === 'order') {
+      // Handle numeric values
+      setFormData(prev => ({
+        ...prev,
+        [name]: value === '' ? 0 : parseInt(value, 10)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   // Handle checkbox change
@@ -100,6 +111,25 @@ const GalleryForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: checked
+    }));
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (file: File): Promise<string> => {
+    try {
+      const imageUrl = await uploadImage(file);
+      return imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  };
+
+  // Handle image change
+  const handleImageChange = (url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: url
     }));
   };
 
@@ -124,8 +154,8 @@ const GalleryForm: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     if (!validateForm()) {
       return;
@@ -181,6 +211,7 @@ const GalleryForm: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
               id="title"
+              name="title"
               label="Title"
               value={formData.title}
               onChange={handleChange}
@@ -191,6 +222,7 @@ const GalleryForm: React.FC = () => {
             
             <Select
               id="category"
+              name="category"
               label="Category"
               value={formData.category}
               onChange={handleChange}
@@ -210,6 +242,7 @@ const GalleryForm: React.FC = () => {
           
           <TextArea
             id="description"
+            name="description"
             label="Description"
             value={formData.description}
             onChange={handleChange}
@@ -219,6 +252,7 @@ const GalleryForm: React.FC = () => {
           
           <TextInput
             id="tags"
+            name="tags"
             label="Tags"
             value={formData.tags}
             onChange={handleChange}
@@ -228,58 +262,45 @@ const GalleryForm: React.FC = () => {
         </FormSection>
 
         <FormSection title="Image">
-          <TextInput
-            id="imageUrl"
-            label="Image URL"
+          <ImageUpload
+            id="galleryImage"
+            label="Gallery Image"
             value={formData.imageUrl}
-            onChange={handleChange}
-            placeholder="https://example.com/image.jpg"
-            type="url"
+            onChange={handleImageChange}
+            onUpload={handleImageUpload}
+            helperText="Upload a high-quality image (up to 10MB)"
             required
             error={errors.imageUrl}
+            maxSizeMB={10}
           />
           
           <TextInput
             id="altText"
+            name="altText"
             label="Alt Text"
             value={formData.altText}
             onChange={handleChange}
             placeholder="Descriptive text for accessibility"
             helperText="Describe the image for screen readers and SEO"
           />
-          
-          {formData.imageUrl && (
-            <div className="mt-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
-              <div className="relative rounded-lg overflow-hidden border border-gray-200 max-w-md">
-                <img 
-                  src={formData.imageUrl} 
-                  alt={formData.altText || "Preview"} 
-                  className="w-full h-auto"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Invalid+Image+URL';
-                  }}
-                />
-              </div>
-            </div>
-          )}
         </FormSection>
 
         <FormSection title="Display Options">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
               id="order"
+              name="order"
               label="Display Order"
               value={formData.order.toString()}
               onChange={handleChange}
               type="number"
-              min="0"
               helperText="Lower numbers appear first (0 = use default ordering)"
             />
             
             <div className="flex items-center h-full pt-6">
               <Checkbox
                 id="featured"
+                name="featured"
                 label="Featured Image"
                 checked={formData.featured}
                 onChange={handleCheckboxChange}
@@ -290,21 +311,11 @@ const GalleryForm: React.FC = () => {
         </FormSection>
 
         <FormActions
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          submitLabel={
-            <>
-              <FiSave className="mr-2" />
-              {isEditMode ? 'Update Image' : 'Save Image'}
-            </>
-          }
-          cancelLabel={
-            <>
-              <FiX className="mr-2" />
-              Cancel
-            </>
-          }
-          isSubmitting={isSubmitting}
+          primaryLabel="Save Image"
+          secondaryLabel="Cancel"
+          onPrimaryClick={handleSubmit}
+          onSecondaryClick={handleCancel}
+          isLoading={isSubmitting}
         />
       </form>
     </div>
