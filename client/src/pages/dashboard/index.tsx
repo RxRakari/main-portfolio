@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FiFileText, 
@@ -12,6 +12,7 @@ import {
   FiEdit,
   FiPlus
 } from 'react-icons/fi';
+import { useAdmin } from '../../context/admin-context';
 
 // Dashboard stat card component
 interface StatCardProps {
@@ -130,44 +131,72 @@ const QuickAction: React.FC<QuickActionProps> = ({ title, description, icon, to,
 };
 
 export const Dashboard: React.FC = () => {
-  // Mock data - in a real app, this would come from an API
-  const stats = [
-    { title: 'Total Blogs', value: 24, icon: <FiFileText size={20} className="text-purple-400" />, change: '+12% from last month', trend: 'up' as const, color: 'purple' },
-    { title: 'Total Projects', value: 18, icon: <FiFolder size={20} className="text-blue-400" />, change: '+5% from last month', trend: 'up' as const, color: 'blue' },
-    { title: 'Gallery Items', value: 143, icon: <FiImage size={20} className="text-green-400" />, change: 'Same as last month', trend: 'neutral' as const, color: 'green' },
-    { title: 'Contact Messages', value: 7, icon: <FiMessageSquare size={20} className="text-orange-400" />, change: '-2 from last month', trend: 'down' as const, color: 'orange' },
-  ];
+  const { fetchDashboardStats } = useAdmin();
+  const [stats, setStats] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const recentActivity = [
-    { 
-      title: 'New Blog Post Published', 
-      description: 'Character Prefix Conditioning', 
-      time: '2 hours ago',
-      icon: <FiFileText className="text-purple-400" />,
-      iconBg: 'bg-purple-100'
-    },
-    { 
-      title: 'New Project Added', 
-      description: 'E-Commerce Platform', 
-      time: '1 day ago',
-      icon: <FiFolder className="text-blue-400" />,
-      iconBg: 'bg-blue-100'
-    },
-    { 
-      title: 'New Images Uploaded', 
-      description: '5 new images added to gallery', 
-      time: '2 days ago',
-      icon: <FiImage className="text-green-400" />,
-      iconBg: 'bg-green-100'
-    },
-    { 
-      title: 'New Contact Message', 
-      description: 'From: john@example.com', 
-      time: '3 days ago',
-      icon: <FiMessageSquare className="text-orange-400" />,
-      iconBg: 'bg-orange-100'
-    },
-  ];
+  useEffect(() => {
+    const getStats = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetchDashboardStats();
+        const counts = response.data.counts;
+        const recent = response.data.recent;
+        setStats([
+          { title: 'Total Blogs', value: counts.blogs, icon: <FiFileText size={20} className="text-purple-400" />, color: 'purple' },
+          { title: 'Total Projects', value: counts.projects, icon: <FiFolder size={20} className="text-blue-400" />, color: 'blue' },
+          { title: 'Gallery Items', value: counts.gallery, icon: <FiImage size={20} className="text-green-400" />, color: 'green' },
+          { title: 'Contact Messages', value: counts.contacts, icon: <FiMessageSquare size={20} className="text-orange-400" />, color: 'orange' },
+        ]);
+        // Compose recent activity from blogs, projects, contacts
+        const activities: any[] = [];
+        if (recent.blogs) {
+          recent.blogs.forEach((blog: any) => {
+            activities.push({
+              title: 'New Blog Post',
+              description: blog.title,
+              time: new Date(blog.createdAt).toLocaleString(),
+              icon: <FiFileText className="text-purple-400" />,
+              iconBg: 'bg-purple-100',
+            });
+          });
+        }
+        if (recent.projects) {
+          recent.projects.forEach((project: any) => {
+            activities.push({
+              title: 'New Project',
+              description: project.title,
+              time: new Date(project.createdAt).toLocaleString(),
+              icon: <FiFolder className="text-blue-400" />,
+              iconBg: 'bg-blue-100',
+            });
+          });
+        }
+        if (recent.contacts) {
+          recent.contacts.forEach((contact: any) => {
+            activities.push({
+              title: 'New Contact Message',
+              description: `From: ${contact.name} <${contact.email}>`,
+              time: new Date(contact.createdAt).toLocaleString(),
+              icon: <FiMessageSquare className="text-orange-400" />,
+              iconBg: 'bg-orange-100',
+            });
+          });
+        }
+        // Sort by time descending
+        activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+        setRecentActivity(activities.slice(0, 8));
+      } catch (err: any) {
+        setError('Failed to load dashboard stats');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getStats();
+  }, [fetchDashboardStats]);
 
   const quickActions = [
     { 
@@ -200,6 +229,30 @@ export const Dashboard: React.FC = () => {
     { title: 'Portfolio Dashboard', type: 'Project', views: 654 },
     { title: 'Task Management App', type: 'Project', views: 543 },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="py-6">
+        <div className="flex flex-wrap items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+            <p className="mt-1 text-sm text-gray-400">Loading your portfolio overview...</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[1,2,3,4].map((i) => <div key={i} className="h-32 bg-white/5 rounded-xl animate-pulse" />)}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-6">
+        <div className="text-red-400 text-center font-medium">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-6">
@@ -241,9 +294,13 @@ export const Dashboard: React.FC = () => {
             </Link>
           </div>
           <div className="divide-y divide-white/10">
-            {recentActivity.map((activity, index) => (
-              <ActivityItem key={index} {...activity} />
-            ))}
+            {recentActivity.length === 0 ? (
+              <div className="text-gray-400 text-center py-8">No recent activity found.</div>
+            ) : (
+              recentActivity.map((activity, index) => (
+                <ActivityItem key={index} {...activity} />
+              ))
+            )}
           </div>
         </div>
 

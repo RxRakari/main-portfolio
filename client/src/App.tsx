@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ScrollToTop from './components/ui/scroll-to-top';
 import { useState, useEffect } from 'react';
 import LoadingWrapper from './components/states/loading-wrapper';
+import { ToastProvider } from './context/toast-context';
+import { AdminProvider } from './context/admin-context';
+import { AuthProvider } from './context/auth-context';
+import { AppProvider } from './context/app-context';
 
 // Layouts
 import { LandingLayout } from './layout/landing-layout';
@@ -82,64 +86,72 @@ const App = () => {
       loadingText="Loading Portfolio..."
     >
       <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          {/* Auth routes without layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          
-          {/* Public routes with landing layout */}
-          <Route element={<LandingLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:id" element={<ProjectDetails />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/blogs/details/:id" element={<BlogDetails />} />
-            <Route path="/gallery" element={<Gallery />} />
-          </Route>
-          
-          {/* Protected dashboard routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Dashboard />} />
-            
-            {/* Blog Management Routes */}
-            <Route path="blogs" element={<BlogsManagement />} />
-            <Route path="blogs/form" element={<BlogForm />} />
-            <Route path="blogs/form/:id" element={<BlogForm />} />
-            
-            {/* Project Management Routes */}
-            <Route path="projects" element={<ProjectsManagement />} />
-            <Route path="projects/form" element={<ProjectForm />} />
-            <Route path="projects/form/:id" element={<ProjectForm />} />
-            
-            {/* Experience Management Routes */}
-            <Route path="experience" element={<ExperienceManagement />} />
-            <Route path="experience/form" element={<ExperienceForm />} />
-            <Route path="experience/form/:id" element={<ExperienceForm />} />
-            
-            {/* Gallery Management Routes */}
-            <Route path="gallery" element={<GalleryManagement />} />
-            <Route path="gallery/form" element={<GalleryForm />} />
-            <Route path="gallery/form/:id" element={<GalleryForm />} />
-            
-            {/* Testimonials Management Routes */}
-            <Route path="testimonials" element={<TestimonialsManagement />} />
-            <Route path="testimonials/form" element={<TestimonialForm />} />
-            <Route path="testimonials/form/:id" element={<TestimonialForm />} />
-            
-            {/* Contact Messages Routes */}
-            <Route path="contacts" element={<ContactsManagement />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
-          
-          {/* 404 route */}
-          <Route path='/not-found' element={<NotFound /> } />
-          <Route path="*" element={<Navigate to="/not-found" replace />} />
-        </Routes>
+        <ToastProvider>
+          <AuthProvider>
+            <AdminProvider>
+              <AppProvider>
+                <ScrollToTop />
+                <Routes>
+                  {/* Auth routes without layout */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/logout" element={<Logout />} />
+                  
+                  {/* Public routes with landing layout */}
+                  <Route element={<LandingLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/projects/:id" element={<ProjectDetails />} />
+                    <Route path="/blogs" element={<Blogs />} />
+                    <Route path="/blogs/:id" element={<BlogDetails />} />
+                    <Route path="/gallery" element={<Gallery />} />
+                  </Route>
+                  
+                  {/* Protected dashboard routes */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }>
+                    <Route index element={<Dashboard />} />
+                    
+                    {/* Blog Management Routes */}
+                    <Route path="blogs" element={<BlogsManagement />} />
+                    <Route path="blogs/form" element={<BlogForm />} />
+                    <Route path="blogs/form/:id" element={<BlogForm />} />
+                    
+                    {/* Project Management Routes */}
+                    <Route path="projects" element={<ProjectsManagement />} />
+                    <Route path="projects/form" element={<ProjectForm />} />
+                    <Route path="projects/form/:id" element={<ProjectForm />} />
+                    
+                    {/* Experience Management Routes */}
+                    <Route path="experience" element={<ExperienceManagement />} />
+                    <Route path="experience/form" element={<ExperienceForm />} />
+                    <Route path="experience/form/:id" element={<ExperienceForm />} />
+                    
+                    {/* Gallery Management Routes */}
+                    <Route path="gallery" element={<GalleryManagement />} />
+                    <Route path="gallery/form" element={<GalleryForm />} />
+                    <Route path="gallery/form/:id" element={<GalleryForm />} />
+                    
+                    {/* Testimonials Management Routes */}
+                    <Route path="testimonials" element={<TestimonialsManagement />} />
+                    <Route path="testimonials/form" element={<TestimonialForm />} />
+                    <Route path="testimonials/form/:id" element={<TestimonialForm />} />
+                    
+                    {/* Contact Messages Routes */}
+                    <Route path="contacts" element={<ContactsManagement />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                  </Route>
+                  
+                  {/* 404 route */}
+                  <Route path='/not-found' element={<NotFound /> } />
+                  <Route path="*" element={<Navigate to="/not-found" replace />} />
+                </Routes>
+              </AppProvider>
+            </AdminProvider>
+          </AuthProvider>
+        </ToastProvider>
       </BrowserRouter>
     </LoadingWrapper>
   );

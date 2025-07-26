@@ -11,118 +11,39 @@ import {
   FormActions
 } from '../../../components/ui/dashboard/form-elements';
 import ImageUpload from '../../../components/ui/dashboard/image-upload';
-import { uploadImage } from '../../../services/upload-service';
-
-// Mock blog data for editing
-const mockBlogs = [
-  {
-    id: '1',
-    title: 'Character Prefix Conditioning',
-    subtitle: 'A clever algorithm for more accurate code completion sampling.',
-    slug: 'character-prefix-conditioning',
-    excerpt: 'The first in a series of problems that give a glimpse into the work we do at Cursor.',
-    content: 'When using a language model for code completion, we typically want the model to produce a completion that begins with what the user has typed.',
-    category: 'Technology',
-    tags: 'AI, language models, coding',
-    coverImage: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    status: 'published',
-    featured: true,
-    author: 'Jacob',
-    readTime: '2 minutes read',
-    date: '2023-09-15',
-    views: 1245,
-    intro: 'The first in a series of problems that give a glimpse into the work we do at Cursor.',
-    sections: [
-      {
-        id: 'Setup',
-        heading: 'Setup',
-        content: 'When using a language model for code completion, we typically want the model to produce a completion that begins with what the user has typed.'
-      },
-      {
-        id: 'Problem',
-        heading: 'Problem',
-        content: 'Can you construct an efficient algorithm for sampling from q(tₖ |t₁, ... ,tₖ₋₁), that minimizes calls to the original language model? A description of the algorithm is great. An actual implementation is excellent.',
-        additionalContent: true
-      }
-    ],
-    seo: {
-      metaTitle: 'Character Prefix Conditioning - Advanced AI Techniques',
-      metaDescription: 'Learn about character prefix conditioning, a clever algorithm for more accurate code completion sampling.',
-      keywords: 'AI, machine learning, code completion, language models',
-    }
-  },
-  {
-    id: '2',
-    title: 'Building a Modern Portfolio Website',
-    subtitle: 'A comprehensive guide to creating stunning portfolio sites',
-    slug: 'building-modern-portfolio-website',
-    excerpt: 'A comprehensive guide to building a portfolio website using modern web technologies.',
-    content: 'In this article, we will explore how to build a modern portfolio website using React, Tailwind CSS, and Framer Motion.',
-    category: 'Web Development',
-    tags: 'React, Tailwind CSS, Framer Motion, Portfolio',
-    coverImage: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    status: 'published',
-    featured: false,
-    author: 'Jacob',
-    readTime: '5 minutes read',
-    date: '2023-08-22',
-    views: 982,
-    intro: 'Creating a portfolio website is essential for showcasing your work and skills to potential clients or employers.',
-    sections: [
-      {
-        id: 'Introduction',
-        heading: 'Introduction',
-        content: 'In this article, we will explore how to build a modern portfolio website using React, Tailwind CSS, and Framer Motion.'
-      },
-      {
-        id: 'Technologies',
-        heading: 'Technologies Used',
-        content: 'We will be using React for the frontend, Tailwind CSS for styling, and Framer Motion for animations.'
-      }
-    ],
-    seo: {
-      metaTitle: 'Building a Modern Portfolio Website with React and Tailwind',
-      metaDescription: 'Learn how to build a modern portfolio website using React, Tailwind CSS, and Framer Motion.',
-      keywords: 'React, Tailwind CSS, Portfolio, Web Development',
-    }
-  }
-];
+import { useAdmin } from '../../../context/admin-context';
+import { toast } from 'sonner';
 
 interface BlogSection {
   id: string;
-  heading: string;
+  title: string;
   content: string;
-  additionalContent?: boolean;
 }
 
 interface BlogFormData {
   title: string;
   subtitle: string;
   slug: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  tags: string;
   coverImage: string;
-  status: string;
-  featured: boolean;
+  category: string;
+  tags: string[];
+  newTag: string;
   author: string;
   readTime: string;
   intro: string;
+  content: string;
   sections: BlogSection[];
-  newSectionHeading: string;
+  newSectionTitle: string;
   newSectionContent: string;
-  seo: {
-    metaTitle: string;
-    metaDescription: string;
-    keywords: string;
-  };
+  published: boolean;
+  featured: boolean;
 }
 
 const BlogForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
+  const { fetchBlog, createBlog, updateBlog } = useAdmin();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
@@ -130,86 +51,85 @@ const BlogForm: React.FC = () => {
     title: '',
     subtitle: '',
     slug: '',
-    excerpt: '',
-    content: '',
-    category: '',
-    tags: '',
     coverImage: '',
-    status: 'draft',
-    featured: false,
+    category: '',
+    tags: [],
+    newTag: '',
     author: '',
     readTime: '',
     intro: '',
+    content: '',
     sections: [],
-    newSectionHeading: '',
+    newSectionTitle: '',
     newSectionContent: '',
-    seo: {
-      metaTitle: '',
-      metaDescription: '',
-      keywords: '',
-    }
+    published: false,
+    featured: false
   });
+  const [imageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [categories] = useState([
+    { value: '', label: 'Select a category' },
+    { value: 'Technology', label: 'Technology' },
+    { value: 'Web Development', label: 'Web Development' },
+    { value: 'Design', label: 'Design' },
+    { value: 'Business', label: 'Business' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'AI', label: 'AI' },
+    { value: 'Programming', label: 'Programming' },
+    { value: 'Other', label: 'Other' },
+  ]);
 
   // Fetch blog data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && id) {
       setIsLoading(true);
-      // Simulate API call to fetch blog data
-      setTimeout(() => {
-        const blog = mockBlogs.find(blog => blog.id === id);
-        if (blog) {
-          setFormData({
-            title: blog.title,
-            subtitle: blog.subtitle || '',
-            slug: blog.slug,
-            excerpt: blog.excerpt,
-            content: blog.content,
-            category: blog.category,
-            tags: blog.tags,
-            coverImage: blog.coverImage,
-            status: blog.status,
-            featured: blog.featured,
-            author: blog.author,
-            readTime: blog.readTime || '',
-            intro: blog.intro || '',
-            sections: blog.sections || [],
-            newSectionHeading: '',
-            newSectionContent: '',
-            seo: {
-              metaTitle: blog.seo.metaTitle,
-              metaDescription: blog.seo.metaDescription,
-              keywords: blog.seo.keywords,
-            }
-          });
-        } else {
-          // Blog not found, redirect to blogs list
+      
+      fetchBlog(id)
+        .then(response => {
+          const blog = response.blog;
+          
+          if (blog) {
+            setFormData({
+              title: blog.title || '',
+              subtitle: blog.subtitle || '',
+              slug: blog.slug || '',
+              coverImage: blog.coverImage || '',
+              category: blog.category || '',
+              tags: blog.tags || [],
+              newTag: '',
+              author: blog.author || '',
+              readTime: blog.readTime || '',
+              intro: blog.intro || '',
+              content: blog.content || '',
+              sections: blog.sections || [],
+              newSectionTitle: '',
+              newSectionContent: '',
+              published: blog.published || false,
+              featured: blog.featured || false
+            });
+          } else {
+            toast.error('Blog not found');
+            navigate('/dashboard/blogs');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching blog:', error);
+          toast.error('Failed to load blog');
           navigate('/dashboard/blogs');
-        }
-        setIsLoading(false);
-      }, 500);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-  }, [id, isEditMode, navigate]);
+  }, [id, isEditMode, navigate, fetchBlog]);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
-    if (name.startsWith('seo.')) {
-      const seoField = name.split('.')[1];
-      setFormData(prev => ({
-        ...prev,
-        seo: {
-          ...prev.seo,
-          [seoField]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   // Handle checkbox change
@@ -218,25 +138,6 @@ const BlogForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: checked
-    }));
-  };
-
-  // Handle image upload
-  const handleImageUpload = async (file: File): Promise<string> => {
-    try {
-      const imageUrl = await uploadImage(file);
-      return imageUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
-    }
-  };
-
-  // Handle cover image change
-  const handleCoverImageChange = (url: string) => {
-    setFormData(prev => ({
-      ...prev,
-      coverImage: url
     }));
   };
 
@@ -255,12 +156,55 @@ const BlogForm: React.FC = () => {
     }));
   };
 
-  // Add a new section
-  const addSection = () => {
-    if (!formData.newSectionHeading.trim()) {
+  // Handle image file selection
+  const handleImageChange = (imageUrl: string) => {
+    if (imageUrl) {
+      setFormData(prev => ({
+        ...prev,
+        coverImage: imageUrl
+      }));
+    }
+  };
+
+  // Add tag
+  const addTag = () => {
+    if (formData.newTag.trim() === '') return;
+    
+    if (formData.tags.includes(formData.newTag.trim())) {
       setErrors(prev => ({
         ...prev,
-        newSectionHeading: 'Section heading is required'
+        newTag: 'Tag already added'
+      }));
+      return;
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      tags: [...prev.tags, prev.newTag.trim()],
+      newTag: ''
+    }));
+    
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.newTag;
+      return newErrors;
+    });
+  };
+
+  // Remove tag
+  const removeTag = (tag: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(t => t !== tag)
+    }));
+  };
+
+  // Add a new section
+  const addSection = () => {
+    if (!formData.newSectionTitle.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        newSectionTitle: 'Section title is required'
       }));
       return;
     }
@@ -273,22 +217,28 @@ const BlogForm: React.FC = () => {
       return;
     }
 
+    // Generate a unique id
+    const sectionId = formData.newSectionTitle
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-');
+
     const newSection: BlogSection = {
-      id: formData.newSectionHeading.replace(/\s+/g, ''),
-      heading: formData.newSectionHeading,
-      content: formData.newSectionContent
+      id: sectionId,
+      title: formData.newSectionTitle.trim(),
+      content: formData.newSectionContent.trim()
     };
 
     setFormData(prev => ({
       ...prev,
       sections: [...prev.sections, newSection],
-      newSectionHeading: '',
+      newSectionTitle: '',
       newSectionContent: ''
     }));
 
     setErrors(prev => ({
       ...prev,
-      newSectionHeading: '',
+      newSectionTitle: '',
       newSectionContent: ''
     }));
   };
@@ -313,8 +263,8 @@ const BlogForm: React.FC = () => {
       newErrors.slug = 'Slug is required';
     }
     
-    if (!formData.excerpt.trim()) {
-      newErrors.excerpt = 'Excerpt is required';
+    if (!formData.subtitle.trim()) {
+      newErrors.subtitle = 'Subtitle is required';
     }
     
     if (!formData.content.trim()) {
@@ -325,7 +275,7 @@ const BlogForm: React.FC = () => {
       newErrors.category = 'Category is required';
     }
     
-    if (!formData.coverImage) {
+    if (!isEditMode && !imageFile && !formData.coverImage) {
       newErrors.coverImage = 'Cover image is required';
     }
 
@@ -335,10 +285,6 @@ const BlogForm: React.FC = () => {
 
     if (!formData.intro.trim()) {
       newErrors.intro = 'Introduction is required';
-    }
-
-    if (formData.sections.length === 0) {
-      newErrors.sections = 'At least one section is required';
     }
     
     setErrors(newErrors);
@@ -350,22 +296,52 @@ const BlogForm: React.FC = () => {
     if (e) e.preventDefault();
     
     if (!validateForm()) {
+      window.scrollTo(0, 0);
+      toast.error('Please fill in all required fields');
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would call an API to save the blog
-      console.log('Form data to be submitted:', formData);
+      // Prepare form data for submission
+      const blogData = new FormData();
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Add text fields
+      blogData.append('title', formData.title);
+      blogData.append('subtitle', formData.subtitle);
+      blogData.append('slug', formData.slug);
+      blogData.append('category', formData.category);
+      blogData.append('tags', JSON.stringify(formData.tags));
+      blogData.append('author', formData.author);
+      blogData.append('readTime', formData.readTime);
+      blogData.append('intro', formData.intro);
+      blogData.append('content', formData.content);
+      blogData.append('sections', JSON.stringify(formData.sections));
+      blogData.append('published', formData.published.toString());
+      blogData.append('featured', formData.featured.toString());
+      
+      // Add image file if available
+      if (imageFile) {
+        blogData.append('imageFile', imageFile);
+      } else if (formData.coverImage) {
+        blogData.append('coverImage', formData.coverImage);
+      }
+      
+      // Submit the form
+      if (isEditMode && id) {
+        await updateBlog(id, blogData);
+        toast.success('Blog updated successfully');
+      } else {
+        await createBlog(blogData);
+        toast.success('Blog created successfully');
+      }
       
       // Redirect to blogs list
       navigate('/dashboard/blogs');
     } catch (error) {
       console.error('Error saving blog:', error);
+      toast.error('Failed to save blog');
     } finally {
       setIsSubmitting(false);
     }
@@ -381,10 +357,17 @@ const BlogForm: React.FC = () => {
   if (isLoading) {
     return (
       <div className="py-6">
-        <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded-md mb-6 w-3/4"></div>
-          <div className="h-64 bg-gray-100 rounded-md mb-6"></div>
-          <div className="h-32 bg-gray-100 rounded-md"></div>
+        <SectionHeader
+          title={isEditMode ? "Edit Blog Post" : "Create New Blog Post"}
+          description="Loading..."
+          icon={<FiFileText size={24} />}
+        />
+        <div className="mt-6 bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-10 bg-white/5 rounded-md w-3/4"></div>
+            <div className="h-64 bg-white/5 rounded-md"></div>
+            <div className="h-32 bg-white/5 rounded-md"></div>
+          </div>
         </div>
       </div>
     );
@@ -398,7 +381,7 @@ const BlogForm: React.FC = () => {
         icon={<FiFileText size={24} />}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6">
         <FormSection title="Basic Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
@@ -441,18 +424,8 @@ const BlogForm: React.FC = () => {
             value={formData.subtitle}
             onChange={handleChange}
             placeholder="Enter blog subtitle"
-          />
-          
-          <TextArea
-            id="excerpt"
-            name="excerpt"
-            label="Excerpt"
-            value={formData.excerpt}
-            onChange={handleChange}
-            placeholder="Enter a brief excerpt or summary"
-            rows={2}
             required
-            error={errors.excerpt}
+            error={errors.subtitle}
           />
           
           <TextArea
@@ -488,7 +461,7 @@ const BlogForm: React.FC = () => {
               {formData.sections.map((section, index) => (
                 <div key={index} className="p-4 border border-white/10 rounded-lg bg-black/30">
                   <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-white font-medium">{section.heading}</h4>
+                    <h4 className="text-white font-medium">{section.title}</h4>
                     <button
                       type="button"
                       onClick={() => removeSection(section.id)}
@@ -507,21 +480,17 @@ const BlogForm: React.FC = () => {
             </div>
           )}
 
-          {errors.sections && (
-            <div className="text-red-500 text-sm mb-4">{errors.sections}</div>
-          )}
-
           <div className="border border-white/10 rounded-lg p-4 bg-black/20">
             <h4 className="text-white font-medium mb-4">Add New Section</h4>
             
             <TextInput
-              id="newSectionHeading"
-              name="newSectionHeading"
-              label="Section Heading"
-              value={formData.newSectionHeading}
+              id="newSectionTitle"
+              name="newSectionTitle"
+              label="Section Title"
+              value={formData.newSectionTitle}
               onChange={handleChange}
-              placeholder="Enter section heading"
-              error={errors.newSectionHeading}
+              placeholder="Enter section title"
+              error={errors.newSectionTitle}
             />
             
             <TextArea
@@ -550,13 +519,52 @@ const BlogForm: React.FC = () => {
             id="coverImage"
             label="Cover Image"
             value={formData.coverImage}
-            onChange={handleCoverImageChange}
-            onUpload={handleImageUpload}
-            helperText="Upload a featured image for this blog post"
+            onChange={handleImageChange}
+            helperText="Upload a featured image for this blog post (up to 5MB)"
             required
             error={errors.coverImage}
-            maxSizeMB={10}
+            maxSizeMB={5}
           />
+        </FormSection>
+
+        <FormSection title="Tags">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {formData.tags.map((tag, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-black/30 text-white border border-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-sm"
+              >
+                <span>{tag}</span>
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="ml-2 text-gray-400 hover:text-white"
+                >
+                  <FiTrash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex items-end gap-2">
+            <TextInput
+              id="newTag"
+              name="newTag"
+              label="Add Tag"
+              value={formData.newTag}
+              onChange={handleChange}
+              placeholder="Enter tag name"
+              error={errors.newTag}
+              className="flex-1"
+            />
+            <button
+              type="button"
+              onClick={addTag}
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-md border border-white/20 mb-0.5"
+            >
+              <FiPlus size={18} />
+            </button>
+          </div>
         </FormSection>
 
         <FormSection title="Metadata">
@@ -567,30 +575,11 @@ const BlogForm: React.FC = () => {
               label="Category"
               value={formData.category}
               onChange={handleChange}
-              options={[
-                { value: '', label: 'Select a category' },
-                { value: 'Technology', label: 'Technology' },
-                { value: 'Web Development', label: 'Web Development' },
-                { value: 'Design', label: 'Design' },
-                { value: 'Business', label: 'Business' },
-                { value: 'Marketing', label: 'Marketing' },
-              ]}
+              options={categories}
               required
               error={errors.category}
             />
             
-            <TextInput
-              id="tags"
-              name="tags"
-              label="Tags"
-              value={formData.tags}
-              onChange={handleChange}
-              placeholder="Enter tags separated by commas"
-              helperText="E.g., React, JavaScript, Web Development"
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
               id="author"
               name="author"
@@ -611,22 +600,22 @@ const BlogForm: React.FC = () => {
               placeholder="E.g., 5 minutes read"
             />
           </div>
+        </FormSection>
 
+        <FormSection title="Publishing Options">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Select
-              id="status"
-              name="status"
-              label="Status"
-              value={formData.status}
-              onChange={handleChange}
-              options={[
-                { value: 'draft', label: 'Draft' },
-                { value: 'published', label: 'Published' },
-                { value: 'archived', label: 'Archived' },
-              ]}
-            />
+            <div className="flex items-center">
+              <Checkbox
+                id="published"
+                name="published"
+                label="Publish Post"
+                checked={formData.published}
+                onChange={handleCheckboxChange}
+                helperText="Make this post visible to the public"
+              />
+            </div>
             
-            <div className="flex items-center h-full pt-6">
+            <div className="flex items-center">
               <Checkbox
                 id="featured"
                 name="featured"
@@ -639,40 +628,8 @@ const BlogForm: React.FC = () => {
           </div>
         </FormSection>
 
-        <FormSection title="SEO">
-          <TextInput
-            id="seo.metaTitle"
-            name="seo.metaTitle"
-            label="Meta Title"
-            value={formData.seo.metaTitle}
-            onChange={handleChange}
-            placeholder="Enter SEO meta title"
-            helperText="Recommended length: 50-60 characters"
-          />
-          
-          <TextArea
-            id="seo.metaDescription"
-            name="seo.metaDescription"
-            label="Meta Description"
-            value={formData.seo.metaDescription}
-            onChange={handleChange}
-            placeholder="Enter SEO meta description"
-            rows={2}
-            helperText="Recommended length: 150-160 characters"
-          />
-          
-          <TextInput
-            id="seo.keywords"
-            name="seo.keywords"
-            label="Keywords"
-            value={formData.seo.keywords}
-            onChange={handleChange}
-            placeholder="Enter SEO keywords separated by commas"
-          />
-        </FormSection>
-
         <FormActions
-          primaryLabel="Save Blog"
+          primaryLabel={isEditMode ? "Update Blog" : "Create Blog"}
           secondaryLabel="Cancel"
           onPrimaryClick={handleSubmit}
           onSecondaryClick={handleCancel}

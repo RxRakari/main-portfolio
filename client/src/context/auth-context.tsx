@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { API_URL } from '../helpers/api_url';
+import { toast } from 'sonner';
 
 interface Admin {
   id: string;
@@ -43,6 +44,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
+      
+      // Show loading toast
+      toast.loading('Logging in...');
+      
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -53,6 +58,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
+        toast.dismiss();
+        toast.error(errorData.message || 'Login failed');
         throw new Error(errorData.message || 'Login failed');
       }
 
@@ -63,6 +70,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setAdmin(data.data.admin);
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('admin', JSON.stringify(data.data.admin));
+      
+      // Dismiss loading toast and show success
+      toast.dismiss();
+      toast.success('Login successful');
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -76,6 +87,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setToken(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('admin');
+    toast.info('Logged out successfully');
   };
 
   const value = {

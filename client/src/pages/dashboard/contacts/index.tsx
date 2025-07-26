@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FiMessageSquare, 
   FiTrash2, 
@@ -6,84 +6,72 @@ import {
   FiEye, 
   FiArchive, 
   FiCheck, 
-  FiStar,
   FiCalendar
 } from 'react-icons/fi';
 import SectionHeader from '../../../components/ui/dashboard/section-header';
 import Card from '../../../components/ui/dashboard/card';
 import { TextInput, Select } from '../../../components/ui/dashboard/form-elements';
 import { format } from 'date-fns';
-
-// Mock data for contact messages
-const mockContactMessages = [
-  {
-    id: '1',
-    name: 'John Smith',
-    email: 'john.smith@example.com',
-    subject: 'Website Development Inquiry',
-    message: 'Hello, I\'m interested in your web development services. I have a small business and need a new website. Could you provide me with some information about your services and pricing? Thanks!',
-    date: '2023-09-15T14:30:00',
-    status: 'unread',
-    starred: false,
-  },
-  {
-    id: '2',
-    name: 'Emily Johnson',
-    email: 'emily.johnson@example.com',
-    subject: 'Collaboration Opportunity',
-    message: 'Hi there, I came across your portfolio and I\'m really impressed with your work. I\'m working on a project that I think would be a great fit for your skills. Would you be interested in discussing a potential collaboration?',
-    date: '2023-09-12T09:45:00',
-    status: 'read',
-    starred: true,
-  },
-  {
-    id: '3',
-    name: 'Michael Brown',
-    email: 'michael.brown@example.com',
-    subject: 'Question about your React tutorial',
-    message: 'I recently went through your React tutorial and found it very helpful. However, I\'m having some issues with the state management part. Could you clarify how the context API is being used in the example? Thanks in advance!',
-    date: '2023-09-10T16:20:00',
-    status: 'replied',
-    starred: false,
-  },
-  {
-    id: '4',
-    name: 'Sarah Davis',
-    email: 'sarah.davis@example.com',
-    subject: 'Job Opportunity',
-    message: 'Hello, I represent XYZ Company and we\'re impressed with your portfolio. We have an opening for a senior developer position that might interest you. Would you be available for a brief call to discuss this opportunity?',
-    date: '2023-09-08T11:15:00',
-    status: 'read',
-    starred: true,
-  },
-  {
-    id: '5',
-    name: 'David Wilson',
-    email: 'david.wilson@example.com',
-    subject: 'Bug report on your portfolio site',
-    message: 'Hi, I noticed that the contact form on your portfolio site isn\'t working properly on mobile devices. The submit button seems to be unresponsive on iOS. Just wanted to let you know!',
-    date: '2023-09-05T13:50:00',
-    status: 'archived',
-    starred: false,
-  },
-];
+import { useAdmin } from '../../../context/admin-context';
+import { toast } from 'sonner';
 
 const ContactsManagement: React.FC = () => {
+  const [messages, setMessages] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [activeMessage, setActiveMessage] = useState<string | null>(null);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const { fetchContacts, markContactRead, archiveContact, deleteContact } = useAdmin();
+
+  // Fetch contact messages
+  useEffect(() => {
+    const getContactMessages = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const response = await fetchContacts();
+        if (response?.messages) {
+          setMessages(response.messages);
+        } else {
+          setError('No contact messages found');
+        }
+      } catch (err) {
+        console.error('Failed to fetch contact messages:', err);
+        setError('Failed to load contact messages');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    getContactMessages();
+  }, [fetchContacts]);
 
   // Filter contact messages based on search query and filters
-  const filteredMessages = mockContactMessages.filter((message) => {
+  const filteredMessages = messages.filter((message) => {
     const matchesSearch = 
       message.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       message.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       message.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       message.message.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = statusFilter ? message.status === statusFilter : true;
+    let matchesStatus = true;
+    if (statusFilter) {
+      switch (statusFilter) {
+        case 'unread':
+          matchesStatus = !message.read && !message.archived;
+          break;
+        case 'read':
+          matchesStatus = message.read && !message.archived;
+          break;
+        case 'archived':
+          matchesStatus = message.archived;
+          break;
+      }
+    }
     
     return matchesSearch && matchesStatus;
   });
@@ -98,7 +86,7 @@ const ContactsManagement: React.FC = () => {
   };
 
   // Handle bulk actions
-  const handleBulkAction = (action: 'read' | 'archive' | 'delete') => {
+  const handleBulkAction = async (action: 'read' | 'archive' | 'delete') => {
     if (selectedMessages.length === 0) return;
     
     const actionMessages = {
@@ -108,26 +96,111 @@ const ContactsManagement: React.FC = () => {
     };
     
     if (window.confirm(`Are you sure you want to ${actionMessages[action]} ${selectedMessages.length} selected message(s)?`)) {
-      // In a real app, you would call an API to perform the action
-      console.log(`${action.charAt(0).toUpperCase() + action.slice(1)} messages with IDs: ${selectedMessages.join(', ')}`);
-      setSelectedMessages([]);
+      setIsLoading(true);
+      
+      try {
+        // Handle each selected message
+        for (const id of selectedMessages) {
+          switch (action) {
+            case 'read':
+              await markContactRead(id);
+              break;
+            case 'archive':
+              await archiveContact(id);
+              break;
+            case 'delete':
+              await deleteContact(id);
+              break;
+          }
+        }
+        
+        // Refresh message list
+        const response = await fetchContacts();
+        if (response?.messages) {
+          setMessages(response.messages);
+        }
+        
+        // Clear selection and active message
+        setSelectedMessages([]);
+        setActiveMessage(null);
+        
+        toast.success(`Successfully ${actionMessages[action]}ed ${selectedMessages.length} messages`);
+      } catch (error) {
+        console.error(`Failed to ${action} messages:`, error);
+        toast.error(`Failed to ${action} some messages`);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   // Handle single message actions
-  const handleMessageAction = (id: string, action: 'read' | 'unread' | 'archive' | 'delete' | 'star') => {
-    // In a real app, you would call an API to perform the action
-    console.log(`${action.charAt(0).toUpperCase() + action.slice(1)} message with ID: ${id}`);
-    
-    // If deleting or archiving the active message, clear the active message
-    if ((action === 'delete' || action === 'archive') && activeMessage === id) {
-      setActiveMessage(null);
+  const handleMessageAction = async (id: string, action: 'read' | 'unread' | 'archive' | 'delete') => {
+    try {
+      setIsLoading(true);
+      
+      switch (action) {
+        case 'read':
+        case 'unread':
+          await markContactRead(id);
+          break;
+        case 'archive':
+          await archiveContact(id);
+          break;
+        case 'delete':
+          if (!window.confirm('Are you sure you want to delete this message?')) {
+            setIsLoading(false);
+            return;
+          }
+          await deleteContact(id);
+          break;
+      }
+      
+      // Refresh message list
+      const response = await fetchContacts();
+      if (response?.messages) {
+        setMessages(response.messages);
+      }
+      
+      // If deleting or archiving the active message, clear the active message
+      if ((action === 'delete' || action === 'archive') && activeMessage === id) {
+        setActiveMessage(null);
+      }
+      
+      toast.success(`Message ${action === 'unread' ? 'marked as unread' : action === 'read' ? 'marked as read' : action + 'd'} successfully`);
+    } catch (error) {
+      console.error(`Failed to ${action} message:`, error);
+      toast.error(`Failed to ${action} message`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Get the active message
   const getActiveMessage = () => {
-    return mockContactMessages.find(message => message.id === activeMessage);
+    return messages.find(message => message._id === activeMessage);
+  };
+
+  // Handle message click
+  const handleMessageClick = async (id: string) => {
+    setActiveMessage(id);
+    
+    // If the message is unread, mark it as read
+    const message = messages.find(msg => msg._id === id);
+    if (message && !message.read) {
+      try {
+        await markContactRead(id);
+        
+        // Update the local state to reflect the change
+        setMessages(prev => 
+          prev.map(msg => 
+            msg._id === id ? { ...msg, read: true } : msg
+          )
+        );
+      } catch (error) {
+        console.error('Failed to mark message as read:', error);
+      }
+    }
   };
 
   // Format date
@@ -141,6 +214,13 @@ const ContactsManagement: React.FC = () => {
     }
   };
 
+  // Get message status
+  const getMessageStatus = (message: any) => {
+    if (message.archived) return 'archived';
+    if (!message.read) return 'unread';
+    return 'read';
+  };
+
   // Get status badge styles
   const getStatusStyles = (status: string) => {
     switch (status) {
@@ -148,8 +228,6 @@ const ContactsManagement: React.FC = () => {
         return 'bg-blue-100 text-blue-800';
       case 'read':
         return 'bg-gray-100 text-gray-800';
-      case 'replied':
-        return 'bg-green-100 text-green-800';
       case 'archived':
         return 'bg-yellow-100 text-yellow-800';
       default:
@@ -169,16 +247,18 @@ const ContactsManagement: React.FC = () => {
             <>
               <button
                 onClick={() => handleBulkAction('read')}
-                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                 title="Mark as Read"
+                disabled={isLoading}
               >
                 <FiCheck className="mr-1" />
                 <span className="hidden sm:inline">Read</span>
               </button>
               <button
                 onClick={() => handleBulkAction('archive')}
-                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                 title="Archive"
+                disabled={isLoading}
               >
                 <FiArchive className="mr-1" />
                 <span className="hidden sm:inline">Archive</span>
@@ -187,6 +267,7 @@ const ContactsManagement: React.FC = () => {
                 onClick={() => handleBulkAction('delete')}
                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 title="Delete"
+                disabled={isLoading}
               >
                 <FiTrash2 className="mr-1" />
                 <span className="hidden sm:inline">Delete</span>
@@ -218,7 +299,6 @@ const ContactsManagement: React.FC = () => {
               { value: '', label: 'All Messages' },
               { value: 'unread', label: 'Unread' },
               { value: 'read', label: 'Read' },
-              { value: 'replied', label: 'Replied' },
               { value: 'archived', label: 'Archived' },
             ]}
           />
@@ -230,92 +310,81 @@ const ContactsManagement: React.FC = () => {
         {/* Message List */}
         <div className="lg:col-span-1">
           <Card noPadding className="h-full">
-            <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
-              {isLoading ? (
+            <div className="divide-y divide-white/10 max-h-[600px] overflow-y-auto">
+              {isLoading && messages.length === 0 ? (
                 Array.from({ length: 5 }).map((_, index) => (
                   <div key={index} className="animate-pulse p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                      <div className="h-4 bg-white/5 rounded w-1/3"></div>
+                      <div className="h-4 bg-white/5 rounded w-1/4"></div>
                     </div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    <div className="h-4 bg-white/5 rounded w-2/3 mb-2"></div>
+                    <div className="h-4 bg-white/5 rounded w-full"></div>
                   </div>
                 ))
               ) : filteredMessages.length === 0 ? (
                 <div className="p-6 text-center">
                   <FiMessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-lg font-medium text-gray-900">No messages found</h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <h3 className="mt-2 text-lg font-medium text-white">No messages found</h3>
+                  <p className="mt-1 text-sm text-gray-400">
                     {searchQuery || statusFilter
                       ? "Try adjusting your search or filter to find what you're looking for."
                       : 'There are no contact messages yet.'}
                   </p>
                 </div>
               ) : (
-                filteredMessages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-150 ${
-                      activeMessage === message.id ? 'bg-purple-50' : ''
-                    } ${message.status === 'unread' ? 'border-l-4 border-blue-500' : ''}`}
-                    onClick={() => setActiveMessage(message.id)}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="font-medium text-gray-900 flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedMessages.includes(message.id)}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            toggleMessageSelection(message.id);
-                          }}
-                          className="mr-2 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                        />
-                        <span className="truncate max-w-[150px]">{message.name}</span>
+                filteredMessages.map((message) => {
+                  const messageStatus = getMessageStatus(message);
+                  return (
+                    <div
+                      key={message._id}
+                      className={`p-4 cursor-pointer hover:bg-white/5 transition-colors duration-150 ${
+                        activeMessage === message._id ? 'bg-white/10' : ''
+                      } ${messageStatus === 'unread' ? 'border-l-4 border-blue-500' : ''}`}
+                      onClick={() => handleMessageClick(message._id)}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="font-medium text-white flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedMessages.includes(message._id)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              toggleMessageSelection(message._id);
+                            }}
+                            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded bg-black/30"
+                          />
+                          <span className="truncate max-w-[150px]">{message.name}</span>
+                        </div>
+                        <div className="text-xs text-gray-400 flex items-center">
+                          <FiCalendar className="mr-1 text-gray-400" size={12} />
+                          {(() => {
+                            try {
+                              return format(new Date(message.createdAt), 'MMM d');
+                            } catch (error) {
+                              return 'Invalid date';
+                            }
+                          })()}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 flex items-center">
-                        <FiCalendar className="mr-1 text-gray-400" size={12} />
-                        {(() => {
-                          try {
-                            return format(new Date(message.date), 'MMM d');
-                          } catch (error) {
-                            return 'Invalid date';
-                          }
-                        })()}
+                      <h3 className="text-sm font-medium text-gray-300 mb-1 truncate">
+                        {message.subject}
+                      </h3>
+                      <p className="text-xs text-gray-400 truncate">
+                        {message.message}
+                      </p>
+                      <div className="flex justify-between items-center mt-2">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusStyles(
+                            messageStatus
+                          )}`}
+                        >
+                          {messageStatus.charAt(0).toUpperCase() + messageStatus.slice(1)}
+                        </span>
                       </div>
                     </div>
-                    <h3 className="text-sm font-medium text-gray-800 mb-1 truncate">
-                      {message.subject}
-                    </h3>
-                    <p className="text-xs text-gray-500 truncate">
-                      {message.message}
-                    </p>
-                    <div className="flex justify-between items-center mt-2">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusStyles(
-                          message.status
-                        )}`}
-                      >
-                        {message.status.charAt(0).toUpperCase() + message.status.slice(1)}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMessageAction(message.id, 'star');
-                        }}
-                        className={`p-1 rounded-full hover:bg-gray-200 ${
-                          message.starred ? 'text-yellow-500' : 'text-gray-400'
-                        }`}
-                      >
-                        <FiStar
-                          size={16}
-                          className={message.starred ? 'fill-current' : ''}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </Card>
@@ -329,68 +398,74 @@ const ContactsManagement: React.FC = () => {
                 {(() => {
                   const message = getActiveMessage();
                   if (!message) return null;
+                  const messageStatus = getMessageStatus(message);
 
                   return (
                     <>
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h2 className="text-xl font-medium text-gray-900">{message.subject}</h2>
+                          <h2 className="text-xl font-medium text-white">{message.subject}</h2>
                           <div className="mt-1 flex items-center">
-                            <span className="text-sm text-gray-500">From:</span>
-                            <span className="ml-1 text-sm font-medium text-gray-900">{message.name}</span>
-                            <span className="mx-1 text-gray-500">&lt;{message.email}&gt;</span>
+                            <span className="text-sm text-gray-400">From:</span>
+                            <span className="ml-1 text-sm font-medium text-white">{message.name}</span>
+                            <span className="mx-1 text-gray-400">&lt;{message.email}&gt;</span>
                           </div>
-                          <div className="mt-1 text-sm text-gray-500">
-                            {formatDate(message.date)}
+                          <div className="mt-1 text-sm text-gray-400">
+                            {formatDate(message.createdAt)}
                           </div>
                         </div>
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => handleMessageAction(message.id, 'archive')}
-                            className="p-2 rounded-full text-gray-500 hover:bg-gray-100"
-                            title="Archive"
+                            onClick={() => handleMessageAction(message._id, 'archive')}
+                            className="p-2 rounded-full text-gray-300 hover:bg-white/10"
+                            title={message.archived ? "Unarchive" : "Archive"}
+                            disabled={isLoading}
                           >
                             <FiArchive size={18} />
                           </button>
                           <button
-                            onClick={() => handleMessageAction(message.id, 'delete')}
-                            className="p-2 rounded-full text-red-500 hover:bg-red-50"
+                            onClick={() => handleMessageAction(message._id, 'delete')}
+                            className="p-2 rounded-full text-red-400 hover:bg-red-900/20"
                             title="Delete"
+                            disabled={isLoading}
                           >
                             <FiTrash2 size={18} />
                           </button>
                         </div>
                       </div>
-                      <div className="border-t border-gray-200 pt-4 mt-4">
-                        <div className="prose max-w-none">
-                          <p className="whitespace-pre-line">{message.message}</p>
+                      <div className="border-t border-white/10 pt-4 mt-4">
+                        <div className="prose max-w-none prose-invert">
+                          <p className="whitespace-pre-line text-gray-300">{message.message}</p>
                         </div>
                       </div>
-                      <div className="border-t border-gray-200 pt-4 mt-6">
+                      <div className="border-t border-white/10 pt-4 mt-6">
                         <div className="flex space-x-3">
-                          <button
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                            onClick={() => window.open(`mailto:${message.email}?subject=Re: ${message.subject}`, '_blank')}
+                          <a
+                            href={`mailto:${message.email}?subject=Re: ${message.subject}`}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                           >
                             <FiMail className="mr-2" />
                             Reply via Email
-                          </button>
-                          <button
-                            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                            onClick={() => handleMessageAction(message.id, message.status === 'unread' ? 'read' : 'unread')}
-                          >
-                            {message.status === 'unread' ? (
-                              <>
-                                <FiCheck className="mr-2" />
-                                Mark as Read
-                              </>
-                            ) : (
-                              <>
-                                <FiEye className="mr-2" />
-                                Mark as Unread
-                              </>
-                            )}
-                          </button>
+                          </a>
+                          {!message.archived && (
+                            <button
+                              className="inline-flex items-center px-4 py-2 border border-white/20 text-sm font-medium rounded-md shadow-sm text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              onClick={() => handleMessageAction(message._id, messageStatus === 'unread' ? 'read' : 'unread')}
+                              disabled={isLoading}
+                            >
+                              {messageStatus === 'unread' ? (
+                                <>
+                                  <FiCheck className="mr-2" />
+                                  Mark as Read
+                                </>
+                              ) : (
+                                <>
+                                  <FiEye className="mr-2" />
+                                  Mark as Unread
+                                </>
+                              )}
+                            </button>
+                          )}
                         </div>
                       </div>
                     </>
@@ -399,9 +474,9 @@ const ContactsManagement: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full py-12">
-                <FiMessageSquare className="h-16 w-16 text-gray-300" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No message selected</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <FiMessageSquare className="h-16 w-16 text-gray-500" />
+                <h3 className="mt-4 text-lg font-medium text-white">No message selected</h3>
+                <p className="mt-1 text-sm text-gray-400">
                   Select a message from the list to view its details
                 </p>
               </div>
@@ -409,6 +484,13 @@ const ContactsManagement: React.FC = () => {
           </Card>
         </div>
       </div>
+
+      {error && !isLoading && messages.length === 0 && (
+        <div className="bg-red-900/20 backdrop-blur-lg border border-red-900/30 rounded-xl shadow-lg p-6 text-center mt-4">
+          <h3 className="text-lg font-medium text-red-400">Error</h3>
+          <p className="mt-1 text-sm text-red-300">{error}</p>
+        </div>
+      )}
     </div>
   );
 };

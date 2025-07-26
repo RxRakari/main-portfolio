@@ -10,102 +10,37 @@ import {
   FormSection
 } from '../../../components/ui/dashboard/form-elements';
 import ImageUpload from '../../../components/ui/dashboard/image-upload';
-import { uploadImage } from '../../../services/upload-service';
+import { useAdmin } from '../../../context/admin-context';
+import { toast } from 'sonner';
 
-// Mock project data for editing
-const mockProjects = [
-  {
-    id: '1',
-    title: 'E-Commerce Platform',
-    slug: 'e-commerce-platform',
-    description: 'A full-featured e-commerce platform with product management, cart, and checkout functionality.',
-    content: 'This project is a comprehensive e-commerce solution built with React, Node.js, and MongoDB. It includes features such as product listings, search, filtering, cart management, and secure checkout with Stripe integration.',
-    category: 'Web Development',
-    technologies: ['React', 'Node.js', 'MongoDB', 'Express', 'Stripe'],
-    images: [
-      'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-      'https://images.unsplash.com/photo-1661956602868-6ae368943878?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
-    ],
-    featuredImage: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    status: 'completed',
-    featured: true,
-    liveUrl: 'https://example.com/ecommerce',
-    repoUrl: 'https://github.com/example/ecommerce',
-    date: '2023-08-15',
-    client: 'Self',
-    duration: '3 months',
-    approach: 'We used a modern full-stack architecture with React for the frontend, Node.js and Express for the backend, and MongoDB for data storage. We implemented secure authentication, product management, and payment processing with Stripe integration.',
-    challenges: 'Scaling the application, handling large amounts of data, and ensuring high availability during peak traffic.',
-    features: ['Product listings with images and descriptions', 'Search and filtering functionality', 'Shopping cart and checkout', 'User authentication and authorization', 'Secure payment processing with Stripe'],
-    seo: {
-      metaTitle: 'E-Commerce Platform - Full-Stack Web Development Project',
-      metaDescription: 'A full-featured e-commerce platform built with React, Node.js, and MongoDB.',
-      keywords: 'e-commerce, React, Node.js, MongoDB, web development',
-    }
-  },
-  {
-    id: '2',
-    title: 'AI Chat Application',
-    slug: 'ai-chat-application',
-    description: 'An AI-powered chat application that uses natural language processing to provide intelligent responses.',
-    content: 'This project is an AI chat application that leverages TensorFlow and natural language processing to provide intelligent responses to user queries. It includes features such as conversation history, user authentication, and customizable chat interfaces.',
-    category: 'AI/ML',
-    technologies: ['Python', 'TensorFlow', 'React', 'Flask', 'WebSockets'],
-    images: [
-      'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1506&q=80'
-    ],
-    featuredImage: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1506&q=80',
-    status: 'completed',
-    featured: true,
-    liveUrl: 'https://example.com/ai-chat',
-    repoUrl: 'https://github.com/example/ai-chat',
-    date: '2023-07-22',
-    client: 'Tech Startup',
-    duration: '4 months',
-    approach: 'We developed a scalable chat application using React for the frontend, Flask for the backend, and TensorFlow for natural language processing. We implemented real-time communication using WebSockets and secured user data with authentication.',
-    challenges: 'Ensuring accurate and contextually relevant responses, managing large volumes of user messages, and maintaining high availability.',
-    features: ['Real-time chat interface', 'Conversation history', 'User authentication', 'Contextual responses', 'Scalable architecture'],
-    seo: {
-      metaTitle: 'AI Chat Application - Machine Learning Project',
-      metaDescription: 'An AI-powered chat application built with TensorFlow and React.',
-      keywords: 'AI, machine learning, chat, TensorFlow, React',
-    }
-  }
-];
-
-// Add new fields to the interface
+// Project form data interface
 interface ProjectFormData {
   title: string;
   slug: string;
   description: string;
-  content: string;
   category: string;
   technologies: string[];
   newTechnology: string;
-  images: string[];
-  newImage: string;
-  featuredImage: string;
-  status: string;
+  images: {
+    url: string;
+    cloudinaryId?: string;
+    isLocal?: boolean;
+  }[];
+  featuredImageUrl: string;
   featured: boolean;
+  githubUrl: string;
   liveUrl: string;
-  repoUrl: string;
-  client: string;
-  duration: string;
   approach: string;
   challenges: string;
   features: string[];
   newFeature: string;
-  seo: {
-    metaTitle: string;
-    metaDescription: string;
-    keywords: string;
-  };
 }
 
 const ProjectForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
+  const { fetchProject, createProject, updateProject } = useAdmin();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
@@ -113,96 +48,83 @@ const ProjectForm: React.FC = () => {
     title: '',
     slug: '',
     description: '',
-    content: '',
     category: '',
     technologies: [],
     newTechnology: '',
     images: [],
-    newImage: '',
-    featuredImage: '',
-    status: 'planning',
+    featuredImageUrl: '',
     featured: false,
+    githubUrl: '',
     liveUrl: '',
-    repoUrl: '',
-    client: '',
-    duration: '',
     approach: '',
     challenges: '',
     features: [],
     newFeature: '',
-    seo: {
-      metaTitle: '',
-      metaDescription: '',
-      keywords: '',
-    }
   });
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [categories] = useState([
+    { value: '', label: 'Select a category' },
+    { value: 'Web Development', label: 'Web Development' },
+    { value: 'Mobile Development', label: 'Mobile Development' },
+    { value: 'AI/ML', label: 'AI/ML' },
+    { value: 'Blockchain', label: 'Blockchain' },
+    { value: 'UI/UX Design', label: 'UI/UX Design' },
+    { value: 'Data Science', label: 'Data Science' },
+    { value: 'DevOps', label: 'DevOps' },
+    { value: 'Other', label: 'Other' },
+  ]);
 
   // Fetch project data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && id) {
       setIsLoading(true);
-      // Simulate API call to fetch project data
-      setTimeout(() => {
-        const project = mockProjects.find(project => project.id === id);
-        if (project) {
-          setFormData({
-            title: project.title,
-            slug: project.slug,
-            description: project.description,
-            content: project.content,
-            category: project.category,
-            technologies: project.technologies,
-            newTechnology: '',
-            images: project.images,
-            newImage: '',
-            featuredImage: project.featuredImage,
-            status: project.status,
-            featured: project.featured,
-            liveUrl: project.liveUrl,
-            repoUrl: project.repoUrl,
-            client: project.client,
-            duration: project.duration,
-            approach: project.approach,
-            challenges: project.challenges,
-            features: project.features,
-            newFeature: '',
-            seo: {
-              metaTitle: project.seo.metaTitle,
-              metaDescription: project.seo.metaDescription,
-              keywords: project.seo.keywords,
-            }
-          });
-        } else {
-          // Project not found, redirect to projects list
+      
+      fetchProject(id)
+        .then(response => {
+          const project = response.project;
+          
+          if (project) {
+            setFormData({
+              title: project.title || '',
+              slug: project.slug || '',
+              description: project.description || '',
+              category: project.category || '',
+              technologies: project.technologies || [],
+              newTechnology: '',
+              images: project.images || [],
+              featuredImageUrl: project.images && project.images.length > 0 ? project.images[0].url : '',
+              featured: project.featured || false,
+              githubUrl: project.githubUrl || '',
+              liveUrl: project.liveUrl || '',
+              approach: project.approach || '',
+              challenges: project.challenges || '',
+              features: project.features || [],
+              newFeature: '',
+            });
+          } else {
+            toast.error('Project not found');
+            navigate('/dashboard/projects');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching project:', error);
+          toast.error('Failed to load project');
           navigate('/dashboard/projects');
-        }
-        setIsLoading(false);
-      }, 500);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-  }, [id, isEditMode, navigate]);
+  }, [id, isEditMode, navigate, fetchProject]);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      if (parent === 'seo') {
-        setFormData(prev => ({
-          ...prev,
-          seo: {
-            ...prev.seo,
-            [child]: value
-          }
-        }));
-      }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   // Handle checkbox change
@@ -260,44 +182,61 @@ const ProjectForm: React.FC = () => {
     }));
   };
 
-  // Handle single image upload and add to images array
-  const handleSingleImageUpload = async (file: File): Promise<string> => {
-    try {
-      const imageUrl = await uploadImage(file);
+  // Handle image file selection
+  const handleImageChange = (imageUrl: string) => {
+    if (imageUrl) {
+      const newImage = {
+        url: imageUrl,
+        isLocal: imageUrl.startsWith('blob:') // Flag to identify this as a local file for preview
+      };
       
-      // Add the new image to the images array
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, imageUrl],
+        images: [...prev.images, newImage],
         // If no featured image is set, use this as the featured image
-        featuredImage: prev.featuredImage || imageUrl
+        featuredImageUrl: prev.featuredImageUrl || imageUrl
       }));
-      
-      return imageUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
     }
   };
 
   // Remove image
-  const removeImage = (image: string) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter(img => img !== image),
-      featuredImage: prev.featuredImage === image ? (prev.images.length > 1 ? prev.images.filter(img => img !== image)[0] : '') : prev.featuredImage
-    }));
+  const removeImage = (index: number) => {
+    setFormData(prev => {
+      const newImages = [...prev.images];
+      const removedImage = newImages.splice(index, 1)[0];
+      
+      // If we're removing the featured image, set a new one if available
+      let newFeaturedImageUrl = prev.featuredImageUrl;
+      if (removedImage.url === prev.featuredImageUrl) {
+        newFeaturedImageUrl = newImages.length > 0 ? newImages[0].url : '';
+      }
+      
+      return {
+        ...prev,
+        images: newImages,
+        featuredImageUrl: newFeaturedImageUrl
+      };
+    });
+    
+    // Also remove from the files array if it's a local file
+    if (imageFiles.length > index) {
+      setImageFiles(prev => {
+        const newFiles = [...prev];
+        newFiles.splice(index, 1);
+        return newFiles;
+      });
+    }
   };
 
   // Set featured image
-  const setAsFeaturedImage = (image: string) => {
+  const setAsFeaturedImage = (imageUrl: string) => {
     setFormData(prev => ({
       ...prev,
-      featuredImage: image
+      featuredImageUrl: imageUrl
     }));
   };
 
-  // Add this new function for adding features
+  // Add feature
   const addFeature = () => {
     if (!formData.newFeature.trim()) {
       setErrors(prev => ({
@@ -319,7 +258,7 @@ const ProjectForm: React.FC = () => {
     }));
   };
 
-  // Add this new function for removing features
+  // Remove feature
   const removeFeature = (feature: string) => {
     setFormData(prev => ({
       ...prev,
@@ -343,10 +282,6 @@ const ProjectForm: React.FC = () => {
       newErrors.description = 'Description is required';
     }
     
-    if (!formData.content.trim()) {
-      newErrors.content = 'Content is required';
-    }
-    
     if (!formData.category) {
       newErrors.category = 'Category is required';
     }
@@ -355,16 +290,24 @@ const ProjectForm: React.FC = () => {
       newErrors.technologies = 'At least one technology is required';
     }
     
-    if (formData.images.length === 0) {
+    if (formData.images.length === 0 && imageFiles.length === 0) {
       newErrors.images = 'At least one image is required';
     }
     
-    if (!formData.featuredImage && formData.images.length > 0) {
+    if (!formData.featuredImageUrl && formData.images.length > 0) {
       // Auto-select the first image as featured if none is selected
       setFormData(prev => ({
         ...prev,
-        featuredImage: prev.images[0]
+        featuredImageUrl: prev.images[0].url
       }));
+    }
+    
+    if (!formData.approach.trim()) {
+      newErrors.approach = 'Approach is required';
+    }
+    
+    if (!formData.challenges.trim()) {
+      newErrors.challenges = 'Challenges is required';
     }
     
     setErrors(newErrors);
@@ -376,22 +319,58 @@ const ProjectForm: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
+      window.scrollTo(0, 0);
+      toast.error('Please fill in all required fields');
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would call an API to save the project
-      console.log('Form data to be submitted:', formData);
+      // Prepare form data for submission
+      const projectData = new FormData();
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Add basic fields
+      projectData.append('title', formData.title);
+      projectData.append('slug', formData.slug);
+      projectData.append('description', formData.description);
+      projectData.append('category', formData.category);
+      projectData.append('technologies', JSON.stringify(formData.technologies));
+      projectData.append('featured', formData.featured.toString());
+      projectData.append('githubUrl', formData.githubUrl);
+      projectData.append('liveUrl', formData.liveUrl);
+      projectData.append('approach', formData.approach);
+      projectData.append('challenges', formData.challenges);
+      projectData.append('features', JSON.stringify(formData.features));
+      
+      // For edit mode, include existing images
+      if (isEditMode) {
+        const existingImages = formData.images.filter(img => !img.isLocal && img.url && !img.url.startsWith('blob:'));
+        projectData.append('images', JSON.stringify(existingImages));
+      }
+      
+      // Add image files for upload
+      for (const file of imageFiles) {
+        projectData.append('imageFiles', file);
+      }
+      
+      // Add featured image
+      projectData.append('featuredImageUrl', formData.featuredImageUrl);
+      
+      // Submit the form
+      if (isEditMode && id) {
+        await updateProject(id, projectData);
+        toast.success('Project updated successfully');
+      } else {
+        await createProject(projectData);
+        toast.success('Project created successfully');
+      }
       
       // Redirect to project list
       navigate('/dashboard/projects');
     } catch (error) {
       console.error('Error saving project:', error);
+      toast.error('Failed to save project');
     } finally {
       setIsSubmitting(false);
     }
@@ -407,10 +386,17 @@ const ProjectForm: React.FC = () => {
   if (isLoading) {
     return (
       <div className="py-6">
-        <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded-md mb-6 w-3/4"></div>
-          <div className="h-64 bg-gray-100 rounded-md mb-6"></div>
-          <div className="h-32 bg-gray-100 rounded-md"></div>
+        <SectionHeader
+          title={isEditMode ? "Edit Project" : "Create New Project"}
+          description="Loading..."
+          icon={<FiFolder size={24} />}
+        />
+        <div className="mt-6 bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-10 bg-white/5 rounded-md w-3/4"></div>
+            <div className="h-64 bg-white/5 rounded-md"></div>
+            <div className="h-32 bg-white/5 rounded-md"></div>
+          </div>
         </div>
       </div>
     );
@@ -424,7 +410,7 @@ const ProjectForm: React.FC = () => {
         icon={<FiFolder size={24} />}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6">
         <FormSection title="Basic Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
@@ -467,14 +453,7 @@ const ProjectForm: React.FC = () => {
               label="Category"
               value={formData.category}
               onChange={handleChange}
-              options={[
-                { value: '', label: 'Select a category' },
-                { value: 'Web Development', label: 'Web Development' },
-                { value: 'Mobile Development', label: 'Mobile Development' },
-                { value: 'AI/ML', label: 'AI/ML' },
-                { value: 'Blockchain', label: 'Blockchain' },
-                { value: 'UI/UX Design', label: 'UI/UX Design' },
-              ]}
+              options={categories}
               required
               error={errors.category}
             />
@@ -496,18 +475,6 @@ const ProjectForm: React.FC = () => {
 
         <FormSection title="Project Details">
           <TextArea
-            id="content"
-            name="content"
-            label="Overview"
-            value={formData.content}
-            onChange={handleChange}
-            placeholder="Enter a detailed overview of the project"
-            rows={6}
-            required
-            error={errors.content}
-          />
-
-          <TextArea
             id="approach"
             name="approach"
             label="Approach"
@@ -515,6 +482,8 @@ const ProjectForm: React.FC = () => {
             onChange={handleChange}
             placeholder="Describe your approach to this project"
             rows={4}
+            required
+            error={errors.approach}
           />
 
           <TextArea
@@ -525,6 +494,8 @@ const ProjectForm: React.FC = () => {
             onChange={handleChange}
             placeholder="Describe challenges faced and how you overcame them"
             rows={4}
+            required
+            error={errors.challenges}
           />
         </FormSection>
 
@@ -627,7 +598,7 @@ const ProjectForm: React.FC = () => {
             {formData.images.map((image, index) => (
               <div key={index} className="relative group rounded-lg overflow-hidden border border-white/10 bg-black/30">
                 <img
-                  src={image}
+                  src={image.url}
                   alt={`Project image ${index + 1}`}
                   className="w-full h-48 object-cover"
                   onError={(e) => {
@@ -637,24 +608,24 @@ const ProjectForm: React.FC = () => {
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setAsFeaturedImage(image)}
+                    onClick={() => setAsFeaturedImage(image.url)}
                     className={`p-2 rounded-full ${
-                      formData.featuredImage === image ? 'bg-white/80' : 'bg-black/50'
-                    } ${formData.featuredImage === image ? 'text-black' : 'text-white'} hover:bg-white/60 hover:text-black`}
-                    title={formData.featuredImage === image ? 'Featured Image' : 'Set as Featured Image'}
+                      formData.featuredImageUrl === image.url ? 'bg-white/80' : 'bg-black/50'
+                    } ${formData.featuredImageUrl === image.url ? 'text-black' : 'text-white'} hover:bg-white/60 hover:text-black`}
+                    title={formData.featuredImageUrl === image.url ? 'Featured Image' : 'Set as Featured Image'}
                   >
                     ★
                   </button>
                   <button
                     type="button"
-                    onClick={() => removeImage(image)}
+                    onClick={() => removeImage(index)}
                     className="p-2 rounded-full bg-black/50 text-white hover:bg-red-500/80"
                     title="Remove Image"
                   >
                     <FiTrash2 />
                   </button>
                 </div>
-                {formData.featuredImage === image && (
+                {formData.featuredImageUrl === image.url && (
                   <div className="absolute top-2 right-2 bg-white/80 text-xs text-black px-2 py-1 rounded-full">
                     Featured
                   </div>
@@ -666,74 +637,46 @@ const ProjectForm: React.FC = () => {
           <ImageUpload
             id="projectImage"
             label="Add Project Image"
-            onChange={() => {}} // This is handled in onUpload
-            onUpload={handleSingleImageUpload}
+            onChange={handleImageChange}
             helperText="Upload images for your project (up to 10MB each)"
             error={errors.images}
             maxSizeMB={10}
           />
         </FormSection>
 
-        <FormSection title="Publishing Options">
+        <FormSection title="Links">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Select
-              id="status"
-              name="status"
-              label="Status"
-              value={formData.status}
+            <TextInput
+              id="githubUrl"
+              name="githubUrl"
+              label="GitHub Repository URL"
+              value={formData.githubUrl}
               onChange={handleChange}
-              options={[
-                { value: 'planning', label: 'Planning' },
-                { value: 'in-progress', label: 'In Progress' },
-                { value: 'completed', label: 'Completed' },
-                { value: 'archived', label: 'Archived' },
-              ]}
+              placeholder="https://github.com/username/repo"
             />
             
-            <div className="flex items-center h-full pt-6">
-              <Checkbox
-                id="featured"
-                name="featured"
-                label="Featured Project"
-                checked={formData.featured}
-                onChange={handleCheckboxChange}
-                helperText="Display this project in featured sections"
-              />
-            </div>
+            <TextInput
+              id="liveUrl"
+              name="liveUrl"
+              label="Live Demo URL"
+              value={formData.liveUrl}
+              onChange={handleChange}
+              placeholder="https://example.com"
+            />
           </div>
         </FormSection>
 
-        <FormSection title="SEO Settings">
-          <TextInput
-            id="seo.metaTitle"
-            name="seo.metaTitle"
-            label="Meta Title"
-            value={formData.seo.metaTitle}
-            onChange={handleChange}
-            placeholder="Enter meta title"
-            helperText="Leave blank to use the project title"
-          />
-          
-          <TextArea
-            id="seo.metaDescription"
-            name="seo.metaDescription"
-            label="Meta Description"
-            value={formData.seo.metaDescription}
-            onChange={handleChange}
-            placeholder="Enter meta description"
-            rows={2}
-            helperText="Brief description for search engines"
-          />
-          
-          <TextInput
-            id="seo.keywords"
-            name="seo.keywords"
-            label="Keywords"
-            value={formData.seo.keywords}
-            onChange={handleChange}
-            placeholder="Enter keywords separated by commas"
-            helperText="Keywords for search engines"
-          />
+        <FormSection title="Publishing Options">
+          <div className="flex items-center">
+            <Checkbox
+              id="featured"
+              name="featured"
+              label="Featured Project"
+              checked={formData.featured}
+              onChange={handleCheckboxChange}
+              helperText="Display this project in featured sections"
+            />
+          </div>
         </FormSection>
 
         <div className="flex items-center justify-end space-x-3 mt-6">

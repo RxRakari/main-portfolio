@@ -11,40 +11,14 @@ import {
   FormActions 
 } from '../../../components/ui/dashboard/form-elements';
 import ImageUpload from '../../../components/ui/dashboard/image-upload';
-import { uploadImage } from '../../../services/upload-service';
-
-// Mock gallery data for editing
-const mockGalleryItems = [
-  {
-    id: '1',
-    title: 'Modern Architecture',
-    description: 'Contemporary building design with clean lines and geometric shapes.',
-    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    category: 'Architecture',
-    tags: ['modern', 'building', 'design'],
-    featured: true,
-    date: '2023-08-15',
-    altText: 'Modern glass and steel building with geometric design',
-    order: 1,
-  },
-  {
-    id: '2',
-    title: 'Nature Landscape',
-    description: 'Beautiful mountain landscape with reflective lake.',
-    imageUrl: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    category: 'Nature',
-    tags: ['mountains', 'lake', 'landscape'],
-    featured: true,
-    date: '2023-07-22',
-    altText: 'Mountain range reflected in a calm lake',
-    order: 2,
-  }
-];
+import { useAdmin } from '../../../context/admin-context';
+import { toast } from 'sonner';
 
 const GalleryForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
+  const { fetchGalleryItem, createGalleryItem, updateGalleryItem } = useAdmin();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
@@ -53,39 +27,59 @@ const GalleryForm: React.FC = () => {
     description: '',
     imageUrl: '',
     category: '',
-    tags: '',
     featured: false,
-    altText: '',
     order: 0,
   });
+  const [imageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [categories] = useState<{value: string, label: string}[]>([
+    { value: '', label: 'Select a category' },
+    { value: 'Architecture', label: 'Architecture' },
+    { value: 'Nature', label: 'Nature' },
+    { value: 'Urban', label: 'Urban' },
+    { value: 'Art', label: 'Art' },
+    { value: 'Technology', label: 'Technology' },
+    { value: 'Food', label: 'Food' },
+    { value: 'Travel', label: 'Travel' },
+    { value: 'Portrait', label: 'Portrait' },
+    { value: 'Design', label: 'Design' },
+    { value: 'Other', label: 'Other' },
+  ]);
 
   // Fetch gallery item data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && id) {
       setIsLoading(true);
-      // Simulate API call to fetch gallery item data
-      setTimeout(() => {
-        const item = mockGalleryItems.find(item => item.id === id);
-        if (item) {
-          setFormData({
-            title: item.title,
-            description: item.description,
-            imageUrl: item.imageUrl,
-            category: item.category,
-            tags: item.tags.join(', '),
-            featured: item.featured,
-            altText: item.altText,
-            order: item.order,
-          });
-        } else {
-          // Gallery item not found, redirect to gallery list
+      
+      fetchGalleryItem(id)
+        .then(response => {
+          const item = response.gallery;
+          
+          if (item) {
+            setFormData({
+              title: item.title || '',
+              description: item.description || '',
+              imageUrl: item.imageUrl || '',
+              category: item.category || '',
+              featured: item.featured || false,
+              order: item.order || 0,
+            });
+          } else {
+            // Gallery item not found, redirect to gallery list
+            toast.error('Gallery item not found');
+            navigate('/dashboard/gallery');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching gallery item:', error);
+          toast.error('Failed to load gallery item');
           navigate('/dashboard/gallery');
-        }
-        setIsLoading(false);
-      }, 500);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-  }, [id, isEditMode, navigate]);
+  }, [id, isEditMode, navigate, fetchGalleryItem]);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -114,23 +108,14 @@ const GalleryForm: React.FC = () => {
     }));
   };
 
-  // Handle image upload
-  const handleImageUpload = async (file: File): Promise<string> => {
-    try {
-      const imageUrl = await uploadImage(file);
-      return imageUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
+  // Handle image file selection
+  const handleFileChange = (imageUrl: string) => {
+    if (imageUrl) {
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: imageUrl
+      }));
     }
-  };
-
-  // Handle image change
-  const handleImageChange = (url: string) => {
-    setFormData(prev => ({
-      ...prev,
-      imageUrl: url
-    }));
   };
 
   // Validate form
@@ -141,8 +126,8 @@ const GalleryForm: React.FC = () => {
       newErrors.title = 'Title is required';
     }
     
-    if (!formData.imageUrl.trim()) {
-      newErrors.imageUrl = 'Image URL is required';
+    if (!isEditMode && !imageFile && !formData.imageUrl) {
+      newErrors.imageFile = 'Image is required';
     }
     
     if (!formData.category) {
@@ -164,16 +149,33 @@ const GalleryForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would call an API to save the gallery item
-      console.log('Form data to be submitted:', formData);
+      // Prepare form data for API
+      const galleryData = new FormData();
+      galleryData.append('title', formData.title);
+      galleryData.append('description', formData.description);
+      galleryData.append('category', formData.category);
+      galleryData.append('order', formData.order.toString());
+      galleryData.append('featured', formData.featured.toString());
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (imageFile) {
+        galleryData.append('imageFile', imageFile);
+      } else if (isEditMode && formData.imageUrl) {
+        galleryData.append('imageUrl', formData.imageUrl);
+      }
+      
+      // Submit the form data
+      if (isEditMode && id) {
+        await updateGalleryItem(id, galleryData);
+      } else {
+        await createGalleryItem(galleryData);
+      }
       
       // Redirect to gallery list
       navigate('/dashboard/gallery');
+      
     } catch (error) {
       console.error('Error saving gallery item:', error);
+      toast.error('Failed to save gallery item');
     } finally {
       setIsSubmitting(false);
     }
@@ -189,10 +191,17 @@ const GalleryForm: React.FC = () => {
   if (isLoading) {
     return (
       <div className="py-6">
-        <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded-md mb-6 w-3/4"></div>
-          <div className="h-64 bg-gray-100 rounded-md mb-6"></div>
-          <div className="h-32 bg-gray-100 rounded-md"></div>
+        <SectionHeader
+          title={isEditMode ? "Edit Gallery Image" : "Add New Gallery Image"}
+          description="Loading..."
+          icon={<FiImage size={24} />}
+        />
+        <div className="mt-6 bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-10 bg-white/5 rounded-md w-3/4"></div>
+            <div className="h-64 bg-white/5 rounded-md"></div>
+            <div className="h-32 bg-white/5 rounded-md"></div>
+          </div>
         </div>
       </div>
     );
@@ -206,7 +215,7 @@ const GalleryForm: React.FC = () => {
         icon={<FiImage size={24} />}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6">
         <FormSection title="Image Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
@@ -226,15 +235,7 @@ const GalleryForm: React.FC = () => {
               label="Category"
               value={formData.category}
               onChange={handleChange}
-              options={[
-                { value: '', label: 'Select a category' },
-                { value: 'Architecture', label: 'Architecture' },
-                { value: 'Nature', label: 'Nature' },
-                { value: 'Urban', label: 'Urban' },
-                { value: 'Art', label: 'Art' },
-                { value: 'Technology', label: 'Technology' },
-                { value: 'Food', label: 'Food' },
-              ]}
+              options={categories}
               required
               error={errors.category}
             />
@@ -249,39 +250,18 @@ const GalleryForm: React.FC = () => {
             placeholder="Enter a description for this image"
             rows={3}
           />
-          
-          <TextInput
-            id="tags"
-            name="tags"
-            label="Tags"
-            value={formData.tags}
-            onChange={handleChange}
-            placeholder="Enter tags separated by commas"
-            helperText="E.g., nature, landscape, mountains"
-          />
         </FormSection>
 
         <FormSection title="Image">
           <ImageUpload
-            id="galleryImage"
+            id="imageFile"
             label="Gallery Image"
             value={formData.imageUrl}
-            onChange={handleImageChange}
-            onUpload={handleImageUpload}
+            onChange={handleFileChange}
             helperText="Upload a high-quality image (up to 10MB)"
             required
-            error={errors.imageUrl}
+            error={errors.imageFile}
             maxSizeMB={10}
-          />
-          
-          <TextInput
-            id="altText"
-            name="altText"
-            label="Alt Text"
-            value={formData.altText}
-            onChange={handleChange}
-            placeholder="Descriptive text for accessibility"
-            helperText="Describe the image for screen readers and SEO"
           />
         </FormSection>
 
@@ -311,7 +291,7 @@ const GalleryForm: React.FC = () => {
         </FormSection>
 
         <FormActions
-          primaryLabel="Save Image"
+          primaryLabel={isEditMode ? "Update Image" : "Save Image"}
           secondaryLabel="Cancel"
           onPrimaryClick={handleSubmit}
           onSecondaryClick={handleCancel}

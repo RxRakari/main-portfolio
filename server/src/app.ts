@@ -15,6 +15,7 @@ import galleryRoutes from './routes/gallery.routes';
 import contactRoutes from './routes/contact.routes';
 import experienceRoutes from './routes/experience.route';
 import newsletterRoutes from './routes/newsletter.route';
+import dashboardRoutes from './routes/dashboard.routes';
 
 // Import error middleware
 import { errorHandler } from './middleware/error.middleware';
@@ -39,6 +40,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/experience', experienceRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {

@@ -1,100 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiUsers, FiPlus, FiEdit, FiTrash2, FiStar, FiSearch } from 'react-icons/fi';
+import { FiUsers, FiEdit, FiTrash2, FiStar } from 'react-icons/fi';
 import SectionHeader from '../../../components/ui/dashboard/section-header';
 import DataTable from '../../../components/ui/dashboard/data-table';
 import Card from '../../../components/ui/dashboard/card';
 import { TextInput, Select } from '../../../components/ui/dashboard/form-elements';
-
-// Mock data for testimonials
-const mockTestimonials = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    role: 'Marketing Director',
-    company: 'TechCorp Inc.',
-    content: 'Working with this team was an absolute pleasure. They delivered our project on time and exceeded our expectations. The attention to detail and creativity they brought to the table was impressive.',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    featured: true,
-    date: '2023-08-15',
-    status: 'published',
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'CEO',
-    company: 'Startup Ventures',
-    content: 'I was blown away by the quality of work and professionalism. Our website redesign project was handled with care and the results have significantly improved our conversion rates.',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-    featured: true,
-    date: '2023-07-22',
-    status: 'published',
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    role: 'Product Manager',
-    company: 'InnovateTech',
-    content: 'The team was responsive, creative, and delivered exactly what we needed. They took the time to understand our requirements and translated them into an amazing product.',
-    rating: 4,
-    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
-    featured: false,
-    date: '2023-09-05',
-    status: 'published',
-  },
-  {
-    id: '4',
-    name: 'David Wilson',
-    role: 'CTO',
-    company: 'DataSystems',
-    content: 'Exceptional work on our complex data visualization project. The team showed great technical expertise and problem-solving abilities throughout the development process.',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/men/46.jpg',
-    featured: false,
-    date: '2023-06-30',
-    status: 'draft',
-  },
-  {
-    id: '5',
-    name: 'Lisa Thompson',
-    role: 'Creative Director',
-    company: 'DesignHub',
-    content: 'As someone with high standards for design, I was thoroughly impressed with the creativity and execution. The collaboration was smooth, and they were receptive to feedback.',
-    rating: 4,
-    avatar: 'https://randomuser.me/api/portraits/women/90.jpg',
-    featured: true,
-    date: '2023-08-05',
-    status: 'published',
-  },
-];
-
-// Status badge component
-interface StatusBadgeProps {
-  status: string;
-}
-
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  const getStatusStyles = () => {
-    switch (status.toLowerCase()) {
-      case 'published':
-        return 'bg-green-100 text-green-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'archived':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  return (
-    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusStyles()}`}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
-  );
-};
+import { TableSkeleton } from '../../../components/ui/dashboard/skeleton';
+import { useAdmin } from '../../../context/admin-context';
+import { toast } from 'sonner';
 
 // Star rating component
 interface StarRatingProps {
@@ -116,22 +29,66 @@ const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
   );
 };
 
+// Featured badge component
+interface FeaturedBadgeProps {
+  featured: boolean;
+}
+
+const FeaturedBadge: React.FC<FeaturedBadgeProps> = ({ featured }) => {
+  if (!featured) return null;
+  
+  return (
+    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white">
+      Featured
+    </span>
+  );
+};
+
 const TestimonialsManagement: React.FC = () => {
+  const [testimonials, setTestimonials] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [featuredFilter, setFeaturedFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const { fetchTestimonials, deleteTestimonial, toggleTestimonialPublished } = useAdmin();
+
+  // Fetch testimonials
+  useEffect(() => {
+    const getTestimonials = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const response = await fetchTestimonials();
+        if (response?.testimonials) {
+          setTestimonials(response.testimonials);
+        } else {
+          setError('No testimonials found');
+        }
+      } catch (err) {
+        console.error('Failed to fetch testimonials:', err);
+        setError('Failed to load testimonials');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    getTestimonials();
+  }, [fetchTestimonials]);
 
   // Filter testimonials based on search query and filters
-  const filteredTestimonials = mockTestimonials.filter((testimonial) => {
+  const filteredTestimonials = testimonials.filter((testimonial) => {
     const matchesSearch = 
       testimonial.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       testimonial.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      testimonial.content.toLowerCase().includes(searchQuery.toLowerCase());
+      testimonial.testimonial.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = statusFilter ? testimonial.status === statusFilter : true;
+    const matchesFeatured = featuredFilter === '' ? true : 
+      featuredFilter === 'featured' ? testimonial.featured : !testimonial.featured;
     
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesFeatured;
   });
 
   // Table columns configuration
@@ -151,18 +108,23 @@ const TestimonialsManagement: React.FC = () => {
             }}
           />
           <div>
-            <div className="font-medium text-gray-900">{value}</div>
-            <div className="text-sm text-gray-500">{row.role} at {row.company}</div>
+            <div className="font-medium text-white flex items-center">
+              {value}
+              <div className="ml-2">
+                <FeaturedBadge featured={row.featured} />
+              </div>
+            </div>
+            <div className="text-sm text-gray-400">{row.position} at {row.company}</div>
           </div>
         </div>
       ),
     },
     {
-      key: 'content',
+      key: 'testimonial',
       header: 'Testimonial',
       width: '40%',
       render: (value: string) => (
-        <p className="text-sm text-gray-600 truncate max-w-xs">{value}</p>
+        <p className="text-sm text-gray-300 truncate max-w-xs">{value}</p>
       ),
     },
     {
@@ -171,17 +133,16 @@ const TestimonialsManagement: React.FC = () => {
       render: (value: number) => <StarRating rating={value} />,
     },
     {
-      key: 'status',
-      header: 'Status',
-      render: (value: string) => <StatusBadge status={value} />,
-    },
-    {
       key: 'featured',
       header: 'Featured',
-      render: (value: boolean) => (
-        <span className={`${value ? 'text-yellow-500' : 'text-gray-400'}`}>
+      render: (value: boolean, row: any) => (
+        <button
+          onClick={() => handleToggleFeatured(row._id)}
+          className={`${value ? 'text-yellow-400' : 'text-gray-400'} hover:text-yellow-300`}
+          disabled={isLoading}
+        >
           {value ? 'Yes' : 'No'}
-        </span>
+        </button>
       ),
     },
     {
@@ -190,16 +151,17 @@ const TestimonialsManagement: React.FC = () => {
       render: (_: any, row: any) => (
         <div className="flex space-x-2">
           <Link
-            to={`/dashboard/testimonials/form/${row.id}`}
-            className="p-1 text-blue-600 hover:text-blue-800"
+            to={`/dashboard/testimonials/form/${row._id}`}
+            className="p-1 text-blue-400 hover:text-blue-300"
             title="Edit"
           >
             <FiEdit size={18} />
           </Link>
           <button
-            onClick={() => handleDelete(row.id)}
-            className="p-1 text-red-600 hover:text-red-800"
+            onClick={() => handleDelete(row._id)}
+            className="p-1 text-red-400 hover:text-red-300"
             title="Delete"
+            disabled={isLoading}
           >
             <FiTrash2 size={18} />
           </button>
@@ -209,17 +171,56 @@ const TestimonialsManagement: React.FC = () => {
   ];
 
   // Handle testimonial deletion
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this testimonial?')) {
-      // In a real app, you would call an API to delete the testimonial
-      console.log(`Delete testimonial with ID: ${id}`);
+      try {
+        setIsLoading(true);
+        await deleteTestimonial(id);
+        setTestimonials(prevTestimonials => prevTestimonials.filter(item => item._id !== id));
+        toast.success('Testimonial deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete testimonial:', error);
+        toast.error('Failed to delete testimonial');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
-  // Handle row click
-  const handleRowClick = (testimonial: any) => {
-    console.log('Clicked testimonial:', testimonial);
+  // Handle toggle featured
+  const handleToggleFeatured = async (id: string) => {
+    try {
+      setIsLoading(true);
+      await toggleTestimonialPublished(id);
+      
+      // Update local state
+      setTestimonials(prevTestimonials => 
+        prevTestimonials.map(item => 
+          item._id === id ? { ...item, featured: !item.featured } : item
+        )
+      );
+      
+      toast.success('Testimonial featured status updated');
+    } catch (error) {
+      console.error('Failed to update featured status:', error);
+      toast.error('Failed to update featured status');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading && testimonials.length === 0) {
+    return (
+      <div className="py-6">
+        <SectionHeader
+          title="Testimonials Management"
+          description="Manage client testimonials and reviews"
+          icon={<FiUsers size={24} />}
+        />
+        <TableSkeleton rows={5} columns={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="py-6">
@@ -233,27 +234,24 @@ const TestimonialsManagement: React.FC = () => {
 
       {/* Filters and Search */}
       <Card className="mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
-            <TextInput
-              id="search"
-              label="Search Testimonials"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, company or content..."
-              type="text"
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TextInput
+            id="search"
+            label="Search Testimonials"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name, company or testimonial..."
+            type="text"
+          />
           <Select
-            id="status"
-            label="Status"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            id="featured"
+            label="Filter"
+            value={featuredFilter}
+            onChange={(e) => setFeaturedFilter(e.target.value)}
             options={[
-              { value: '', label: 'All Statuses' },
-              { value: 'published', label: 'Published' },
-              { value: 'draft', label: 'Draft' },
-              { value: 'archived', label: 'Archived' },
+              { value: '', label: 'All Testimonials' },
+              { value: 'featured', label: 'Featured Only' },
+              { value: 'not-featured', label: 'Not Featured' },
             ]}
           />
         </div>
@@ -271,9 +269,16 @@ const TestimonialsManagement: React.FC = () => {
           currentPage: currentPage,
           onPageChange: setCurrentPage,
         }}
-        onRowClick={handleRowClick}
-        rowKey="id"
+        onRowClick={() => {}}
+        rowKey="_id"
       />
+
+      {error && !isLoading && (
+        <div className="bg-red-900/20 backdrop-blur-lg border border-red-900/30 rounded-xl shadow-lg p-6 text-center mt-4">
+          <h3 className="text-lg font-medium text-red-400">Error</h3>
+          <p className="mt-1 text-sm text-red-300">{error}</p>
+        </div>
+      )}
     </div>
   );
 };

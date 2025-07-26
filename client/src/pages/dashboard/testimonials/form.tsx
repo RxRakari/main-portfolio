@@ -5,87 +5,67 @@ import SectionHeader from '../../../components/ui/dashboard/section-header';
 import { 
   TextInput, 
   TextArea, 
-  Select, 
   Checkbox, 
   FormSection, 
   FormActions 
 } from '../../../components/ui/dashboard/form-elements';
 import ImageUpload from '../../../components/ui/dashboard/image-upload';
-import { uploadImage } from '../../../services/upload-service';
-
-// Mock testimonial data for editing
-const mockTestimonials = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    role: 'Marketing Director',
-    company: 'TechCorp Inc.',
-    content: 'Working with this team was an absolute pleasure. They delivered our project on time and exceeded our expectations. The attention to detail and creativity they brought to the table was impressive.',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    featured: true,
-    date: '2023-08-15',
-    status: 'published',
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'CEO',
-    company: 'Startup Ventures',
-    content: 'I was blown away by the quality of work and professionalism. Our website redesign project was handled with care and the results have significantly improved our conversion rates.',
-    rating: 5,
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-    featured: true,
-    date: '2023-07-22',
-    status: 'published',
-  }
-];
+import { useAdmin } from '../../../context/admin-context';
+import { toast } from 'sonner';
 
 const TestimonialForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
+  const { fetchTestimonial, createTestimonial, updateTestimonial } = useAdmin();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [formData, setFormData] = useState({
     name: '',
-    role: '',
+    position: '',
     company: '',
-    content: '',
+    testimonial: '',
     rating: 5,
     avatar: '',
     featured: false,
-    status: 'draft',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Fetch testimonial data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && id) {
       setIsLoading(true);
-      // Simulate API call to fetch testimonial data
-      setTimeout(() => {
-        const testimonial = mockTestimonials.find(testimonial => testimonial.id === id);
-        if (testimonial) {
-          setFormData({
-            name: testimonial.name,
-            role: testimonial.role,
-            company: testimonial.company,
-            content: testimonial.content,
-            rating: testimonial.rating,
-            avatar: testimonial.avatar,
-            featured: testimonial.featured,
-            status: testimonial.status,
-          });
-        } else {
-          // Testimonial not found, redirect to testimonials list
+      
+      fetchTestimonial(id)
+        .then(response => {
+          const item = response.testimonial;
+          
+          if (item) {
+            setFormData({
+              name: item.name || '',
+              position: item.position || '',
+              company: item.company || '',
+              testimonial: item.testimonial || '',
+              rating: item.rating || 5,
+              avatar: item.avatar || '',
+              featured: item.featured || false,
+            });
+          } else {
+            toast.error('Testimonial not found');
+            navigate('/dashboard/testimonials');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching testimonial:', error);
+          toast.error('Failed to load testimonial');
           navigate('/dashboard/testimonials');
-        }
-        setIsLoading(false);
-      }, 500);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-  }, [id, isEditMode, navigate]);
+  }, [id, isEditMode, navigate, fetchTestimonial]);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -105,23 +85,14 @@ const TestimonialForm: React.FC = () => {
     }));
   };
 
-  // Handle image upload
-  const handleImageUpload = async (file: File): Promise<string> => {
-    try {
-      const imageUrl = await uploadImage(file);
-      return imageUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
+  // Handle image file selection
+  const handleFileChange = (imageUrl: string) => {
+    if (imageUrl) {
+      setFormData(prev => ({
+        ...prev,
+        avatar: imageUrl
+      }));
     }
-  };
-
-  // Handle avatar change
-  const handleAvatarChange = (url: string) => {
-    setFormData(prev => ({
-      ...prev,
-      avatar: url
-    }));
   };
 
   // Validate form
@@ -132,8 +103,20 @@ const TestimonialForm: React.FC = () => {
       newErrors.name = 'Name is required';
     }
     
-    if (!formData.content.trim()) {
-      newErrors.content = 'Testimonial content is required';
+    if (!formData.position.trim()) {
+      newErrors.position = 'Position is required';
+    }
+    
+    if (!formData.company.trim()) {
+      newErrors.company = 'Company is required';
+    }
+    
+    if (!formData.testimonial.trim()) {
+      newErrors.testimonial = 'Testimonial content is required';
+    }
+    
+    if (!isEditMode && !formData.avatar) {
+      newErrors.avatar = 'Avatar image is required';
     }
     
     setErrors(newErrors);
@@ -151,16 +134,33 @@ const TestimonialForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would call an API to save the testimonial
-      console.log('Form data to be submitted:', formData);
+      // Prepare form data for API
+      const testimonialData = new FormData();
+      testimonialData.append('name', formData.name);
+      testimonialData.append('position', formData.position);
+      testimonialData.append('company', formData.company);
+      testimonialData.append('testimonial', formData.testimonial);
+      testimonialData.append('rating', formData.rating.toString());
+      testimonialData.append('featured', formData.featured.toString());
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (isEditMode && formData.avatar) {
+        testimonialData.append('avatar', formData.avatar);
+      }
+      
+      // Submit the form data
+      if (isEditMode && id) {
+        await updateTestimonial(id, testimonialData);
+        toast.success('Testimonial updated successfully');
+      } else {
+        await createTestimonial(testimonialData);
+        toast.success('Testimonial created successfully');
+      }
       
       // Redirect to testimonials list
       navigate('/dashboard/testimonials');
     } catch (error) {
       console.error('Error saving testimonial:', error);
+      toast.error('Failed to save testimonial');
     } finally {
       setIsSubmitting(false);
     }
@@ -199,10 +199,17 @@ const TestimonialForm: React.FC = () => {
   if (isLoading) {
     return (
       <div className="py-6">
-        <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded-md mb-6 w-3/4"></div>
-          <div className="h-64 bg-gray-100 rounded-md mb-6"></div>
-          <div className="h-32 bg-gray-100 rounded-md"></div>
+        <SectionHeader
+          title={isEditMode ? "Edit Testimonial" : "Add New Testimonial"}
+          description="Loading..."
+          icon={<FiUsers size={24} />}
+        />
+        <div className="mt-6 bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-10 bg-white/5 rounded-md w-3/4"></div>
+            <div className="h-64 bg-white/5 rounded-md"></div>
+            <div className="h-32 bg-white/5 rounded-md"></div>
+          </div>
         </div>
       </div>
     );
@@ -216,7 +223,7 @@ const TestimonialForm: React.FC = () => {
         icon={<FiUsers size={24} />}
       />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6">
         <FormSection title="Client Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
@@ -231,45 +238,52 @@ const TestimonialForm: React.FC = () => {
             />
             
             <ImageUpload
-              id="avatar"
+              id="imageFile"
               label="Client Avatar"
               value={formData.avatar}
-              onChange={handleAvatarChange}
-              onUpload={handleImageUpload}
+              onChange={handleFileChange}
               helperText="Upload a profile picture (square image recommended)"
               maxSizeMB={2}
+              error={errors.avatar}
             />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
-              id="role"
+              id="position"
+              name="position"
               label="Role/Position"
-              value={formData.role}
+              value={formData.position}
               onChange={handleChange}
               placeholder="e.g., Marketing Director"
+              required
+              error={errors.position}
             />
             
             <TextInput
               id="company"
+              name="company"
               label="Company"
               value={formData.company}
               onChange={handleChange}
               placeholder="e.g., TechCorp Inc."
+              required
+              error={errors.company}
             />
           </div>
         </FormSection>
 
         <FormSection title="Testimonial Content">
           <TextArea
-            id="content"
+            id="testimonial"
+            name="testimonial"
             label="Testimonial"
-            value={formData.content}
+            value={formData.testimonial}
             onChange={handleChange}
             placeholder="Enter the client's testimonial here..."
             rows={6}
             required
-            error={errors.content}
+            error={errors.testimonial}
           />
           
           <div className="mt-4">
@@ -281,28 +295,15 @@ const TestimonialForm: React.FC = () => {
         </FormSection>
 
         <FormSection title="Display Options">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Select
-              id="status"
-              label="Status"
-              value={formData.status}
-              onChange={handleChange}
-              options={[
-                { value: 'draft', label: 'Draft' },
-                { value: 'published', label: 'Published' },
-                { value: 'archived', label: 'Archived' },
-              ]}
+          <div className="flex items-center">
+            <Checkbox
+              id="featured"
+              name="featured"
+              label="Featured Testimonial"
+              checked={formData.featured}
+              onChange={handleCheckboxChange}
+              helperText="Display this testimonial in featured sections"
             />
-            
-            <div className="flex items-center h-full pt-6">
-              <Checkbox
-                id="featured"
-                label="Featured Testimonial"
-                checked={formData.featured}
-                onChange={handleCheckboxChange}
-                helperText="Display this testimonial in featured sections"
-              />
-            </div>
           </div>
         </FormSection>
 

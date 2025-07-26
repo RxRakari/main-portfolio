@@ -92,21 +92,24 @@ export const createExperience = async (req: Request, res: Response) => {
       startDate,
       endDate,
       current,
-      period,
       description,
       achievements,
       technologies,
       order,
       featured,
+      period,
     } = req.body;
     
-    const isCurrent = current === 'true';
+    // Parse boolean values from string
+    const isCurrent = current === true || current === 'true';
+    
+    // Parse dates
     const startDateObj = new Date(startDate);
     const endDateObj = isCurrent ? null : endDate ? new Date(endDate) : null;
     
     // Generate period if not provided
     const periodString = period || generatePeriod(startDateObj, endDateObj, isCurrent);
-    
+
     // Create new experience
     const newExperience = await Experience.create({
       title,
@@ -117,10 +120,10 @@ export const createExperience = async (req: Request, res: Response) => {
       current: isCurrent,
       period: periodString,
       description,
-      achievements: achievements ? JSON.parse(achievements) : [],
-      technologies: technologies ? JSON.parse(technologies) : [],
+      achievements: achievements ? (typeof achievements === 'string' ? JSON.parse(achievements) : achievements) : [],
+      technologies: technologies ? (typeof technologies === 'string' ? JSON.parse(technologies) : technologies) : [],
       order: Number(order) || 0,
-      featured: featured === 'true',
+      featured: featured === true || featured === 'true',
     });
     
     res.status(201).json({
@@ -147,12 +150,12 @@ export const updateExperience = async (req: Request, res: Response) => {
       startDate,
       endDate,
       current,
-      period,
       description,
       achievements,
       technologies,
       order,
       featured,
+      period,
     } = req.body;
     
     // Find experience
@@ -162,13 +165,16 @@ export const updateExperience = async (req: Request, res: Response) => {
       throw new AppError('Experience not found', 404);
     }
     
-    const isCurrent = current === 'true';
+    // Parse boolean values from string
+    const isCurrent = current === true || current === 'true';
+    
+    // Parse dates
     const startDateObj = startDate ? new Date(startDate) : experience.startDate;
-    const endDateObj = isCurrent ? null : endDate ? new Date(endDate) : experience.endDate;
+    const endDateObj = isCurrent ? null : endDate ? new Date(endDate) : experience.endDate as any;
     
     // Generate period if not provided or dates changed
     const periodString = period || generatePeriod(startDateObj, endDateObj, isCurrent);
-    
+
     // Update experience
     const updatedExperience = await Experience.findByIdAndUpdate(
       id,
@@ -181,10 +187,10 @@ export const updateExperience = async (req: Request, res: Response) => {
         current: isCurrent,
         period: periodString,
         description,
-        achievements: achievements ? JSON.parse(achievements) : experience.achievements,
-        technologies: technologies ? JSON.parse(technologies) : experience.technologies,
+        achievements: achievements ? (typeof achievements === 'string' ? JSON.parse(achievements) : achievements) : experience.achievements,
+        technologies: technologies ? (typeof technologies === 'string' ? JSON.parse(technologies) : technologies) : experience.technologies,
         order: Number(order) || experience.order,
-        featured: featured === 'true',
+        featured: featured === true || featured === 'true',
       },
       { new: true, runValidators: true }
     );

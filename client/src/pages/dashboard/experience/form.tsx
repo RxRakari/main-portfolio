@@ -9,67 +9,8 @@ import {
   FormSection,
   FormActions
 } from '../../../components/ui/dashboard/form-elements';
-
-// Mock data for experiences (same as in index.tsx)
-const mockExperiences = [
-  {
-    id: '1',
-    title: 'Senior Frontend Developer',
-    company: 'Tech Innovations Inc.',
-    location: 'San Francisco, CA',
-    startDate: '2021-06-01',
-    endDate: null,
-    current: true,
-    period: '2021 - Present',
-    description: 'Leading the frontend development team in creating responsive web applications using React, TypeScript, and Tailwind CSS.',
-    achievements: [
-      'Improved application performance by 40% through code optimization',
-      'Implemented CI/CD pipeline reducing deployment time by 60%',
-      'Mentored 5 junior developers'
-    ],
-    technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Redux'],
-    order: 0,
-    featured: true,
-  },
-  {
-    id: '2',
-    title: 'Frontend Developer',
-    company: 'Digital Solutions Ltd.',
-    location: 'New York, NY',
-    startDate: '2019-03-15',
-    endDate: '2021-05-30',
-    current: false,
-    period: '2019 - 2021',
-    description: 'Developed and maintained multiple client-facing web applications focusing on performance and accessibility.',
-    achievements: [
-      'Built responsive UI components used across 12 different projects',
-      'Reduced bundle size by 35% through code splitting and lazy loading',
-      'Implemented automated testing increasing code coverage to 85%'
-    ],
-    technologies: ['React', 'JavaScript', 'SCSS', 'Jest'],
-    order: 1,
-    featured: true,
-  },
-  {
-    id: '3',
-    title: 'Web Developer Intern',
-    company: 'StartUp Vision',
-    location: 'Remote',
-    startDate: '2018-06-01',
-    endDate: '2019-02-28',
-    current: false,
-    period: '2018 - 2019',
-    description: 'Assisted in developing and maintaining company website and client projects.',
-    achievements: [
-      'Developed responsive landing pages for 5 client projects',
-      'Implemented analytics tracking improving conversion insights',
-      'Collaborated with design team to improve UI/UX'
-    ],
-    technologies: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
-    order: 2,
-    featured: false,
-  },
-];
+import { FormSkeleton } from '../../../components/ui/dashboard/skeleton';
+import { useAdmin } from '../../../context/admin-context';
 
 // List of common technologies for suggestions
 const commonTechnologies = [
@@ -131,38 +72,57 @@ const ExperienceForm: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<ExperienceFormData>(emptyFormData);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [newTechnology, setNewTechnology] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { fetchExperience, createExperience, updateExperience } = useAdmin();
 
   const isEditMode = Boolean(id);
 
   // Fetch experience data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
-      // In a real app, you would fetch from an API
-      const experience = mockExperiences.find(exp => exp.id === id);
-      if (experience) {
-        setFormData({
-          id: experience.id,
-          title: experience.title,
-          company: experience.company,
-          location: experience.location,
-          startDate: experience.startDate,
-          endDate: experience.current ? '' : experience.endDate || '',
-          current: experience.current,
-          period: experience.period,
-          description: experience.description,
-          achievements: experience.achievements,
-          technologies: experience.technologies,
-          order: experience.order || 0,
-          featured: experience.featured,
-        });
+    const getExperience = async () => {
+      if (isEditMode) {
+        try {
+          setIsFetching(true);
+          
+          const response = await fetchExperience(id as string);
+          const experience = response.experience;
+          
+          if (experience) {
+            setFormData({
+              id: experience.id,
+              title: experience.title,
+              company: experience.company,
+              location: experience.location,
+              startDate: experience.startDate,
+              endDate: experience.current ? '' : experience.endDate || '',
+              current: experience.current,
+              period: experience.period,
+              description: experience.description,
+              achievements: experience.achievements,
+              technologies: experience.technologies,
+              order: experience.order || 0,
+              featured: experience.featured,
+            });
+          } else {
+            // Experience not found
+            navigate('/dashboard/experience');
+          }
+        } catch (error) {
+          console.error('Failed to fetch experience:', error);
+          navigate('/dashboard/experience');
+        } finally {
+          setIsFetching(false);
+        }
       } else {
-        // Experience not found
-        navigate('/dashboard/experience');
+        // For new experience, just set loading to false
+        setIsFetching(false);
       }
-    }
-  }, [id, isEditMode, navigate]);
+    };
+    
+    getExperience();
+  }, [id, isEditMode, navigate, fetchExperience]);
 
   // Update period whenever dates or current status changes
   useEffect(() => {
@@ -257,7 +217,7 @@ const ExperienceForm: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
@@ -265,19 +225,47 @@ const ExperienceForm: React.FC = () => {
     setIsLoading(true);
     
     // Prepare data for API submission
-    const submissionData = {
-      ...formData,
-      // Ensure period is generated correctly
-      period: generatePeriod(formData.startDate, formData.endDate, formData.current)
-    };
+    const formDataObj = new FormData();
+    formDataObj.append('title', formData.title);
+    formDataObj.append('company', formData.company);
+    formDataObj.append('location', formData.location);
+    formDataObj.append('startDate', formData.startDate);
+    formDataObj.append('endDate', formData.endDate);
+    formDataObj.append('current', String(formData.current));
+    formDataObj.append('period', formData.period || generatePeriod(formData.startDate, formData.endDate, formData.current));
+    formDataObj.append('description', formData.description);
+    formDataObj.append('achievements', JSON.stringify(formData.achievements));
+    formDataObj.append('technologies', JSON.stringify(formData.technologies));
+    formDataObj.append('order', String(formData.order));
+    formDataObj.append('featured', String(formData.featured));
     
-    // In a real app, you would submit to an API
-    setTimeout(() => {
-      console.log('Submitting experience:', submissionData);
-      setIsLoading(false);
+    try {
+      if (isEditMode) {
+        await updateExperience(id as string, formDataObj);
+      } else {
+        await createExperience(formDataObj);
+      }
+      
       navigate('/dashboard/experience');
-    }, 1000);
+    } catch (error) {
+      console.error('Failed to save experience:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isFetching) {
+    return (
+      <div className="py-6">
+        <SectionHeader
+          title={isEditMode ? 'Edit Experience' : 'Add New Experience'}
+          description={isEditMode ? 'Update your professional experience details' : 'Add a new professional experience to your portfolio'}
+          icon={<FiBriefcase size={24} />}
+        />
+        <FormSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="py-6">

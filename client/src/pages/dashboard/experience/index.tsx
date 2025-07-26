@@ -1,73 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiBriefcase, FiEye, FiEdit, FiTrash2, FiCalendar } from 'react-icons/fi';
 import SectionHeader from '../../../components/ui/dashboard/section-header';
 import DataTable from '../../../components/ui/dashboard/data-table';
 import Card from '../../../components/ui/dashboard/card';
 import { TextInput, Select } from '../../../components/ui/dashboard/form-elements';
-
-// Mock data for experiences
-const mockExperiences = [
-  {
-    id: '1',
-    title: 'Senior Frontend Developer',
-    company: 'Tech Innovations Inc.',
-    location: 'San Francisco, CA',
-    startDate: '2021-06-01',
-    endDate: 'Present',
-    isCurrent: true,
-    description: 'Leading the frontend development team in creating responsive web applications using React, TypeScript, and Tailwind CSS.',
-    achievements: [
-      'Improved application performance by 40% through code optimization',
-      'Implemented CI/CD pipeline reducing deployment time by 60%',
-      'Mentored 5 junior developers'
-    ],
-    technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Redux'],
-    featured: true,
-  },
-  {
-    id: '2',
-    title: 'Frontend Developer',
-    company: 'Digital Solutions Ltd.',
-    location: 'New York, NY',
-    startDate: '2019-03-15',
-    endDate: '2021-05-30',
-    isCurrent: false,
-    description: 'Developed and maintained multiple client-facing web applications focusing on performance and accessibility.',
-    achievements: [
-      'Built responsive UI components used across 12 different projects',
-      'Reduced bundle size by 35% through code splitting and lazy loading',
-      'Implemented automated testing increasing code coverage to 85%'
-    ],
-    technologies: ['React', 'JavaScript', 'SCSS', 'Jest'],
-    featured: true,
-  },
-  {
-    id: '3',
-    title: 'Web Developer Intern',
-    company: 'StartUp Vision',
-    location: 'Remote',
-    startDate: '2018-06-01',
-    endDate: '2019-02-28',
-    isCurrent: false,
-    description: 'Assisted in developing and maintaining company website and client projects.',
-    achievements: [
-      'Developed responsive landing pages for 5 client projects',
-      'Implemented analytics tracking improving conversion insights',
-      'Collaborated with design team to improve UI/UX'
-    ],
-    technologies: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
-    featured: false,
-  },
-];
-
-// Format date helper
-const formatDate = (dateString: string): string => {
-  if (dateString === 'Present') return 'Present';
-  
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-};
+import { TableSkeleton } from '../../../components/ui/dashboard/skeleton';
+import { useAdmin } from '../../../context/admin-context';
 
 // Status badge component
 interface FeaturedBadgeProps {
@@ -105,18 +44,47 @@ const TechnologiesList: React.FC<TechnologiesListProps> = ({ technologies }) => 
 };
 
 const ExperienceManagement: React.FC = () => {
+  const [experiences, setExperiences] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [featuredFilter, setFeaturedFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  console.log(error)
+  
+  const { fetchExperiences, deleteExperience } = useAdmin();
+
+  // Fetch experiences
+  useEffect(() => {
+    const getExperiences = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const response = await fetchExperiences();
+        if (response?.experiences) {
+          setExperiences(response.experiences);
+        } else {
+          setError('No experiences found');
+        }
+      } catch (err) {
+        console.error('Failed to fetch experiences:', err);
+        setError('Failed to load experiences');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    getExperiences();
+  }, [fetchExperiences]);
 
   // Filter experiences based on search query and filters
-  const filteredExperiences = mockExperiences.filter((experience) => {
+  const filteredExperiences = experiences.filter((experience) => {
     const matchesSearch = 
       experience.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       experience.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       experience.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      experience.technologies.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()));
+      experience.technologies.some((tech: string) => tech.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesFeatured = featuredFilter === '' ? true : 
       featuredFilter === 'featured' ? experience.featured : !experience.featured;
@@ -143,14 +111,12 @@ const ExperienceManagement: React.FC = () => {
       ),
     },
     {
-      key: 'duration',
+      key: 'period',
       header: 'Duration',
-      render: (_: any, row: any) => (
+      render: (value: string) => (
         <div className="flex items-center text-gray-300">
           <FiCalendar className="mr-1 text-gray-400" />
-          <span>
-            {formatDate(row.startDate)} - {row.isCurrent ? 'Present' : formatDate(row.endDate)}
-          </span>
+          <span>{value}</span>
         </div>
       ),
     },
@@ -192,17 +158,51 @@ const ExperienceManagement: React.FC = () => {
   ];
 
   // Handle experience deletion
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this experience?')) {
-      // In a real app, you would call an API to delete the experience
-      console.log(`Delete experience with ID: ${id}`);
+      try {
+        setIsLoading(true);
+        await deleteExperience(id);
+        setExperiences(prevExperiences => prevExperiences.filter(exp => exp.id !== id));
+      } catch (error) {
+        console.error('Failed to delete experience:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
-  // Handle row click
-  const handleRowClick = (experience: any) => {
-    console.log('Clicked experience:', experience);
-  };
+  // Handle toggle featured
+  // const handleToggleFeatured = async (id: string) => {
+  //   try {
+  //     setIsLoading(true);
+  //     await toggleExperienceFeatured(id);
+      
+  //     // Update local state
+  //     setExperiences(prevExperiences => 
+  //       prevExperiences.map(exp => 
+  //         exp.id === id ? { ...exp, featured: !exp.featured } : exp
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error('Failed to update featured status:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  if (isLoading) {
+    return (
+      <div className="py-6">
+        <SectionHeader
+          title="Experience Management"
+          description="Create, edit and manage your professional experience"
+          icon={<FiBriefcase size={24} />}
+        />
+        <TableSkeleton rows={5} columns={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="py-6">
@@ -219,6 +219,7 @@ const ExperienceManagement: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <TextInput
             id="search"
+            name="search"
             label="Search Experiences"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -227,6 +228,7 @@ const ExperienceManagement: React.FC = () => {
           />
           <Select
             id="featured"
+            name="featured"
             label="Filter"
             value={featuredFilter}
             onChange={(e) => setFeaturedFilter(e.target.value)}
@@ -251,7 +253,7 @@ const ExperienceManagement: React.FC = () => {
           currentPage: currentPage,
           onPageChange: setCurrentPage,
         }}
-        onRowClick={handleRowClick}
+        onRowClick={() => {}}
         rowKey="id"
       />
     </div>
