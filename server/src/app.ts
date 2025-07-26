@@ -13,6 +13,8 @@ import projectRoutes from './routes/project.routes';
 import testimonialRoutes from './routes/testimonial.routes';
 import galleryRoutes from './routes/gallery.routes';
 import contactRoutes from './routes/contact.routes';
+import experienceRoutes from './routes/experience.route';
+import newsletterRoutes from './routes/newsletter.route';
 
 // Import error middleware
 import { errorHandler } from './middleware/error.middleware';
@@ -35,6 +37,8 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/experience', experienceRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {

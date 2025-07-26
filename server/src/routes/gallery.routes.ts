@@ -1,26 +1,29 @@
 import express from 'express';
-import multer from 'multer';
-
-// Configure multer for memory storage
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+import { authMiddleware, adminMiddleware } from '../middleware/auth.middleware';
+import { upload, cloudinaryUpload } from '../middleware/upload.middleware';
+import { catchAsync } from '../middleware/error.middleware';
+import {
+  getAllGalleryItems,
+  getGalleryItem,
+  createGalleryItem,
+  updateGalleryItem,
+  deleteGalleryItem,
+  toggleFeatured,
+} from '../controllers/gallery.controller';
 
 const router = express.Router();
 
-// Gallery routes placeholders with file upload
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Get all gallery items endpoint' });
-});
+// Public routes
+router.get('/', catchAsync(getAllGalleryItems));
+router.get('/:id', catchAsync(getGalleryItem));
 
-router.post('/', upload.single('image'), (req, res) => {
-  res.status(201).json({ 
-    message: 'Upload image endpoint',
-    file: req.file ? req.file.originalname : 'No file uploaded'
-  });
-});
-
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: `Delete gallery item with id: ${req.params.id}` });
-});
+// Admin routes
+router.use('/admin', authMiddleware, adminMiddleware);
+router.get('/admin', catchAsync(getAllGalleryItems));
+router.get('/admin/:id', catchAsync(getGalleryItem));
+router.post('/admin', upload.single('imageFile'), cloudinaryUpload, catchAsync(createGalleryItem));
+router.put('/admin/:id', upload.single('imageFile'), cloudinaryUpload, catchAsync(updateGalleryItem));
+router.delete('/admin/:id', catchAsync(deleteGalleryItem));
+router.patch('/admin/:id/featured', catchAsync(toggleFeatured));
 
 export default router; 

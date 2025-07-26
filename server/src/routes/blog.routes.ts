@@ -1,26 +1,31 @@
 import express from 'express';
+import { authMiddleware, adminMiddleware } from '../middleware/auth.middleware';
+import { upload, cloudinaryUpload } from '../middleware/upload.middleware';
+import { catchAsync } from '../middleware/error.middleware';
+import {
+  getAllBlogs,
+  getBlog,
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  toggleFeatured,
+  togglePublished,
+} from '../controllers/blog.controller';
 
 const router = express.Router();
 
-// Blog routes placeholders
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Get all blogs endpoint' });
-});
+// Public routes
+router.get('/', catchAsync(getAllBlogs));
+router.get('/:id', catchAsync(getBlog));
 
-router.get('/:id', (req, res) => {
-  res.status(200).json({ message: `Get blog with id: ${req.params.id}` });
-});
-
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'Create blog endpoint' });
-});
-
-router.put('/:id', (req, res) => {
-  res.status(200).json({ message: `Update blog with id: ${req.params.id}` });
-});
-
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: `Delete blog with id: ${req.params.id}` });
-});
+// Admin routes
+router.use('/admin', authMiddleware, adminMiddleware);
+router.get('/admin', catchAsync(getAllBlogs));
+router.get('/admin/:id', catchAsync(getBlog));
+router.post('/admin', upload.single('coverImage'), cloudinaryUpload, catchAsync(createBlog));
+router.put('/admin/:id', upload.single('coverImage'), cloudinaryUpload, catchAsync(updateBlog));
+router.delete('/admin/:id', catchAsync(deleteBlog));
+router.patch('/admin/:id/featured', catchAsync(toggleFeatured));
+router.patch('/admin/:id/published', catchAsync(togglePublished));
 
 export default router; 

@@ -1,17 +1,61 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaCalendarAlt, FaMapMarkerAlt, FaAward, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { experienceAPI } from '../../services/api-client';
+
+// Interface for experience data
+interface ExperienceData {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  period: string;
+  description: string;
+  achievements: string[];
+  technologies: string[];
+  featured: boolean;
+}
 
 export const ExperienceSection = () => {
   const [activeExperience, setActiveExperience] = useState(0);
+  const [experiences, setExperiences] = useState<ExperienceData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   
-  const experiences = [
+  // Fetch experiences from the API
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        setIsLoading(true);
+        const response = await experienceAPI.getFeatured();
+        if (response.data.experiences && response.data.experiences.length > 0) {
+          setExperiences(response.data.experiences);
+        } else {
+          // Fallback to mock data if no experiences are returned
+          setExperiences(mockExperiences);
+        }
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch experiences:', err);
+        setError('Failed to load experiences. Using mock data instead.');
+        setExperiences(mockExperiences);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchExperiences();
+  }, []);
+
+  // Mock data as fallback
+  const mockExperiences = [
     {
+      id: '1',
+      title: "Senior Software Engineer",
       company: "Cursor",
-      position: "Senior Software Engineer",
       period: "2022 - Present",
       location: "San Francisco, CA",
       description: "Led the development of AI-powered code completion tools, improving developer productivity by 35%. Architected and implemented real-time collaboration features used by over 50,000 developers.",
@@ -21,11 +65,13 @@ export const ExperienceSection = () => {
         "Implemented an advanced machine learning pipeline that improved code suggestions by 28%",
         "Presented technical architecture at 3 industry conferences"
       ],
-      technologies: ["TypeScript", "React", "Node.js", "Python", "TensorFlow"]
+      technologies: ["TypeScript", "React", "Node.js", "Python", "TensorFlow"],
+      featured: true
     },
     {
+      id: '2',
+      title: "Software Engineer",
       company: "Google",
-      position: "Software Engineer",
       period: "2019 - 2022",
       location: "Mountain View, CA",
       description: "Developed scalable backend services handling millions of requests daily. Contributed to the redesign of core APIs, reducing latency by 40% and improving overall system reliability.",
@@ -35,11 +81,13 @@ export const ExperienceSection = () => {
         "Contributed to open-source projects with over 10k stars on GitHub",
         "Mentored 4 junior engineers who were later promoted to mid-level positions"
       ],
-      technologies: ["Go", "Kubernetes", "gRPC", "Cloud Pub/Sub", "BigQuery"]
+      technologies: ["Go", "Kubernetes", "gRPC", "Cloud Pub/Sub", "BigQuery"],
+      featured: true
     },
     {
+      id: '3',
+      title: "Frontend Engineer",
       company: "Stripe",
-      position: "Frontend Engineer",
       period: "2017 - 2019",
       location: "Remote",
       description: "Built responsive, high-performance UI components for the Stripe Dashboard. Implemented data visualization tools that helped merchants better understand transaction patterns.",
@@ -49,7 +97,8 @@ export const ExperienceSection = () => {
         "Created a reusable component library that accelerated feature development by 25%",
         "Implemented accessibility improvements that achieved WCAG AA compliance"
       ],
-      technologies: ["JavaScript", "React", "Redux", "GraphQL", "D3.js"]
+      technologies: ["JavaScript", "React", "Redux", "GraphQL", "D3.js"],
+      featured: true
     }
   ];
 
@@ -57,7 +106,7 @@ export const ExperienceSection = () => {
   useEffect(() => {
     const startAutoplay = () => {
       autoplayRef.current = setInterval(() => {
-        if (!isHovering) {
+        if (!isHovering && experiences.length > 0) {
           setActiveExperience(prev => (prev + 1) % experiences.length);
         }
       }, 5000); // Change tab every 5 seconds
@@ -70,12 +119,14 @@ export const ExperienceSection = () => {
       }
     };
 
-    // Start autoplay
-    startAutoplay();
+    // Start autoplay if experiences are loaded
+    if (!isLoading && experiences.length > 0) {
+      startAutoplay();
+    }
 
     // Clean up on unmount
     return () => stopAutoplay();
-  }, [experiences.length, isHovering]);
+  }, [experiences.length, isHovering, isLoading]);
 
   // Animation variants
   const containerVariants = {
@@ -97,6 +148,30 @@ export const ExperienceSection = () => {
       transition: { duration: 0.5 }
     }
   };
+
+  // If still loading or no experiences, show loading state
+  if (isLoading) {
+    return (
+      <section id="experience" className="py-36 relative overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-4">
+          <h2 className="text-6xl font-medium mb-6">Experience</h2>
+          <p className="text-2xl text-gray-400 mb-24">Loading experience data...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // If error and no experiences, show error state
+  if (error && experiences.length === 0) {
+    return (
+      <section id="experience" className="py-36 relative overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-4">
+          <h2 className="text-6xl font-medium mb-6">Experience</h2>
+          <p className="text-2xl text-gray-400 mb-24">Failed to load experience data.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 
@@ -170,7 +245,7 @@ export const ExperienceSection = () => {
                 <FaAward />
                 <span className="text-lg font-medium uppercase tracking-wider">Position</span>
               </div>
-              <h3 className="text-4xl font-medium mb-2">{experiences[activeExperience].position}</h3>
+              <h3 className="text-4xl font-medium mb-2">{experiences[activeExperience].title}</h3>
               <div className="flex flex-wrap gap-6 mt-4 text-[1.2rem] text-gray-400">
                 <div className="flex items-center gap-2">
                   <FaCalendarAlt className="text-gray-500" />

@@ -1,5 +1,9 @@
 2. Make UI changes where necessary
 
-3. Build and integrate server
+now, let's complete the server side for the entire portflio(make sure the values/params match with waht the dashboard use when creating).
 
-4. Update context
+and also dont forget the newsletter controller where subscribed emails get updates for all my new blogs, projects, gallery uploads, or any new changes at all with captivating texts like "hey! Caaleb just adde a new project you might like to his portfoli" there's already a nodemailer and many other configurations.. just read everything in the server then proceed.
+
+also dont forget to update the swagger.
+
+4. Update context and integrate the admin dashboard(all the pages) and also please lets use sonner in the admin dashboard in all the pages for error and updates handling and also please make sure all pages throughout the entire app uses sekeleton loading and error and empty state handling that is sleek and modern and match our exsisting color scheme. fix bug in experience controller as well

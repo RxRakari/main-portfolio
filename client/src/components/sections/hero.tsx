@@ -121,6 +121,7 @@ export const HeroSection = () => {
 
   return (
     <div ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden w-full">
+      <HeroHighlight containerClassName="bg-gray-50 dark:bg-black">
       {/* Floating background elements */}
       <div 
         ref={(el) => { floatingElementsRef.current[0] = el; }}
@@ -135,7 +136,6 @@ export const HeroSection = () => {
         className="absolute bottom-32 left-40 w-20 h-20 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
       />
 
-<HeroHighlight containerClassName="bg-gray-50 dark:bg-black">
       <div className="flex items-center justify-between w-full max-w-7xl px-4 md:px-0">
         {/* Content Section */}
         <div className="flex flex-col gap-6 max-w-2xl">
@@ -196,7 +196,7 @@ export const HeroSection = () => {
         </div>
         
       </div>
-      </HeroHighlight>
+      
 
       {/* Custom styles */}
       <style>{`
@@ -220,6 +220,7 @@ export const HeroSection = () => {
           50% { background-position: 200% center; }
         }
       `}</style>
+      </HeroHighlight>
     </div>
   );
 };

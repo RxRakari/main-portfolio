@@ -18,8 +18,9 @@ const mockExperiences = [
     company: 'Tech Innovations Inc.',
     location: 'San Francisco, CA',
     startDate: '2021-06-01',
-    endDate: 'Present',
-    isCurrent: true,
+    endDate: null,
+    current: true,
+    period: '2021 - Present',
     description: 'Leading the frontend development team in creating responsive web applications using React, TypeScript, and Tailwind CSS.',
     achievements: [
       'Improved application performance by 40% through code optimization',
@@ -27,6 +28,7 @@ const mockExperiences = [
       'Mentored 5 junior developers'
     ],
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Redux'],
+    order: 0,
     featured: true,
   },
   {
@@ -36,7 +38,8 @@ const mockExperiences = [
     location: 'New York, NY',
     startDate: '2019-03-15',
     endDate: '2021-05-30',
-    isCurrent: false,
+    current: false,
+    period: '2019 - 2021',
     description: 'Developed and maintained multiple client-facing web applications focusing on performance and accessibility.',
     achievements: [
       'Built responsive UI components used across 12 different projects',
@@ -44,6 +47,7 @@ const mockExperiences = [
       'Implemented automated testing increasing code coverage to 85%'
     ],
     technologies: ['React', 'JavaScript', 'SCSS', 'Jest'],
+    order: 1,
     featured: true,
   },
   {
@@ -53,7 +57,8 @@ const mockExperiences = [
     location: 'Remote',
     startDate: '2018-06-01',
     endDate: '2019-02-28',
-    isCurrent: false,
+    current: false,
+    period: '2018 - 2019',
     description: 'Assisted in developing and maintaining company website and client projects.',
     achievements: [
       'Developed responsive landing pages for 5 client projects',
@@ -61,6 +66,7 @@ const mockExperiences = [
       'Collaborated with design team to improve UI/UX'
     ],
     technologies: ['HTML', 'CSS', 'JavaScript', 'jQuery'],
+    order: 2,
     featured: false,
   },
 ];
@@ -83,10 +89,12 @@ interface ExperienceFormData {
   location: string;
   startDate: string;
   endDate: string;
-  isCurrent: boolean;
+  current: boolean;
+  period?: string; // Calculated field for landing page
   description: string;
   achievements: string[];
   technologies: string[];
+  order: number;
   featured: boolean;
 }
 
@@ -97,11 +105,25 @@ const emptyFormData: ExperienceFormData = {
   location: '',
   startDate: '',
   endDate: '',
-  isCurrent: false,
+  current: false,
   description: '',
   achievements: [''],
   technologies: [],
+  order: 0,
   featured: false,
+};
+
+// Function to format date to YYYY
+const formatYearFromDate = (dateString: string): string => {
+  if (!dateString) return '';
+  return new Date(dateString).getFullYear().toString();
+};
+
+// Function to generate period string from dates
+const generatePeriod = (startDate: string, endDate: string, current: boolean): string => {
+  const startYear = formatYearFromDate(startDate);
+  const endYear = current ? 'Present' : formatYearFromDate(endDate);
+  return startYear && (endYear || current) ? `${startYear} - ${endYear}` : '';
 };
 
 const ExperienceForm: React.FC = () => {
@@ -126,11 +148,13 @@ const ExperienceForm: React.FC = () => {
           company: experience.company,
           location: experience.location,
           startDate: experience.startDate,
-          endDate: experience.isCurrent ? '' : experience.endDate,
-          isCurrent: experience.isCurrent,
+          endDate: experience.current ? '' : experience.endDate || '',
+          current: experience.current,
+          period: experience.period,
           description: experience.description,
           achievements: experience.achievements,
           technologies: experience.technologies,
+          order: experience.order || 0,
           featured: experience.featured,
         });
       } else {
@@ -139,6 +163,12 @@ const ExperienceForm: React.FC = () => {
       }
     }
   }, [id, isEditMode, navigate]);
+
+  // Update period whenever dates or current status changes
+  useEffect(() => {
+    const period = generatePeriod(formData.startDate, formData.endDate, formData.current);
+    setFormData(prev => ({ ...prev, period }));
+  }, [formData.startDate, formData.endDate, formData.current]);
 
   // Handle form field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -150,6 +180,12 @@ const ExperienceForm: React.FC = () => {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData(prev => ({ ...prev, [name]: checked }));
+  };
+
+  // Handle order change
+  const handleOrderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 0;
+    setFormData(prev => ({ ...prev, order: value }));
   };
 
   // Handle achievements changes
@@ -205,7 +241,7 @@ const ExperienceForm: React.FC = () => {
     if (!formData.company.trim()) newErrors.company = 'Company is required';
     if (!formData.location.trim()) newErrors.location = 'Location is required';
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.isCurrent && !formData.endDate) {
+    if (!formData.current && !formData.endDate) {
       newErrors.endDate = 'End date is required if not current position';
     }
     if (!formData.description.trim()) newErrors.description = 'Description is required';
@@ -228,9 +264,16 @@ const ExperienceForm: React.FC = () => {
     
     setIsLoading(true);
     
+    // Prepare data for API submission
+    const submissionData = {
+      ...formData,
+      // Ensure period is generated correctly
+      period: generatePeriod(formData.startDate, formData.endDate, formData.current)
+    };
+    
     // In a real app, you would submit to an API
     setTimeout(() => {
-      console.log('Submitting experience:', formData);
+      console.log('Submitting experience:', submissionData);
       setIsLoading(false);
       navigate('/dashboard/experience');
     }, 1000);
@@ -299,18 +342,43 @@ const ExperienceForm: React.FC = () => {
                 type="date"
                 value={formData.endDate}
                 onChange={handleChange}
-                disabled={formData.isCurrent}
-                required={!formData.isCurrent}
+                disabled={formData.current}
+                required={!formData.current}
                 error={errors.endDate}
               />
               <Checkbox
-                id="isCurrent"
-                name="isCurrent"
+                id="current"
+                name="current"
                 label="This is my current position"
-                checked={formData.isCurrent}
+                checked={formData.current}
                 onChange={handleCheckboxChange}
               />
             </div>
+          </div>
+          
+          {/* Display the generated period string */}
+          <div className="mt-4">
+            <TextInput
+              id="period"
+              name="period"
+              label="Display Period (auto-generated)"
+              value={formData.period || ''}
+              onChange={() => {}} // Read-only
+              disabled
+              helperText="This is how the period will appear on your portfolio"
+            />
+          </div>
+          
+          <div className="mt-4">
+            <TextInput
+              id="order"
+              name="order"
+              label="Display Order"
+              type="number"
+              value={formData.order.toString()}
+              onChange={handleOrderChange}
+              helperText="Lower numbers appear first (0 is highest priority)"
+            />
           </div>
         </FormSection>
 
