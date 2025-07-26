@@ -38,11 +38,11 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-black dark:via-gray-900 dark:to-black overflow-hidden">
       {/* Mobile sidebar overlay */}
       {isMobile && sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/80 z-20 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/80 dark:bg-black/80 z-20 backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         ></div>

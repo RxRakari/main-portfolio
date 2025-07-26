@@ -6,9 +6,10 @@ import {
   FiEye, 
   FiTrendingUp,
   FiCalendar,
-  FiClock,
   FiEdit,
-  FiPlus
+  FiPlus,
+  FiTrendingDown,
+  FiMinus
 } from 'react-icons/fi';
 import { useAdmin } from '../../context/admin-context';
 
@@ -24,39 +25,35 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, change, trend, color }) => {
   const getTrendIcon = () => {
-    if (trend === 'up') return <FiTrendingUp className="text-green-400" />;
-    if (trend === 'down') return <FiTrendingUp className="text-red-400 transform rotate-180" />;
-    return null;
+    if (trend === 'up') return <FiTrendingUp className="w-4 h-4 text-green-500" />;
+    if (trend === 'down') return <FiTrendingDown className="w-4 h-4 text-red-500" />;
+    return <FiMinus className="w-4 h-4 text-gray-500" />;
   };
 
   const getColorClasses = () => {
-    switch(color) {
-      case 'purple': return 'from-purple-500/20 to-purple-600/10 border-purple-500/30';
-      case 'blue': return 'from-blue-500/20 to-blue-600/10 border-blue-500/30';
-      case 'green': return 'from-green-500/20 to-green-600/10 border-green-500/30';
-      case 'orange': return 'from-orange-500/20 to-orange-600/10 border-orange-500/30';
-      default: return 'from-gray-500/20 to-gray-600/10 border-gray-500/30';
-    }
+    const colors = {
+      purple: 'bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-400',
+      blue: 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400',
+      green: 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400',
+      orange: 'bg-orange-500/10 border-orange-500/20 text-orange-600 dark:text-orange-400',
+    };
+    return colors[color as keyof typeof colors] || colors.purple;
   };
 
   return (
-    <div className={`bg-gradient-to-br ${getColorClasses()} backdrop-blur-lg p-6 rounded-xl border border-white/10 shadow-lg`}>
-      <div className="flex justify-between items-start">
+    <div className="bg-white/80 dark:bg-black/40 backdrop-blur-lg rounded-xl border border-gray-200 dark:border-white/10 shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+      <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-medium text-gray-400">{title}</h3>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-3xl font-semibold text-white">{value}</p>
-          </div>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
           {change && (
-            <div className="mt-2 flex items-center text-xs">
+            <div className="flex items-center mt-2">
               {getTrendIcon()}
-              <span className={`ml-1 ${trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-gray-400'}`}>
-                {change}
-              </span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">{change}</span>
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-full bg-white/10`}>
+        <div className={`p-3 rounded-lg border ${getColorClasses()}`}>
           {icon}
         </div>
       </div>
@@ -75,20 +72,14 @@ interface ActivityItemProps {
 
 const ActivityItem: React.FC<ActivityItemProps> = ({ title, description, time, icon, iconBg }) => {
   return (
-    <div className="py-4 px-1">
-      <div className="flex items-start">
-        <div className={`${iconBg.replace('bg-', 'bg-').replace('-100', '-900/30')} p-2 rounded-full mr-4`}>
-          {icon}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-white truncate">{title}</p>
-          <p className="text-sm text-gray-400 truncate">{description}</p>
-        </div>
-        <div className="ml-4 flex-shrink-0">
-          <p className="text-xs text-gray-500 flex items-center">
-            <FiClock className="mr-1" /> {time}
-          </p>
-        </div>
+    <div className="flex items-start py-4">
+      <div className={`flex-shrink-0 w-8 h-8 rounded-full ${iconBg} flex items-center justify-center`}>
+        {icon}
+      </div>
+      <div className="ml-3 flex-1 min-w-0">
+        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{title}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{time}</p>
       </div>
     </div>
   );
@@ -105,23 +96,26 @@ interface QuickActionProps {
 
 const QuickAction: React.FC<QuickActionProps> = ({ title, description, icon, to, color }) => {
   const getColorClasses = () => {
-    switch(color) {
-      case 'purple': return 'from-purple-500/20 to-purple-600/10 border-purple-500/30';
-      case 'blue': return 'from-blue-500/20 to-blue-600/10 border-blue-500/30';
-      case 'green': return 'from-green-500/20 to-green-600/10 border-green-500/30';
-      default: return 'from-gray-500/20 to-gray-600/10 border-gray-500/30';
-    }
+    const colors = {
+      purple: 'hover:bg-purple-50 dark:hover:bg-purple-900/20 border-purple-200 dark:border-purple-800',
+      blue: 'hover:bg-blue-50 dark:hover:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+      green: 'hover:bg-green-50 dark:hover:bg-green-900/20 border-green-200 dark:border-green-800',
+    };
+    return colors[color as keyof typeof colors] || colors.purple;
   };
 
   return (
-    <Link to={to} className={`block bg-gradient-to-br ${getColorClasses()} backdrop-blur-lg p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 shadow-lg`}>
+    <Link
+      to={to}
+      className={`block p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${getColorClasses()}`}
+    >
       <div className="flex items-center">
-        <div className="p-2 rounded-full bg-white/10 mr-4">
+        <div className="flex-shrink-0">
           {icon}
         </div>
-        <div>
-          <h3 className="text-base font-medium text-white">{title}</h3>
-          <p className="text-sm text-gray-400">{description}</p>
+        <div className="ml-3">
+          <p className="text-sm font-medium text-gray-900 dark:text-white">{title}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400">{description}</p>
         </div>
       </div>
     </Link>
@@ -250,12 +244,12 @@ export const Dashboard: React.FC = () => {
       <div className="py-6">
         <div className="flex flex-wrap items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-400">Loading your portfolio overview...</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Loading your portfolio overview...</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[1,2,3,4].map((i) => <div key={i} className="h-32 bg-white/5 rounded-xl animate-pulse" />)}
+          {[1,2,3,4].map((i) => <div key={i} className="h-32 bg-gray-200 dark:bg-white/5 rounded-xl animate-pulse" />)}
         </div>
       </div>
     );
@@ -264,7 +258,7 @@ export const Dashboard: React.FC = () => {
   if (error) {
     return (
       <div className="py-6">
-        <div className="text-red-400 text-center font-medium">{error}</div>
+        <div className="text-red-600 dark:text-red-400 text-center font-medium">{error}</div>
       </div>
     );
   }
@@ -273,10 +267,10 @@ export const Dashboard: React.FC = () => {
     <div className="py-6">
       <div className="flex flex-wrap items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-400">Welcome back! Here's an overview of your portfolio.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Welcome back! Here's an overview of your portfolio.</p>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-400">
+        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
           <FiCalendar />
           <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
         </div>
@@ -291,8 +285,8 @@ export const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 lg:col-span-1">
-          <h2 className="text-lg font-medium text-white mb-4">Quick Actions</h2>
+        <div className="bg-white/80 dark:bg-black/40 backdrop-blur-lg rounded-xl border border-gray-200 dark:border-white/10 shadow-lg p-6 lg:col-span-1">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
           <div className="space-y-4">
             {quickActions.map((action, index) => (
               <QuickAction key={index} {...action} />
@@ -301,16 +295,16 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 lg:col-span-2">
+        <div className="bg-white/80 dark:bg-black/40 backdrop-blur-lg rounded-xl border border-gray-200 dark:border-white/10 shadow-lg p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-white">Recent Activity</h2>
-            <Link to="/dashboard/activity" className="text-sm text-purple-400 hover:text-purple-300">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Activity</h2>
+            <Link to="/dashboard/activity" className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300">
               View All
             </Link>
           </div>
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-gray-200 dark:divide-white/10">
             {recentActivity.length === 0 ? (
-              <div className="text-gray-400 text-center py-8">No recent activity found.</div>
+              <div className="text-gray-500 dark:text-gray-400 text-center py-8">No recent activity found.</div>
             ) : (
               recentActivity.map((activity, index) => (
                 <ActivityItem key={index} {...activity} />
@@ -320,47 +314,47 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Popular Content */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 lg:col-span-3">
+        <div className="bg-white/80 dark:bg-black/40 backdrop-blur-lg rounded-xl border border-gray-200 dark:border-white/10 shadow-lg p-6 lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-white">Popular Content</h2>
-            <Link to="/dashboard/analytics" className="text-sm text-purple-400 hover:text-purple-300">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Popular Content</h2>
+            <Link to="/dashboard/analytics" className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300">
               View Analytics
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10">
-              <thead className="bg-black/60">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10">
+              <thead className="bg-gray-50 dark:bg-black/60">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white uppercase tracking-wider">
                     Views
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-gray-200 dark:divide-white/10">
                 {popularContent.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-gray-400">
+                    <td colSpan={3} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                       No popular content available yet. Create some blogs and projects to see analytics here.
                     </td>
                   </tr>
                 ) : (
                   popularContent.map((content, index) => (
-                    <tr key={index} className={`${index % 2 === 0 ? 'bg-white/5' : ''} hover:bg-white/10 transition-colors duration-150`}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50 dark:bg-white/5' : ''} hover:bg-gray-100 dark:hover:bg-white/10 transition-colors duration-150`}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                         {content.title}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                         {content.type}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                         <div className="flex items-center">
-                          <FiEye className="mr-1 text-gray-400" />
+                          <FiEye className="mr-1 text-gray-500 dark:text-gray-400" />
                           {content.views.toLocaleString()}
                         </div>
                       </td>
