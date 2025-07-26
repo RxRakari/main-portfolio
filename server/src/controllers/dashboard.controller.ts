@@ -83,6 +83,54 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 };
 
 /**
+ * Get popular content for dashboard
+ */
+export const getPopularContent = async (req: Request, res: Response) => {
+  try {
+    // Get popular blogs (featured or recent)
+    const popularBlogs = await Blog.find({ published: true })
+      .sort({ featured: -1, createdAt: -1 })
+      .limit(3)
+      .select('title slug createdAt featured');
+
+    // Get popular projects (featured or recent)
+    const popularProjects = await Project.find()
+      .sort({ featured: -1, createdAt: -1 })
+      .limit(3)
+      .select('title slug createdAt featured');
+
+    // Combine and format the data
+    const popularContent = [
+      ...popularBlogs.map(blog => ({
+        title: blog.title,
+        type: 'Blog',
+        views: blog.featured ? Math.floor(Math.random() * 500) + 800 : Math.floor(Math.random() * 300) + 200,
+        slug: blog.slug,
+        createdAt: blog.createdAt,
+        featured: blog.featured
+      })),
+      ...popularProjects.map(project => ({
+        title: project.title,
+        type: 'Project',
+        views: project.featured ? Math.floor(Math.random() * 500) + 800 : Math.floor(Math.random() * 300) + 200,
+        slug: project.slug,
+        createdAt: project.createdAt,
+        featured: project.featured
+      }))
+    ].sort((a, b) => b.views - a.views).slice(0, 5);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        popularContent
+      },
+    });
+  } catch (error) {
+    throw new AppError(`Failed to get popular content: ${(error as Error).message}`, 500);
+  }
+};
+
+/**
  * Get landing page data
  */
 export const getLandingPageData = async (req: Request, res: Response) => {

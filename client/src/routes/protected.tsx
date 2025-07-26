@@ -9,19 +9,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, token } = useAuth();
   const location = useLocation();
   const { showErrorToast } = useToast();
 
-  // DEVELOPMENT MODE: Skip authentication check
-  const isDevelopment = true; // Set to false in production
-
   // Show notification when redirected due to authentication
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && !isDevelopment) {
+    if (!isLoading && !isAuthenticated) {
       showErrorToast('Please login to access this page');
     }
-  }, [isLoading, isAuthenticated, isDevelopment, showErrorToast]);
+  }, [isLoading, isAuthenticated, showErrorToast]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -32,12 +29,12 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // Redirect to login if not authenticated (skip in development mode)
-  if (!isAuthenticated && !isDevelopment) {
+  // Redirect to login if not authenticated
+  if (!isAuthenticated || !token) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  // Render children if authenticated or in development mode
+  // Render children if authenticated
   return <>{children}</>;
 };
 

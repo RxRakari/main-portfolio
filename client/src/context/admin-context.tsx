@@ -66,6 +66,7 @@ interface AdminContextProps {
   sendNewsletterUpdate: (type: string, id: string) => Promise<any>;
   // Dashboard operations
   fetchDashboardStats: () => Promise<any>;
+  fetchPopularContent: () => Promise<any>;
 }
 
 const AdminContext = createContext<AdminContextProps | undefined>(undefined);
@@ -595,6 +596,16 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     }
   };
 
+  const fetchPopularContent = async () => {
+    try {
+      return await dashboardAPI.getPopularContent();
+    } catch (error) {
+      console.error('Error fetching popular content:', error);
+      toast.error('Failed to fetch popular content');
+      throw error;
+    }
+  };
+
   const value = {
     // Blog operations
     fetchBlogs,
@@ -649,6 +660,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     sendNewsletterUpdate,
     // Dashboard operations
     fetchDashboardStats,
+    fetchPopularContent,
   };
 
   return (

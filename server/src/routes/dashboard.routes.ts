@@ -1,5 +1,5 @@
 import express from 'express';
-import { getDashboardStats, getLandingPageData } from '../controllers/dashboard.controller';
+import { getDashboardStats, getLandingPageData, getPopularContent } from '../controllers/dashboard.controller';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.middleware';
 import { catchAsync } from '../middleware/error.middleware';
 
@@ -11,6 +11,13 @@ router.get(
   authMiddleware,
   adminMiddleware,
   catchAsync(getDashboardStats)
+);
+
+router.get(
+  '/admin/popular-content',
+  authMiddleware,
+  adminMiddleware,
+  catchAsync(getPopularContent)
 );
 
 // Public routes

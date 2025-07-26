@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  FiFileText, 
-  FiFolder, 
   FiImage, 
   FiMessageSquare, 
   FiEye, 
@@ -131,9 +129,10 @@ const QuickAction: React.FC<QuickActionProps> = ({ title, description, icon, to,
 };
 
 export const Dashboard: React.FC = () => {
-  const { fetchDashboardStats } = useAdmin();
+  const { fetchDashboardStats, fetchPopularContent } = useAdmin();
   const [stats, setStats] = useState<any[]>([]);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [popularContent, setPopularContent] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -145,58 +144,82 @@ export const Dashboard: React.FC = () => {
         const response = await fetchDashboardStats();
         const counts = response.data.counts;
         const recent = response.data.recent;
-        setStats([
-          { title: 'Total Blogs', value: counts.blogs, icon: <FiFileText size={20} className="text-purple-400" />, color: 'purple' },
-          { title: 'Total Projects', value: counts.projects, icon: <FiFolder size={20} className="text-blue-400" />, color: 'blue' },
-          { title: 'Gallery Items', value: counts.gallery, icon: <FiImage size={20} className="text-green-400" />, color: 'green' },
-          { title: 'Contact Messages', value: counts.contacts, icon: <FiMessageSquare size={20} className="text-orange-400" />, color: 'orange' },
-        ]);
-        // Compose recent activity from blogs, projects, contacts
-        const activities: any[] = [];
-        if (recent.blogs) {
-          recent.blogs.forEach((blog: any) => {
-            activities.push({
-              title: 'New Blog Post',
-              description: blog.title,
-              time: new Date(blog.createdAt).toLocaleString(),
-              icon: <FiFileText className="text-purple-400" />,
-              iconBg: 'bg-purple-100',
-            });
-          });
-        }
-        if (recent.projects) {
-          recent.projects.forEach((project: any) => {
-            activities.push({
-              title: 'New Project',
-              description: project.title,
-              time: new Date(project.createdAt).toLocaleString(),
-              icon: <FiFolder className="text-blue-400" />,
-              iconBg: 'bg-blue-100',
-            });
-          });
-        }
-        if (recent.contacts) {
-          recent.contacts.forEach((contact: any) => {
-            activities.push({
-              title: 'New Contact Message',
-              description: `From: ${contact.name} <${contact.email}>`,
-              time: new Date(contact.createdAt).toLocaleString(),
-              icon: <FiMessageSquare className="text-orange-400" />,
-              iconBg: 'bg-orange-100',
-            });
-          });
-        }
-        // Sort by time descending
-        activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
-        setRecentActivity(activities.slice(0, 8));
-      } catch (err: any) {
-        setError('Failed to load dashboard stats');
+        
+        // Format stats
+        const formattedStats = [
+          {
+            title: 'Total Blogs',
+            value: counts.blogs,
+            icon: <FiEdit size={20} />,
+            color: 'purple',
+            change: `${counts.featuredBlogs} featured`
+          },
+          {
+            title: 'Total Projects',
+            value: counts.projects,
+            icon: <FiPlus size={20} />,
+            color: 'blue',
+            change: `${counts.featuredProjects} featured`
+          },
+          {
+            title: 'Gallery Items',
+            value: counts.gallery,
+            icon: <FiImage size={20} />,
+            color: 'green',
+            change: `${counts.featuredGallery} featured`
+          },
+          {
+            title: 'Contact Messages',
+            value: counts.contacts,
+            icon: <FiMessageSquare size={20} />,
+            color: 'orange',
+            change: `${counts.unreadContacts} unread`
+          }
+        ];
+        
+        setStats(formattedStats);
+        
+        // Format recent activity
+        const allRecent = [
+          ...recent.blogs.map((blog: any) => ({
+            title: blog.title,
+            description: `New blog post published`,
+            time: new Date(blog.createdAt).toLocaleDateString(),
+            icon: <FiEdit size={16} />,
+            iconBg: 'bg-purple-500/20'
+          })),
+          ...recent.projects.map((project: any) => ({
+            title: project.title,
+            description: `New project added`,
+            time: new Date(project.createdAt).toLocaleDateString(),
+            icon: <FiPlus size={16} />,
+            iconBg: 'bg-blue-500/20'
+          })),
+          ...recent.contacts.map((contact: any) => ({
+            title: contact.subject || 'New Contact',
+            description: `Message from ${contact.name}`,
+            time: new Date(contact.createdAt).toLocaleDateString(),
+            icon: <FiMessageSquare size={16} />,
+            iconBg: 'bg-orange-500/20'
+          }))
+        ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 5);
+        
+        setRecentActivity(allRecent);
+        
+        // Fetch popular content
+        const popularResponse = await fetchPopularContent();
+        setPopularContent(popularResponse.data.popularContent);
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data');
       } finally {
         setIsLoading(false);
       }
     };
+    
     getStats();
-  }, [fetchDashboardStats]);
+  }, [fetchDashboardStats, fetchPopularContent]);
 
   const quickActions = [
     { 
@@ -220,14 +243,6 @@ export const Dashboard: React.FC = () => {
       to: '/dashboard/gallery/form',
       color: 'green'
     },
-  ];
-
-  const popularContent = [
-    { title: 'Character Prefix Conditioning', type: 'Blog', views: 1245 },
-    { title: 'E-Commerce Platform', type: 'Project', views: 932 },
-    { title: 'AI Chat Application', type: 'Project', views: 821 },
-    { title: 'Portfolio Dashboard', type: 'Project', views: 654 },
-    { title: 'Task Management App', type: 'Project', views: 543 },
   ];
 
   if (isLoading) {
@@ -328,22 +343,30 @@ export const Dashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
-                {popularContent.map((content, index) => (
-                  <tr key={index} className={`${index % 2 === 0 ? 'bg-white/5' : ''} hover:bg-white/10 transition-colors duration-150`}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                      {content.title}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {content.type}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      <div className="flex items-center">
-                        <FiEye className="mr-1 text-gray-400" />
-                        {content.views.toLocaleString()}
-                      </div>
+                {popularContent.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-8 text-center text-gray-400">
+                      No popular content available yet. Create some blogs and projects to see analytics here.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  popularContent.map((content, index) => (
+                    <tr key={index} className={`${index % 2 === 0 ? 'bg-white/5' : ''} hover:bg-white/10 transition-colors duration-150`}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        {content.title}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {content.type}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <div className="flex items-center">
+                          <FiEye className="mr-1 text-gray-400" />
+                          {content.views.toLocaleString()}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

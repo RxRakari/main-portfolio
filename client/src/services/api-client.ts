@@ -21,6 +21,20 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Add a response interceptor to handle auth errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token is invalid or expired, logout user
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('admin');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Experience API endpoints
 export const experienceAPI = {
   getAll: async (params?: any) => {
@@ -539,6 +553,16 @@ export const dashboardAPI = {
       return response.data;
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+      throw error;
+    }
+  },
+  
+  getPopularContent: async () => {
+    try {
+      const response = await apiClient.get('/dashboard/admin/popular-content');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching popular content:', error);
       throw error;
     }
   },

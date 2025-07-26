@@ -120,106 +120,105 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <div ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden w-full">
+    <div ref={heroRef} className="min-h-screen w-full relative overflow-hidden">
       <HeroHighlight containerClassName="bg-gray-50 dark:bg-black">
-      {/* Floating background elements */}
-      <div 
-        ref={(el) => { floatingElementsRef.current[0] = el; }}
-        className="absolute top-20 left-20 w-32 h-32 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
-      />
-      <div 
-        ref={(el) => { floatingElementsRef.current[1] = el; }}
-        className="absolute top-40 right-32 w-24 h-24 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
-      />
-      <div 
-        ref={(el) => { floatingElementsRef.current[2] = el; }}
-        className="absolute bottom-32 left-40 w-20 h-20 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
-      />
-
-      <div className="flex items-center justify-between w-full max-w-7xl px-4 md:px-0">
-        {/* Content Section */}
-        <div className="flex flex-col gap-6 max-w-2xl">
-          <h1 
-            ref={titleRef}
-            className="text-6xl md:text-8xl font-bold text-white leading-tight"
-          >
-            Hey there!
-            <span className="inline-block ml-4 animate-wave">👋🏼</span>
-          </h1>
-          
-          <p 
-            ref={nameRef}
-            className="text-4xl md:text-5xl font-semibold text-purple-500"
-            style={{
-              backgroundSize: "200% 100%",
-              backgroundPosition: "0% center"
-            }}
-          >
-            I'm {bio.FirstName} {bio.LastName}
-          </p>
-          
-          <span 
-            ref={bioRef}
-            className="text-base md:text-[1.4rem] text-gray-300 max-w-[650px] leading-relaxed"
-          >
-            {bio.ShortBio}
-          </span>
-
-          <div 
-            ref={buttonRef}
-            className="flex items-center gap-3 w-fit rounded-[33px] p-4 px-6 mt-8 backdrop-blur-[10px] border border-[#fafafa0d] hover:border-[#fafafa1a] transition-all duration-300 cursor-pointer group"
-          >
-            <a href="#about" className="text-sm md:text-base text-white font-medium">
-              More About Me
-            </a>
-            <BsArrowRightCircle className="text-white text-lg arrow-icon transition-transform duration-300" />
-          </div>
-        </div>
-
-        {/* Image Section */}
+        {/* Floating background elements */}
         <div 
-          ref={imageRef}
-          className="hidden lg:flex items-center justify-center"
-        >
-          <div className="relative">
-            {/* Glass effect frame */}
-            <div className="w-[400px] h-[400px] rounded-full backdrop-blur-[10px] border-4 border-purple-500 flex items-center justify-center relative overflow-hidden">
-              {/* Placeholder for image */}
-              <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-[33px] flex items-center justify-center">
-                <div className="text-6xl">👨‍💻</div>
+          ref={(el) => { floatingElementsRef.current[0] = el; }}
+          className="absolute top-20 left-20 w-32 h-32 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
+        />
+        <div 
+          ref={(el) => { floatingElementsRef.current[1] = el; }}
+          className="absolute top-40 right-32 w-24 h-24 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
+        />
+        <div 
+          ref={(el) => { floatingElementsRef.current[2] = el; }}
+          className="absolute bottom-32 left-40 w-20 h-20 rounded-full backdrop-blur-[10px] border border-[#fafafa0d] opacity-10"
+        />
+
+        <div className="flex items-center justify-between w-full max-w-7xl px-4 md:px-6 lg:px-8 mx-auto min-h-screen">
+          {/* Content Section */}
+          <div className="flex flex-col gap-6 max-w-2xl">
+            <h1 
+              ref={titleRef}
+              className="text-6xl md:text-8xl font-bold text-white leading-tight"
+            >
+              Hey there!
+              <span className="inline-block ml-4 animate-wave">👋🏼</span>
+            </h1>
+            
+            <p 
+              ref={nameRef}
+              className="text-4xl md:text-5xl font-semibold text-purple-500"
+              style={{
+                backgroundSize: "200% 100%",
+                backgroundPosition: "0% center"
+              }}
+            >
+              I'm {bio.FirstName} {bio.LastName}
+            </p>
+            
+            <span 
+              ref={bioRef}
+              className="text-base md:text-[1.4rem] text-gray-300 max-w-[650px] leading-relaxed"
+            >
+              {bio.ShortBio}
+            </span>
+
+            <div 
+              ref={buttonRef}
+              className="flex items-center gap-3 w-fit rounded-[33px] p-4 px-6 mt-8 backdrop-blur-[10px] border border-[#fafafa0d] hover:border-[#fafafa1a] transition-all duration-300 cursor-pointer group"
+            >
+              <a href="#about" className="text-sm md:text-base text-white font-medium">
+                More About Me
+              </a>
+              <BsArrowRightCircle className="text-white text-lg arrow-icon transition-transform duration-300" />
+            </div>
+          </div>
+
+          {/* Image Section */}
+          <div 
+            ref={imageRef}
+            className="hidden lg:flex items-center justify-center"
+          >
+            <div className="relative">
+              {/* Glass effect frame */}
+              <div className="w-[400px] h-[400px] rounded-full backdrop-blur-[10px] border-4 border-purple-500 flex items-center justify-center relative overflow-hidden">
+                {/* Placeholder for image */}
+                <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-[33px] flex items-center justify-center">
+                  <div className="text-6xl">👨‍💻</div>
+                </div>
+                
+                {/* Subtle glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-[33px] blur-xl opacity-50 -z-10" />
               </div>
-              
-              {/* Subtle glow effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-[33px] blur-xl opacity-50 -z-10" />
             </div>
           </div>
         </div>
         
-      </div>
-      
 
-      {/* Custom styles */}
-      <style>{`
-        @keyframes wave {
-          0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(20deg); }
-          75% { transform: rotate(-10deg); }
-        }
-        
-        .animate-wave {
-          animation: wave 2s ease-in-out infinite;
-          transform-origin: 70% 70%;
-        }
-        
-        .text-gradient {
-          animation: gradient-shift 3s ease-in-out infinite;
-        }
-        
-        @keyframes gradient-shift {
-          0%, 100% { background-position: 0% center; }
-          50% { background-position: 200% center; }
-        }
-      `}</style>
+        {/* Custom styles */}
+        <style>{`
+          @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            75% { transform: rotate(-10deg); }
+          }
+          
+          .animate-wave {
+            animation: wave 2s ease-in-out infinite;
+            transform-origin: 70% 70%;
+          }
+          
+          .text-gradient {
+            animation: gradient-shift 3s ease-in-out infinite;
+          }
+          
+          @keyframes gradient-shift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 200% center; }
+          }
+        `}</style>
       </HeroHighlight>
     </div>
   );

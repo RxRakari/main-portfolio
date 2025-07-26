@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { API_URL } from '../helpers/api_url';
 import { toast } from 'sonner';
+import { jwtDecode } from 'jwt-decode';
 
 interface Admin {
   id: string;
@@ -16,6 +17,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  validateToken: () => boolean;
 }
 
 interface AuthProviderProps {
@@ -29,17 +31,57 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Validate token expiration
+  const validateToken = (): boolean => {
+    const storedToken = localStorage.getItem('auth_token');
+    if (!storedToken) return false;
+
+    try {
+      const decoded: any = jwtDecode(storedToken);
+      const currentTime = Date.now() / 1000;
+      
+      if (decoded.exp < currentTime) {
+        // Token is expired
+        logout();
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      // Invalid token
+      logout();
+      return false;
+    }
+  };
+
   useEffect(() => {
     const storedToken = localStorage.getItem('auth_token');
     const storedAdmin = localStorage.getItem('admin');
     
-    if (storedToken && storedAdmin) {
+    if (storedToken && storedAdmin && validateToken()) {
       setToken(storedToken);
       setAdmin(JSON.parse(storedAdmin));
+    } else {
+      // Clear invalid data
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('admin');
     }
     
     setIsLoading(false);
   }, []);
+
+  // Periodic token validation
+  useEffect(() => {
+    if (token) {
+      const interval = setInterval(() => {
+        if (!validateToken()) {
+          toast.error('Session expired. Please login again.');
+        }
+      }, 60000); // Check every minute
+
+      return () => clearInterval(interval);
+    }
+  }, [token]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -93,10 +135,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = {
     admin,
     token,
-    isAuthenticated: !!admin,
+    isAuthenticated: !!admin && !!token && validateToken(),
     isLoading,
     login,
     logout,
+    validateToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

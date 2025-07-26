@@ -1,5 +1,5 @@
 2. Make UI changes where necessary
 
-4. you haven't integrated the following pages and its form -> gallery, testimonials, contacts, projects and blogs. check the server if you need to 
+3. Add light/dark mode toggle to the dashboard
 
-5. and then in the landing page should also use skeleton loading, error and empty state handling that is sleek and modern and match our exsisting color scheme. fix bug in experience controller as well
+4. Integrate landing page
