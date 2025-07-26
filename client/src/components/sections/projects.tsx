@@ -170,7 +170,7 @@ export const techIcons: { [key: string]: React.JSX.Element } = {
 };
 
 export default function ProjectsSection() {
-  const [filter, setFilter] = useState("all");
+  const [filter] = useState("all");
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -329,25 +329,6 @@ export default function ProjectsSection() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <Heading heading={"Featured Projects"} paragraph={"A collection of projects that showcase my skills in modern web development, from concept to deployment."} />
-
-        {/* Filter Buttons */}
-        <div ref={filterRef} className="flex justify-center mb-12">
-          <div className="flex gap-2 p-2 backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
-            {["all", "featured", "other"].map((filterType) => (
-              <button
-                key={filterType}
-                onClick={() => setFilter(filterType)}
-                className={`px-6 py-2 rounded-[25px] text-sm font-medium transition-all duration-300 capitalize ${
-                  filter === filterType
-                    ? "bg-white text-black"
-                    : "text-gray-300 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {filterType}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Projects Grid */}
         <div className="my-12">

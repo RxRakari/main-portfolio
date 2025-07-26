@@ -118,7 +118,7 @@ export default function AboutSection() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-            <Heading heading={"About Me"} paragraph={"Chukwunonso Prosper is a skilled full-stack developer from Lagos, Nigeria, with a passion for building scalable websites and applications. With over three years of experience in the tech ecosystem, he has honed his expertise in crafting innovative solutions that address real-world problems."} />
+            <Heading heading={"About Me"} paragraph={"Caleb Kalejaiye is a skilled full-stack developer from Lagos, Nigeria, with a passion for building scalable websites and applications. With over three years of experience in the tech ecosystem, he has honed his expertise in crafting innovative solutions that address real-world problems."} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
@@ -139,7 +139,7 @@ export default function AboutSection() {
             <div className="professional-focus">
               <h3 className="text-2xl font-bold mb-4 text-purple-400">Professional Focus</h3>
               <p className="text-gray-400">
-                Prosper specializes in both front-end and back-end development. He has worked with several technologies and tools, focusing on building responsive, scalable, and high-performance applications.
+                Caleb specializes in both front-end and back-end development. He has worked with several technologies and tools, focusing on building responsive, scalable, and high-performance applications.
               </p>
             </div>
 
@@ -162,7 +162,7 @@ export default function AboutSection() {
             <div className="community-contribution">
               <h3 className="text-2xl font-bold mb-4 text-purple-400">Community & Open Source</h3>
               <p className="text-gray-400">
-                Chukwunonso is committed to contributing to the tech community. His projects, such as the open-source CryptiaJS, highlight his dedication to sharing knowledge and resources with other developers.
+                Caleb is committed to contributing to the tech community. His projects, such as the open-source Bannerly, highlight his dedication to sharing knowledge and resources with other developers.
               </p>
             </div>
 
