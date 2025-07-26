@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.34.0",
+    "@types/node": "^24.1.0",
+    "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.20.1",

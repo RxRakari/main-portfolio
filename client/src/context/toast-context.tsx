@@ -49,7 +49,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const showWarningToast = (message: string) => toast.warning(message);
   
   const showLoadingToast = (
-    message: string, 
+    _message: string, 
     promise: Promise<any>, 
     options: { loading: string; success: string; error: string }
   ) => {

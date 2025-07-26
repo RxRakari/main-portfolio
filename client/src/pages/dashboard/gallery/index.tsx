@@ -9,21 +9,6 @@ import { TableSkeleton } from '../../../components/ui/dashboard/skeleton';
 import { useAdmin } from '../../../context/admin-context';
 import { toast } from 'sonner';
 
-// Status badge component
-interface FeaturedBadgeProps {
-  featured: boolean;
-}
-
-const FeaturedBadge: React.FC<FeaturedBadgeProps> = ({ featured }) => {
-  if (!featured) return null;
-  
-  return (
-    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white">
-      Featured
-    </span>
-  );
-};
-
 const GalleryManagement: React.FC = () => {
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +17,6 @@ const GalleryManagement: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [categories, setCategories] = useState<{value: string, label: string}[]>([]);
 
   const { fetchGalleryItems, deleteGalleryItem, toggleGalleryItemFeatured } = useAdmin();
