@@ -152,7 +152,7 @@ export const ExperienceSection = () => {
   // If still loading or no experiences, show loading state
   if (isLoading) {
     return (
-      <section id="experience" className="py-36 relative overflow-hidden">
+      <section id="experience" className="relative overflow-hidden">
         <div className="max-w-[1200px] mx-auto px-4">
           <h2 className="text-6xl font-medium mb-6">Experience</h2>
           <p className="text-2xl text-gray-400 mb-24">Loading experience data...</p>
@@ -164,7 +164,7 @@ export const ExperienceSection = () => {
   // If error and no experiences, show error state
   if (error && experiences.length === 0) {
     return (
-      <section id="experience" className="py-36 relative overflow-hidden">
+      <section id="experience" className="relative overflow-hidden">
         <div className="max-w-[1200px] mx-auto px-4">
           <h2 className="text-6xl font-medium mb-6">Experience</h2>
           <p className="text-2xl text-gray-400 mb-24">Failed to load experience data.</p>
@@ -177,7 +177,7 @@ export const ExperienceSection = () => {
     <section 
       id="experience" 
       ref={sectionRef} 
-      className="py-36 relative overflow-hidden"
+      className="relative overflow-hidden"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -192,8 +192,8 @@ export const ExperienceSection = () => {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-6xl font-medium mb-6">Experience</h2>
-          <p className="text-2xl text-gray-400 mb-24 max-w-2xl">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Experience</h2>
+          <p className="text-lg text-gray-400 mb-24 max-w-2xl">
             My professional journey through tech, with a focus on building innovative and scalable solutions.
           </p>
         </motion.div>
@@ -243,10 +243,10 @@ export const ExperienceSection = () => {
             <div className="mb-8">
               <div className="flex items-center gap-3 text-purple-400 mb-3">
                 <FaAward />
-                <span className="text-lg font-medium uppercase tracking-wider">Position</span>
+                <span className="text-[1rem] font-medium uppercase tracking-wider">Position</span>
               </div>
-              <h3 className="text-4xl font-medium mb-2">{experiences[activeExperience].title}</h3>
-              <div className="flex flex-wrap gap-6 mt-4 text-[1.2rem] text-gray-400">
+              <h3 className="text-[1.5rem] font-medium mb-2">{experiences[activeExperience].title}</h3>
+              <div className="flex flex-wrap gap-6 mt-4 text-[1rem] text-gray-400">
                 <div className="flex items-center gap-2">
                   <FaCalendarAlt className="text-gray-500" />
                   {experiences[activeExperience].period}
@@ -259,13 +259,13 @@ export const ExperienceSection = () => {
             </div>
             
             <div className="bg-white/5 border border-gray-800 rounded-[25px] p-8 mb-12">
-              <p className="text-2xl text-gray-300 leading-relaxed font-light">
+              <p className="text-[1.2rem] text-gray-300 leading-relaxed font-light">
                 {experiences[activeExperience].description}
               </p>
             </div>
             
             <div className="mb-12">
-              <h4 className="text-2xl font-medium mb-6 flex items-center gap-3">
+              <h4 className="text-[1.2rem] font-medium mb-6 flex items-center gap-3">
                 <span className="text-purple-400">✦</span> Key Achievements
               </h4>
               <motion.ul 
@@ -277,7 +277,7 @@ export const ExperienceSection = () => {
                 {experiences[activeExperience].achievements.map((achievement, index) => (
                   <motion.li 
                     key={index} 
-                    className="text-xl text-gray-300 leading-relaxed font-light list-disc pl-2"
+                    className="text-[1rem] text-gray-300 leading-relaxed font-light list-disc pl-2"
                     variants={itemVariants}
                   >
                     {achievement}
@@ -287,14 +287,14 @@ export const ExperienceSection = () => {
             </div>
             
             <div>
-              <h4 className="text-2xl font-medium mb-6 flex items-center gap-3">
+              <h4 className="text-[1.2rem] font-medium mb-6 flex items-center gap-3">
                 <span className="text-purple-400">⚙</span> Technologies Used
               </h4>
               <div className="flex flex-wrap gap-4">
                 {experiences[activeExperience].technologies.map((tech, index) => (
                   <motion.span 
                     key={index} 
-                    className="px-6 py-3 bg-white/5 border border-gray-800 rounded-[20px] text-gray-300 text-[1.2rem] transition-all hover:bg-white/10 hover:border-purple-500/50"
+                    className="px-6 py-3 bg-white/5 border border-gray-800 rounded-[20px] text-gray-300 text-[0.9rem] transition-all hover:bg-white/10 hover:border-purple-500/50"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}

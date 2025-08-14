@@ -94,7 +94,7 @@ const BlogDetails = () => {
       <div className="ml-[200px] flex justify-center mt-[100px]">
         <div className="w-full py-24 px-4 max-w-[1200px]">
           <button
-            className="text-gray-400 text-[1.5rem] tracking-wider mb-16 hover:text-gray-300 flex items-center gap-2"
+            className="text-gray-400 text-[1.2rem] tracking-wider mb-16 hover:text-gray-300 flex items-center gap-2"
             onClick={() => navigate('/blogs')}
           >
             <span>←</span> BACK TO THE MAIN BLOG

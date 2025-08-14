@@ -324,7 +324,7 @@ export default function ProjectsSection() {
     <section 
       ref={sectionRef}
       id="projects-section" 
-      className="min-h-screen bg-black text-white py-20 px-4 md:px-10"
+      className=" bg-black text-white  px-4 md:px-10"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}

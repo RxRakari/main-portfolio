@@ -32,6 +32,7 @@ a, button {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgb(168 85 247) rgb(17 24 39);
+  scroll-behavior: smooth;
 }
 
 @keyframes scroll {

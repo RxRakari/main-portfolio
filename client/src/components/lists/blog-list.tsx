@@ -40,7 +40,7 @@ const BlogList = () => {
         <h1 className="font-medium text-2xl md:text-4xl pb-4 md:pb-[35px]">Featured</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-2">
         {blogs.map((blog, index) => (
-            <BlogCard key={index} title={blog.title} paragraph={blog.info} author={blog.author} time={blog.time} avatar={blog.avatar} onClick={() => navigate(`/blogs/details/${blog.id}`)} />
+            <BlogCard key={index} title={blog.title} paragraph={blog.info} author={blog.author} time={blog.time} avatar={blog.avatar} onClick={() => navigate(`/blogs/${blog.id}`)} />
         ))}
         </div>
         </div>
@@ -49,7 +49,7 @@ const BlogList = () => {
         <h1 className="font-medium text-2xl md:text-4xl pb-4 md:pb-[35px]">All Posts</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-2">
         {blogs.map((blog, index) => (
-            <BlogCard key={index} title={blog.title} paragraph={blog.info} author={blog.author} time={blog.time} avatar={blog.avatar} onClick={() => navigate(`/blogs/details/${blog.id}`)} />
+            <BlogCard key={index} title={blog.title} paragraph={blog.info} author={blog.author} time={blog.time} avatar={blog.avatar} onClick={() => navigate(`/blogs/${blog.id}`)} />
         ))}
         </div>
         </div>

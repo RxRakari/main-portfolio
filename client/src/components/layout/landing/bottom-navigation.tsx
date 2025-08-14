@@ -14,7 +14,7 @@ export const BottomNavigation = () => {
         { path: '/projects', label: 'Projects', icon: <FiGrid className="w-5 h-5" /> },
         { path: '/gallery', label: 'Gallery', icon: <FiImage className="w-5 h-5" /> },
         { path: '/blogs', label: 'Blog', icon: <FiFileText className="w-5 h-5" /> },
-        { path: '/contact', label: 'Contact', icon: <FiMail className="w-5 h-5" /> },
+        { path: '#contact', label: 'Contact', icon: <FiMail className="w-5 h-5" /> },
     ];
 
     // Hide navigation when scrolling down, show when scrolling up

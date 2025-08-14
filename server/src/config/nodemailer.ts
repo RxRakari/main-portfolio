@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create a transporter object
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
   auth: {
@@ -12,7 +11,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Function to send email
 export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
     const mailOptions = {

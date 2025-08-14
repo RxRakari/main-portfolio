@@ -8,7 +8,7 @@ import ContactSection from '../../components/sections/contact';
 
 export const Home: React.FC = () => {
   return (
-    <main className='bg-black text-white flex flex-col items-center justify-center'>
+    <main className='bg-black text-white flex flex-col items-center justify-center gap-[200px]'>
     <HeroSection />
     <AboutSection />
     <ProjectsSection />

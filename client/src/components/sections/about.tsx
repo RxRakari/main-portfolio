@@ -1,58 +1,14 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FaReact, FaPhp, FaHtml5, FaCss3Alt, FaGithub, FaTwitter, FaInstagram, FaTiktok } from "react-icons/fa";
-import { SiJavascript, SiMysql, SiGit } from "react-icons/si";
+import { FaReact, FaNodeJs } from "react-icons/fa";
+import { SiJavascript, SiGit, SiTypescript, SiSolidity, SiTailwindcss } from "react-icons/si";
 import Heading from "../ui/heading";
+import { skills } from "../../config/about/skills";
+import { socialLinks } from "../../config/about/social-links";
+import { IconBrandNextjs } from "@tabler/icons-react";
 
-// Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
-
-const skills = [
-  {
-    title: "Full-Stack Development",
-    description: "Building responsive and scalable applications from front to back end.",
-    icon: <FaReact className="text-3xl text-cyan-400" />,
-  },
-  {
-    title: "Web Applications",
-    description: "Creating user-friendly websites and web applications with modern technologies.",
-    icon: <FaPhp className="text-3xl text-indigo-400" />,
-  },
-  {
-    title: "Mobile Development",
-    description: "Developing cross-platform mobile applications using React Native.",
-    icon: <FaReact className="text-3xl text-cyan-400" />,
-  },
-  {
-    title: "Problem Solving",
-    description: "Dedicated to finding innovative solutions to complex technical challenges.",
-    icon: <SiGit className="text-3xl text-orange-500" />,
-  },
-];
-
-const socialLinks = [
-  {
-    name: "GitHub",
-    icon: <FaGithub />,
-    url: "https://github.com/chukwunonsoprosper",
-  },
-  {
-    name: "Twitter",
-    icon: <FaTwitter />,
-    url: "https://twitter.com/prospercode",
-  },
-  {
-    name: "Instagram",
-    icon: <FaInstagram />,
-    url: "https://instagram.com/chukwunonso_prosperr",
-  },
-    {
-    name: "TikTok",
-    icon: <FaTiktok />,
-    url: "https://tiktok.com/@chukwunonso.prosp",
-  },
-];
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -114,7 +70,7 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="min-h-screen bg-black text-white py-20 px-4 md:px-10 overflow-hidden"
+      className="bg-black text-white py-20 px-4 md:px-10 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
@@ -147,12 +103,12 @@ export default function AboutSection() {
               <h3 className="text-2xl font-bold mb-4 text-purple-400">Technical Skills</h3>
               <ul className="grid grid-cols-2 gap-4 text-gray-300">
                 <li className="flex items-center gap-2"><SiJavascript className="text-yellow-400" /> JavaScript</li>
-                <li className="flex items-center gap-2"><FaPhp className="text-indigo-400" /> PHP</li>
-                <li className="flex items-center gap-2"><FaHtml5 className="text-orange-500" /> HTML</li>
-                <li className="flex items-center gap-2"><FaCss3Alt className="text-blue-500" /> CSS</li>
+                <li className="flex items-center gap-2"><SiTypescript className="text-blue-400" /> Typescript</li>
+                <li className="flex items-center gap-2"><IconBrandNextjs className="text-white" /> NextJS</li>
+                <li className="flex items-center gap-2"><SiTailwindcss className="text-blue-500" /> TailwindCSS</li>
                 <li className="flex items-center gap-2"><FaReact className="text-cyan-400" /> ReactJS / React Native</li>
-                <li className="flex items-center gap-2"><FaPhp className="text-red-500" /> Laravel</li>
-                <li className="flex items-center gap-2"><SiMysql className="text-cyan-600" /> MySQL</li>
+                <li className="flex items-center gap-2"><FaNodeJs className="text-green-500" /> NodeJS/Express</li>
+                <li className="flex items-center gap-2"><SiSolidity className="text-purple-600" /> Solidity</li>
                 <li className="flex items-center gap-2"><SiGit className="text-orange-600" /> Git & GitHub</li>
               </ul>
             </div>
