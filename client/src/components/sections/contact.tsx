@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { doodle } from "../../assets";
-import { FaGithub, FaTwitter, FaLinkedinIn, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt, FaPaperPlane, FaCheck } from "react-icons/fa";
+import { FaPaperPlane, FaCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { socialLinks } from "../../config/contact/social-links";
+import { contactInfo } from "../../config/contact/contact-info";
 
 export default function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -20,33 +22,6 @@ export default function ContactSection() {
       setForm({ name: "", email: "", message: "" });
     }, 1200);
   };
-
-  const contactInfo = [
-    {
-      icon: <FaEnvelope className="text-2xl" />,
-      label: "Email",
-      value: "hello@example.com",
-      link: "mailto:hello@example.com"
-    },
-    {
-      icon: <FaPhoneAlt className="text-2xl" />,
-      label: "Phone",
-      value: "+1 (555) 123-4567",
-      link: "tel:+15551234567"
-    },
-    {
-      icon: <FaMapMarkerAlt className="text-2xl" />,
-      label: "Location",
-      value: "San Francisco, CA",
-      link: null
-    }
-  ];
-
-  const socialLinks = [
-    { icon: <FaGithub />, url: "https://github.com", label: "GitHub" },
-    { icon: <FaTwitter />, url: "https://twitter.com", label: "Twitter" },
-    { icon: <FaLinkedinIn />, url: "https://linkedin.com", label: "LinkedIn" }
-  ];
 
   return (
     <section id="contact" className="min-h-screen bg-black text-white px-4 md:px-10 relative overflow-hidden">
