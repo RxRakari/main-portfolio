@@ -254,6 +254,11 @@ const ExperienceForm: React.FC = () => {
     }
   };
 
+  // Handle cancel action
+  const handleCancel = () => {
+    navigate('/dashboard/experience');
+  };
+
   if (isFetching) {
     return (
       <div className="py-6">
@@ -501,11 +506,13 @@ const ExperienceForm: React.FC = () => {
           </div>
         </FormSection>
 
+        {/* FIXED: Using onSubmit instead of onPrimaryClick for the primary button */}
         <FormActions
-          primaryLabel={isEditMode ? 'Update Experience' : 'Save Experience'}
-          secondaryLabel="Cancel"
-          onSecondaryClick={() => navigate('/dashboard/experience')}
-          isLoading={isLoading}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          submitLabel={isEditMode ? 'Update Experience' : 'Save Experience'}
+          cancelLabel="Cancel"
+          isSubmitting={isLoading}
         />
       </form>
     </div>
@@ -513,4 +520,3 @@ const ExperienceForm: React.FC = () => {
 };
 
 export default ExperienceForm;
-

@@ -63,7 +63,7 @@ const ExperienceManagement: React.FC = () => {
         
         const response = await fetchExperiences();
         if (response?.experiences) {
-          setExperiences(response.experiences);
+          setExperiences(response?.experiences);
         } else {
           setError('No experiences found');
         }
@@ -76,7 +76,7 @@ const ExperienceManagement: React.FC = () => {
     };
     
     getExperiences();
-  }, [fetchExperiences]);
+  }, [fetchExperiences, experiences]);
 
   // Filter experiences based on search query and filters
   const filteredExperiences = experiences.filter((experience) => {
