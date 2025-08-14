@@ -23,6 +23,7 @@ const Navbar = ({ userName, toggleSidebar, isMobile }: NavbarProps) => {
   
   // Use admin name from auth context if available, otherwise use prop
   const displayName = admin?.username || userName || 'Admin';
+  const email = admin?.email;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -136,7 +137,7 @@ const Navbar = ({ userName, toggleSidebar, isMobile }: NavbarProps) => {
           
           {/* Notifications Dropdown */}
           {isNotificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white/95 dark:bg-black/80 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-20 border border-gray-200 dark:border-white/10">
+            <div className="absolute right-0 mt-2 w-80 bg-white/95 dark:bg-black/80 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-50 border border-gray-200 dark:border-white/10">
               <div className="px-4 py-3 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/40">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
               </div>
@@ -208,10 +209,10 @@ const Navbar = ({ userName, toggleSidebar, isMobile }: NavbarProps) => {
           
           {/* Profile Dropdown */}
           {isProfileOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-black/80 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-20 border border-gray-200 dark:border-white/10">
+            <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-black/80 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden z-50 border border-gray-200 dark:border-white/10">
               <div className="px-4 py-3 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/40">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{displayName}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">admin@example.com</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{email}</p>
               </div>
               <div className="py-1">
                 <Link to="/dashboard/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white">

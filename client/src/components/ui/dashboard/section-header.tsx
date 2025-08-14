@@ -24,7 +24,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   children,
 }) => {
   return (
-    <div className="mb-6 bg-black/40 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6">
+    <div className="mb-6 bg-black/40 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 z-10">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
         <div className="flex items-center mb-4 md:mb-0">
           {icon && <div className="mr-3 text-white">{icon}</div>}

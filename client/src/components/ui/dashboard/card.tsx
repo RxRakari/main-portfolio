@@ -26,7 +26,7 @@ const Card: React.FC<CardProps> = ({
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className={`bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-lg ${className}`}>
+      <div className={`bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden z-10 shadow-lg ${className}`}>
         <div className="animate-pulse">
           <div className="h-16 bg-white/5 px-6 flex items-center justify-between">
             <div className="flex items-center">

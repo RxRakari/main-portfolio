@@ -93,7 +93,7 @@ const DataTable: React.FC<DataTableProps> = ({
   }
   
   return (
-    <div className={`bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-lg ${className}`}>
+    <div className={`bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-lg z-10 ${className}`}>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/10">
           <thead className="bg-black/60">

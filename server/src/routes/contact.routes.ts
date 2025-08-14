@@ -17,10 +17,10 @@ router.post('/', catchAsync(submitContactMessage));
 
 // Admin routes
 router.use('/admin', authMiddleware, adminMiddleware);
-router.get('/admin', catchAsync(getAllContactMessages));
-router.get('/admin/:id', catchAsync(getContactMessage));
-router.patch('/admin/:id/read', catchAsync(toggleReadStatus));
-router.patch('/admin/:id/archive', catchAsync(toggleArchivedStatus));
-router.delete('/admin/:id', catchAsync(deleteContactMessage));
+router.get('/', catchAsync(getAllContactMessages));
+router.get('/:id', catchAsync(getContactMessage));
+router.patch('/:id/read', catchAsync(toggleReadStatus));
+router.patch('/:id/archive', catchAsync(toggleArchivedStatus));
+router.delete('/:id', catchAsync(deleteContactMessage));
 
 export default router; 

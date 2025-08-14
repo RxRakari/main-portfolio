@@ -374,14 +374,14 @@ const BlogForm: React.FC = () => {
   }
 
   return (
-    <div className="py-6">
+    <div className="py-6 z-10">
       <SectionHeader
         title={isEditMode ? "Edit Blog Post" : "Create New Blog Post"}
         description={isEditMode ? "Update an existing blog post" : "Create a new blog post for your website"}
         icon={<FiFileText size={24} />}
       />
 
-      <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6">
+      <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6 z-10">
         <FormSection title="Basic Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
