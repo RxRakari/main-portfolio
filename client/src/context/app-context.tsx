@@ -5,7 +5,8 @@ import apiClient, {
   experienceAPI,
   galleryAPI,
   testimonialAPI,
-  contactAPI
+  contactAPI,
+  newsletterAPI
 } from '../services/api-client';
 
 interface LandingPageData {
@@ -42,6 +43,9 @@ interface AppContextProps {
   
   // Contact operations
   submitContactForm: (data: any) => Promise<any>;
+
+  // SUBSCRIBE TO NEWSLETTER
+  subscribeToNewsletter: (data: any) => Promise<any>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -176,6 +180,15 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   };
 
+  const subscribeToNewsletter = async (data: any) => {
+    try {
+      return await newsletterAPI.subscribe(data);
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      throw error;
+    }
+  };
+
   const value = {
     landingPageData,
     isLoading,
@@ -188,7 +201,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     fetchExperiences,
     fetchGalleryItems,
     fetchTestimonials,
-    submitContactForm
+    submitContactForm,
+    subscribeToNewsletter
   };
 
   return (

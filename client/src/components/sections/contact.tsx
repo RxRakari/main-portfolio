@@ -4,24 +4,39 @@ import { FaPaperPlane, FaCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { socialLinks } from "../../config/contact/social-links";
 import { contactInfo } from "../../config/contact/contact-info";
+import { useApp } from "../../context/app-context";
 
 export default function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("idle");
+  const { submitContactForm } = useApp();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
-    // Simulate async send
-    setTimeout(() => {
-      setStatus("success");
-      setForm({ name: "", email: "", message: "" });
-    }, 1200);
-  };
+  
+    try {
+      const response = await submitContactForm(form);
+      if (response.status === "success") {
+        setStatus("success");
+        setForm({ name: "", email: "", message: "" });
+  
+        // Reset back to default after 3 seconds
+        setTimeout(() => {
+          setStatus("");
+        }, 3000);
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
+  };  
 
   return (
     <section id="contact" className="min-h-screen bg-black text-white px-4 md:px-10 relative overflow-hidden">

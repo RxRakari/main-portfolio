@@ -28,7 +28,6 @@ const NewsletterSubscriberSchema = new Schema(
     },
     unsubscribeToken: {
       type: String,
-      required: true,
       unique: true,
     },
   },

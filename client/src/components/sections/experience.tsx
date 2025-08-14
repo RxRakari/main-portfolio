@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FaCalendarAlt, FaMapMarkerAlt, FaAward, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { experienceAPI } from '../../services/api-client';
+import Heading from '../ui/heading';
 
 // Interface for experience data
 interface ExperienceData {
@@ -191,12 +192,19 @@ export const ExperienceSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
+          className='md:flex flex-col hidden'
         >
           <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Experience</h2>
-          <p className="text-lg text-gray-400 mb-24 max-w-2xl">
+          <p className="md:text-lg text-base text-gray-400 mb-24 max-w-2xl">
             My professional journey through tech, with a focus on building innovative and scalable solutions.
           </p>
         </motion.div>
+        
+        <Heading
+        className="md:hidden flex flex-col"
+        heading={"Experience"}
+        paragraph={"My professional journey through tech, with a focus on building innovative and scalable solutions."}
+         />
         
         <div className="flex flex-col md:flex-row gap-20">
           {/* Company tabs */}

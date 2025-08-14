@@ -90,7 +90,7 @@ export const submitContactMessage = async (req: Request, res: Response) => {
     const { name, email, subject, message } = req.body;
     
     // Validate input
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !message) {
       throw new AppError('Please provide name, email, subject and message', 400);
     }
     

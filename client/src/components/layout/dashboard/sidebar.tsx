@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '../../../context/auth-context';
 import { useTheme } from '../../../context/theme-context';
+import { FaNewspaper } from 'react-icons/fa';
 
 interface SubMenuItemProps {
   title: string;
@@ -105,6 +106,11 @@ export const Sidebar = () => {
       title: 'Contact Messages',
       path: '/dashboard/contacts',
       icon: <FiMessageSquare className="w-5 h-5" />
+    },
+    {
+      title: 'Newsletter',
+      path: '/dashboard/newsletter',
+      icon: <FaNewspaper className="w-5 h-5" />
     },
     {
       title: 'Settings',

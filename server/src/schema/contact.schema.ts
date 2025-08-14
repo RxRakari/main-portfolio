@@ -25,7 +25,6 @@ const ContactSchema = new Schema(
     },
     subject: {
       type: String,
-      required: true,
       trim: true,
     },
     message: {

@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FiSend } from "react-icons/fi";
 import { doodle } from "../../assets";
 import Heading from "../ui/heading";
+import { useApp } from "../../context/app-context";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,18 +13,17 @@ export default function NewsletterSection() {
   const [status, setStatus] = useState("idle"); // idle, loading, success, error
   const [message, setMessage] = useState("");
   const sectionRef = useRef<HTMLElement>(null);
+  const { subscribeToNewsletter } = useApp()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
     setMessage("");
 
-    // Replace with your actual newsletter subscription logic
     try {
-      // Fake API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await subscribeToNewsletter(email);
       
-      if (email.includes("@")) {
+      if (response.status === "success") {
         setStatus("success");
         setMessage("Thank you for subscribing!");
         setEmail("");

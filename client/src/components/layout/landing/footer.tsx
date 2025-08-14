@@ -4,6 +4,7 @@ import { Icons } from "../../ui/icons";
 import { Link } from "react-router-dom";
 import { bio } from "../../../static/bio";
 import { useEffect } from "react";
+import { FaFacebook } from "react-icons/fa";
 
 const navLinks = [
   { name: "Projects", href: "/projects" },
@@ -72,25 +73,25 @@ const Footer = () => {
             {/* Social Links */}
             <div className="flex gap-[30px] items-center lg:mt-0 mt-5">
               <Link
-                to="#"
+                to="x.com/heyrapto"
                 target="_blank"
                 className="text-[#d4d4d4] hover:text-white transition-colors duration-300"
               >
                 <Icons.twitter className="size-5" />
               </Link>
               <Link
-                to="#"
+                to="t.me/heyrapto"
                 target="_blank"
                 className="text-[#d4d4d4] hover:text-white transition-colors duration-300"
               >
                 <Icons.telegram className="size-5" />
               </Link>
               <Link
-                to="https://whisper-3.gitbook.io/whisper"
+                to="facebook.com/heyrapto"
                 target="_blank"
                 className="text-[#d4d4d4] hover:text-white transition-colors duration-300"
               >
-                <Icons.gitbook className="size-5" />
+                <FaFacebook className="size-5" />
               </Link>
             </div>
           </div>
