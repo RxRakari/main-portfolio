@@ -1,7 +1,9 @@
-export interface Blog {
-    id: number;
-    title: string;
-    content: string;
-    author: string;
-    date: string;
+export interface BlogProps  {
+    id: number,
+    title: string,
+    info: string,
+    author: string,
+    avatar: string,
+    time: string,
+    featured?: boolean
 }

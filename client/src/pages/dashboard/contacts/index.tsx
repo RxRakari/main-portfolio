@@ -34,8 +34,8 @@ const ContactsManagement: React.FC = () => {
         setError(null);
         
         const response = await fetchContacts();
-        if (response?.messages) {
-          setMessages(response.messages);
+        if (response?.data?.messages) {
+          setMessages(response.data?.messages);
         } else {
           setError('No contact messages found');
         }

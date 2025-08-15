@@ -1,45 +1,48 @@
 import { useNavigate } from "react-router-dom";
-import { doodle } from "../../assets";
 import BlogCard from "../ui/blog-card";
+import { useApp } from "../../context/app-context";
+import { useEffect, useState } from "react";
+import { BlogProps } from "../../types/blog";
+import EmptyState from "../states/empty";
+import Skeleton from "../states/skeleton-loading";
+import ErrorState from "../states/error";
 
 const BlogList = () => {
     const navigate = useNavigate();
+    const [blogs, setBlogs] = useState<BlogProps[]>();
+    const { fetchBlogs, isLoading, error } = useApp();
 
-    const blogs = [
-        {
-            id: 0,
-            title: "Blog",
-            info: "You've hit your free requests limit.",
-            author: "Trump Donald",
-            avatar: doodle,
-            time: "2 mins",
-            featured: true
-        },
-        {
-            id: 1,
-            title: "Blog",
-            info: "You've hit your free requests limit.",
-            author: "Trump Donald",
-            avatar: doodle,
-            time: "2 mins",
-            featured: true
-        },
-        {
-            id: 2,
-            title: "Blog",
-            info: "You've hit your free requests limit.",
-            author: "Trump Donald",
-            avatar: doodle,
-            time: "2 mins",
-            featured: true
+    useEffect(() => {
+        const handleFetchBlogs = async () => {
+            const res = await fetchBlogs()
+            setBlogs(res?.data?.blogs)
         }
-    ]
+
+        handleFetchBlogs();
+    }, [blogs])
+
+    if(!blogs || blogs.length === 0){
+        return(
+        <EmptyState title={"No blogs found"} message={"No blogs available at the moment"}  />
+        )
+    }
+
+    if(isLoading){
+        return(
+            <Skeleton variant={"rectangular"} animation={"pulse"} />
+        )
+    }
+
+    if(error){
+        <ErrorState title={"Error loading blogs data"} message={"Please try again"} />
+    }
+
   return (
     <div className="flex flex-col w-full p-4 md:p-[30px] gap-8 md:gap-12">
         <div>
         <h1 className="font-medium text-2xl md:text-4xl pb-4 md:pb-[35px]">Featured</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-2">
-        {blogs.map((blog, index) => (
+        {blogs?.map((blog, index) => (
             <BlogCard key={index} title={blog.title} paragraph={blog.info} author={blog.author} time={blog.time} avatar={blog.avatar} onClick={() => navigate(`/blogs/${blog.id}`)} />
         ))}
         </div>
@@ -48,7 +51,7 @@ const BlogList = () => {
         <div>
         <h1 className="font-medium text-2xl md:text-4xl pb-4 md:pb-[35px]">All Posts</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-2">
-        {blogs.map((blog, index) => (
+        {blogs?.map((blog, index) => (
             <BlogCard key={index} title={blog.title} paragraph={blog.info} author={blog.author} time={blog.time} avatar={blog.avatar} onClick={() => navigate(`/blogs/${blog.id}`)} />
         ))}
         </div>

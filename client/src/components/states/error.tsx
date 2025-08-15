@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface ErrorStateProps {
-  title?: string;
-  message?: string;
+  title: string;
+  message: string;
   code?: string | number;
   icon?: React.ReactNode;
   action?: React.ReactNode;

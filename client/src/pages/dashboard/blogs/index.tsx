@@ -62,8 +62,8 @@ const BlogsManagement: React.FC = () => {
         setError(null);
         
         const response = await fetchBlogs();
-        if (response?.blogs) {
-          setBlogs(response.blogs);
+        if (response?.data?.blogs) {
+          setBlogs(response.data?.blogs);
           
           // Extract unique categories
           const uniqueCategories = Array.from(

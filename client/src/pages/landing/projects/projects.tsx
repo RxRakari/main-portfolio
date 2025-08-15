@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageHeader } from '../../../components/ui/page-header';
-import { projects } from '../../../static/projects';
 import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { techIcons } from '../../../components/sections/projects';
+import { ProjectProps } from '../../../types/project';
+import EmptyState from '../../../components/states/empty';
+import Skeleton from '../../../components/states/skeleton-loading';
+import ErrorState from '../../../components/states/error';
+import { useApp } from '../../../context/app-context';
 
 const Projects: React.FC = () => {
   const [filter, setFilter] = useState("all");
+  const [projects, setProjects]= useState<ProjectProps[] | any>();
   const navigate = useNavigate();
+  const { fetchProjects, isLoading, error } = useApp();
+
+  useEffect(() => {
+    const handleFetchProjects = async () => {
+        const res = await fetchProjects()
+        setProjects(res?.data?.projects)
+    }
+
+    handleFetchProjects();
+}, [projects])
 
   const filteredProjects = filter === "all" 
     ? projects 
     : filter === "featured" 
-    ? projects.filter(p => p.featured)
-    : projects.filter(p => !p.featured);
+    ? projects.filter((p: any) => p.featured)
+    : projects.filter((p: any) => !p.featured);
 
   return (
     <div className="min-h-screen text-white flex flex-col">
@@ -44,7 +59,7 @@ const Projects: React.FC = () => {
       {/* Projects Grid */}
       <div className="max-w-[1200px] mx-auto px-4 pb-24 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project) => (
+          {filteredProjects?.map((project: any) => (
             <div 
               key={project.id}
               className="group relative backdrop-blur-[10px] rounded-[20px] overflow-hidden transition-all duration-300 hover:border-[#fafafa15] cursor-pointer flex flex-col h-full text-white bg-white/5 border border-white/10 shadow-xl hover:shadow-2xl hover:transform hover:scale-[1.02]"
@@ -122,6 +137,18 @@ const Projects: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {error && (
+        <ErrorState title={"Error loading project data"} message={"Please try again"} />
+      )}
+
+      {isLoading && (
+        <Skeleton variant={"rectangular"} animation={"pulse"} />
+      )}
+
+      {!projects || projects.length === 0 && (
+        <EmptyState title={"No project found"} message={"No projects available at the moment"}  />
+      )}
     </div>
   );
 };

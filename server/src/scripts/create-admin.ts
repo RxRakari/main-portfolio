@@ -7,7 +7,7 @@ const MONGODB_URI = process.env.MONGODB_URI as string;
 
 const adminData = {
   username: 'heyrapto',
-  email: 'kalejaiyecal@gmail.com',
+  email: 'kalejaiyecaleb@gmail.com',
   password: '@Kalejaiye11',
   role: 'admin'
 };
@@ -23,8 +23,8 @@ mongoose
       if (adminExists) {
         console.log('Admin already exists');
       } else {
-        const admin = await Admin.deleteOne(adminData);
-        console.log('Admin deleted successfully:', admin);
+        const admin = await Admin.create(adminData);
+        console.log('Admin created successfully:', admin);
       }
       
       await mongoose.disconnect();

@@ -62,8 +62,8 @@ const ExperienceManagement: React.FC = () => {
         setError(null);
         
         const response = await fetchExperiences();
-        if (response?.experiences) {
-          setExperiences(response?.experiences);
+        if (response?.data.experiences) {
+          setExperiences(response?.data.experiences);
         } else {
           setError('No experiences found');
         }
@@ -76,7 +76,7 @@ const ExperienceManagement: React.FC = () => {
     };
     
     getExperiences();
-  }, [fetchExperiences, experiences]);
+  }, [fetchExperiences]);
 
   // Filter experiences based on search query and filters
   const filteredExperiences = experiences.filter((experience) => {
@@ -131,14 +131,14 @@ const ExperienceManagement: React.FC = () => {
       render: (_: any, row: any) => (
         <div className="flex space-x-2">
           <Link
-            to={`/dashboard/experience/form/${row.id}`}
+            to={`/dashboard/experience/form/${row._id}`}
             className="p-1 text-blue-400 hover:text-blue-300"
             title="Edit"
           >
             <FiEdit size={18} />
           </Link>
           <Link
-            to={`/experience/${row.id}`}
+            to={`/experience/${row._id}`}
             target="_blank"
             className="p-1 text-green-400 hover:text-green-300"
             title="View"
@@ -146,7 +146,7 @@ const ExperienceManagement: React.FC = () => {
             <FiEye size={18} />
           </Link>
           <button
-            onClick={() => handleDelete(row.id)}
+            onClick={() => handleDelete(row._id)}
             className="p-1 text-red-400 hover:text-red-300"
             title="Delete"
           >

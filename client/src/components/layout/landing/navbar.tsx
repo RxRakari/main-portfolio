@@ -62,14 +62,14 @@ export default function Navbar() {
 
         <div className="flex gap-3 items-center">
           <Link
-            to={"/"}
+            to={"x.com/heyrapto"}
             target="_blank"
             className="size-14 flex items-center justify-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]"
           >
             <Icons.twitter className="size-6 text-white" />
           </Link>
           <Link
-            to={"/"}
+            to={"t.me/heyrapto"}
             target="_blank"
             className="size-14 flex items-center justify-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]"
           >
@@ -77,7 +77,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            to={"https://whisper-3.gitbook.io/whisper"}
+            to={"https://github.com/heyrapto"}
             target="_blank"
             className="p-[14px] flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]"
           >

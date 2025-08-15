@@ -1,6 +1,10 @@
-export interface Testimonial {
+export interface TestimonialProps {
     id: number;
     name: string;
-    image: string;
-    description: string;
+    avatar: string;
+    testimonial: string;
+    rating?: string;
+    position: string;
+    company: string;
+    featured: boolean;
 }

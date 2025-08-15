@@ -6,7 +6,7 @@ interface ImageUploadProps {
   id: string;
   label: string;
   value?: string | null;
-  onChange: (url: string) => void;
+  onChange: (url: string, file?: File) => void; // Updated to pass both URL and file
   onUpload?: (file: File) => Promise<string>;
   error?: string;
   helperText?: string;
@@ -92,7 +92,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         clearInterval(progressInterval);
         setUploadProgress(100);
         setPreviewUrl(url);
-        onChange(url);
+        onChange(url, file); // Pass both URL and file
         
         // Reset progress after a delay
         setTimeout(() => {
@@ -100,12 +100,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           setUploadProgress(0);
         }, 1000);
       } else {
-        // If no upload function is provided, just create a local preview
+        // Create a local preview and pass the file to parent
         const reader = new FileReader();
         reader.onload = (e) => {
           const result = e.target?.result as string;
           setPreviewUrl(result);
-          onChange(result);
+          onChange(result, file); // Pass both preview URL and file
           setIsUploading(false);
           setUploadProgress(100);
         };
@@ -144,7 +144,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   // Handle removing the image
   const handleRemove = () => {
     setPreviewUrl(null);
-    onChange('');
+    onChange(''); // Pass empty string to indicate removal
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -265,4 +265,4 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   );
 };
 
-export default ImageUpload; 
+export default ImageUpload;

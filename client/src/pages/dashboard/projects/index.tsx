@@ -73,12 +73,12 @@ const ProjectsManagement: React.FC = () => {
         setError(null);
         
         const response = await fetchProjects();
-        if (response?.projects) {
-          setProjects(response.projects);
+        if (response?.data?.projects) {
+          setProjects(response.data?.projects);
           
           // Extract unique categories
           const uniqueCategories = Array.from(
-            new Set(response.projects.map((project: any) => project.category))
+            new Set(response?.data.projects.map((project: any) => project.category))
           ).map(category => ({
             value: category as string,
             label: category as string,

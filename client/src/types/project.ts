@@ -1,12 +1,10 @@
-export interface Project {
+export interface ProjectProps {
     id: number;
-    name: string;
-    price: number;
+    title: string;
     description: string;
     image: string;
-    category: string;
-    isFeatured: boolean;
-    isNew: boolean;
-    isPopular: boolean;
-    isTrending: boolean;
+    technologies: string[];
+    github: string;
+    live: string;
+    featured: boolean
 }

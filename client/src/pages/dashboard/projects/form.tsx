@@ -25,6 +25,7 @@ interface ProjectFormData {
     url: string;
     cloudinaryId?: string;
     isLocal?: boolean;
+    file?: File; // Add file reference for new uploads
   }[];
   featuredImageUrl: string;
   featured: boolean;
@@ -61,7 +62,7 @@ const ProjectForm: React.FC = () => {
     features: [],
     newFeature: '',
   });
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [categories] = useState([
     { value: '', label: 'Select a category' },
@@ -92,7 +93,11 @@ const ProjectForm: React.FC = () => {
               category: project.category || '',
               technologies: project.technologies || [],
               newTechnology: '',
-              images: project.images || [],
+              images: project.images ? project.images.map((img: any) => ({
+                url: img.url,
+                cloudinaryId: img.cloudinaryId,
+                isLocal: false
+              })) : [],
               featuredImageUrl: project.images && project.images.length > 0 ? project.images[0].url : '',
               featured: project.featured || false,
               githubUrl: project.githubUrl || '',
@@ -182,12 +187,14 @@ const ProjectForm: React.FC = () => {
     }));
   };
 
-  // Handle image file selection
-  const handleImageChange = (imageUrl: string) => {
-    if (imageUrl) {
+  // Fixed: Handle image file selection - now properly handles File objects
+  const handleImageChange = (imageUrl: string, file?: File) => {
+    if (imageUrl && file) {
+      // New file uploaded
       const newImage = {
-        url: imageUrl,
-        isLocal: imageUrl.startsWith('blob:') // Flag to identify this as a local file for preview
+        url: imageUrl, // This will be a blob URL for preview
+        isLocal: true,
+        file: file // Store the actual file for upload
       };
       
       setFormData(prev => ({
@@ -196,6 +203,9 @@ const ProjectForm: React.FC = () => {
         // If no featured image is set, use this as the featured image
         featuredImageUrl: prev.featuredImageUrl || imageUrl
       }));
+    } else if (imageUrl === '') {
+      // File was removed (handled by removeImage function)
+      return;
     }
   };
 
@@ -211,21 +221,17 @@ const ProjectForm: React.FC = () => {
         newFeaturedImageUrl = newImages.length > 0 ? newImages[0].url : '';
       }
       
+      // Revoke blob URL to prevent memory leaks
+      if (removedImage.isLocal && removedImage.url.startsWith('blob:')) {
+        URL.revokeObjectURL(removedImage.url);
+      }
+      
       return {
         ...prev,
         images: newImages,
         featuredImageUrl: newFeaturedImageUrl
       };
     });
-    
-    // Also remove from the files array if it's a local file
-    if (imageFiles.length > index) {
-      setImageFiles(prev => {
-        const newFiles = [...prev];
-        newFiles.splice(index, 1);
-        return newFiles;
-      });
-    }
   };
 
   // Set featured image
@@ -290,7 +296,7 @@ const ProjectForm: React.FC = () => {
       newErrors.technologies = 'At least one technology is required';
     }
     
-    if (formData.images.length === 0 && imageFiles.length === 0) {
+    if (formData.images.length === 0) {
       newErrors.images = 'At least one image is required';
     }
     
@@ -343,19 +349,31 @@ const ProjectForm: React.FC = () => {
       projectData.append('challenges', formData.challenges);
       projectData.append('features', JSON.stringify(formData.features));
       
-      // For edit mode, include existing images
+      // Handle existing images for edit mode
       if (isEditMode) {
-        const existingImages = formData.images.filter(img => !img.isLocal && img.url && !img.url.startsWith('blob:'));
-        projectData.append('images', JSON.stringify(existingImages));
+        const existingImages = formData.images
+          .filter(img => !img.isLocal && img.url && !img.url.startsWith('blob:'))
+          .map(img => ({
+            url: img.url,
+            cloudinaryId: img.cloudinaryId
+          }));
+        projectData.append('existingImages', JSON.stringify(existingImages));
       }
       
-      // Add image files for upload
-      for (const file of imageFiles) {
+      // Add new image files for upload
+      const newImageFiles = formData.images
+        .filter(img => img.isLocal && img.file)
+        .map(img => img.file!);
+      
+      for (const file of newImageFiles) {
         projectData.append('imageFiles', file);
       }
       
-      // Add featured image
-      projectData.append('featuredImageUrl', formData.featuredImageUrl);
+      // Add featured image info
+      const featuredImageIndex = formData.images.findIndex(img => img.url === formData.featuredImageUrl);
+      if (featuredImageIndex !== -1) {
+        projectData.append('featuredImageIndex', featuredImageIndex.toString());
+      }
       
       // Submit the form
       if (isEditMode && id) {
@@ -365,6 +383,13 @@ const ProjectForm: React.FC = () => {
         await createProject(projectData);
         toast.success('Project created successfully');
       }
+      
+      // Clean up blob URLs
+      formData.images.forEach(img => {
+        if (img.isLocal && img.url.startsWith('blob:')) {
+          URL.revokeObjectURL(img.url);
+        }
+      });
       
       // Redirect to project list
       navigate('/dashboard/projects');
@@ -379,9 +404,26 @@ const ProjectForm: React.FC = () => {
   // Handle cancel
   const handleCancel = () => {
     if (window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+      // Clean up blob URLs
+      formData.images.forEach(img => {
+        if (img.isLocal && img.url.startsWith('blob:')) {
+          URL.revokeObjectURL(img.url);
+        }
+      });
       navigate('/dashboard/projects');
     }
   };
+
+  // Clean up blob URLs on component unmount
+  useEffect(() => {
+    return () => {
+      formData.images.forEach(img => {
+        if (img.isLocal && img.url.startsWith('blob:')) {
+          URL.revokeObjectURL(img.url);
+        }
+      });
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -639,7 +681,6 @@ const ProjectForm: React.FC = () => {
             label="Add Project Image"
             onChange={handleImageChange}
             helperText="Upload images for your project (up to 10MB each)"
-            error={errors.images}
             maxSizeMB={10}
           />
         </FormSection>
@@ -716,4 +757,4 @@ const ProjectForm: React.FC = () => {
   );
 };
 
-export default ProjectForm; 
+export default ProjectForm;

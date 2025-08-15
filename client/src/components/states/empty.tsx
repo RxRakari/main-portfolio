@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface EmptyStateProps {
-  title?: string;
-  message?: string;
+  title: string;
+  message: string;
   icon?: React.ReactNode;
   action?: React.ReactNode;
   className?: string;

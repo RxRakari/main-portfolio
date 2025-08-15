@@ -30,7 +30,8 @@ const GalleryForm: React.FC = () => {
     featured: false,
     order: 0,
   });
-  const [imageFile] = useState<File | null>(null);
+  // Fixed: Now properly managing the imageFile state
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [categories] = useState<{value: string, label: string}[]>([
     { value: '', label: 'Select a category' },
@@ -65,7 +66,6 @@ const GalleryForm: React.FC = () => {
               order: item.order || 0,
             });
           } else {
-            // Gallery item not found, redirect to gallery list
             toast.error('Gallery item not found');
             navigate('/dashboard/gallery');
           }
@@ -86,7 +86,6 @@ const GalleryForm: React.FC = () => {
     const { name, value } = e.target;
     
     if (name === 'order') {
-      // Handle numeric values
       setFormData(prev => ({
         ...prev,
         [name]: value === '' ? 0 : parseInt(value, 10)
@@ -108,12 +107,27 @@ const GalleryForm: React.FC = () => {
     }));
   };
 
-  // Handle image file selection
-  const handleFileChange = (imageUrl: string) => {
-    if (imageUrl) {
+  // Fixed: Handle both file and URL from ImageUpload component
+  const handleFileChange = (url: string, file?: File) => {
+    if (file) {
+      // New file selected
+      setImageFile(file);
       setFormData(prev => ({
         ...prev,
-        imageUrl: imageUrl
+        imageUrl: url // This will be a preview URL
+      }));
+    } else if (url === '') {
+      // File removed
+      setImageFile(null);
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: ''
+      }));
+    } else {
+      // URL provided (for edit mode)
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: url
       }));
     }
   };
@@ -157,17 +171,22 @@ const GalleryForm: React.FC = () => {
       galleryData.append('order', formData.order.toString());
       galleryData.append('featured', formData.featured.toString());
       
+      // Fixed: Properly handle file upload
       if (imageFile) {
+        // New file to upload
         galleryData.append('imageFile', imageFile);
-      } else if (isEditMode && formData.imageUrl) {
+      } else if (isEditMode && formData.imageUrl && !imageFile) {
+        // Existing image URL (no new file selected)
         galleryData.append('imageUrl', formData.imageUrl);
       }
       
       // Submit the form data
       if (isEditMode && id) {
         await updateGalleryItem(id, galleryData);
+        toast.success('Gallery item updated successfully');
       } else {
         await createGalleryItem(galleryData);
+        toast.success('Gallery item created successfully');
       }
       
       // Redirect to gallery list
@@ -259,7 +278,7 @@ const GalleryForm: React.FC = () => {
             value={formData.imageUrl}
             onChange={handleFileChange}
             helperText="Upload a high-quality image (up to 10MB)"
-            required
+            required={!isEditMode} // Only required for new items
             error={errors.imageFile}
             maxSizeMB={10}
           />

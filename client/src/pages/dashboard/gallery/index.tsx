@@ -29,12 +29,12 @@ const GalleryManagement: React.FC = () => {
         setError(null);
         
         const response = await fetchGalleryItems();
-        if (response?.gallery) {
-          setGalleryItems(response.gallery);
+        if (response?.data?.gallery) {
+          setGalleryItems(response?.data?.gallery);
           
           // Extract unique categories
           const uniqueCategories = Array.from(
-            new Set(response.gallery.map((item: any) => item.category))
+            new Set(response?.data?.gallery.map((item: any) => item.category))
           ).map(category => ({
             value: category as string,
             label: category as string,
@@ -241,7 +241,7 @@ const GalleryManagement: React.FC = () => {
       {/* Grid View */}
       {viewMode === 'grid' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredItems.map((item) => (
+          {filteredItems?.map((item) => (
             <Card key={item._id} className={selectedItems.includes(item._id) ? 'ring-2 ring-white/30' : ''}>
               <div className="relative aspect-square overflow-hidden rounded-t-lg">
                 <img
@@ -422,7 +422,7 @@ const GalleryManagement: React.FC = () => {
       )}
 
       {/* Empty State */}
-      {filteredItems.length === 0 && !isLoading && (
+      {filteredItems?.length === 0 && !isLoading && (
         <div className="bg-black/30 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg p-6 text-center">
           <FiImage className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-lg font-medium text-white">No images found</h3>

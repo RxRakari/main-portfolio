@@ -27,7 +27,6 @@ const TestimonialSchema = new Schema(
     },
     company: {
       type: String,
-      required: true,
       trim: true,
     },
     testimonial: {
@@ -36,7 +35,6 @@ const TestimonialSchema = new Schema(
     },
     rating: {
       type: Number,
-      required: true,
       min: 1,
       max: 5,
     },

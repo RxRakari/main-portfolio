@@ -62,8 +62,8 @@ const TestimonialsManagement: React.FC = () => {
         setError(null);
         
         const response = await fetchTestimonials();
-        if (response?.testimonials) {
-          setTestimonials(response.testimonials);
+        if (response?.data?.testimonials) {
+          setTestimonials(response.data?.testimonials);
         } else {
           setError('No testimonials found');
         }

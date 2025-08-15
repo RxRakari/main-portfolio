@@ -1,55 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageHeader } from '../../components/ui/page-header';
-import { doodle } from '../../assets'; // Using the doodle as placeholder, replace with actual images
+import { useApp } from '../../context/app-context';
+import EmptyState from '../../components/states/empty';
+import ErrorState from '../../components/states/error';
+import Skeleton from '../../components/states/skeleton-loading';
+import { GalleryProps } from '../../types/gallery';
 
 export const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  
-  // Gallery data - replace with your actual images
-  const galleryItems = [
-    {
-      id: 1,
-      image: doodle,
-      title: "Design Exploration",
-      category: "UI/UX",
-      description: "Exploring new design concepts for the dashboard interface."
-    },
-    {
-      id: 2,
-      image: doodle,
-      title: "Code Architecture",
-      category: "Development",
-      description: "Planning the architecture for a scalable application."
-    },
-    {
-      id: 3,
-      image: doodle,
-      title: "Team Collaboration",
-      category: "Workspace",
-      description: "Working together with the team on new features."
-    },
-    {
-      id: 4,
-      image: doodle,
-      title: "Product Launch",
-      category: "Events",
-      description: "Celebrating the successful launch of our latest product."
-    },
-    {
-      id: 5,
-      image: doodle,
-      title: "User Testing",
-      category: "Research",
-      description: "Conducting user testing sessions for the new interface."
-    },
-    {
-      id: 6,
-      image: doodle,
-      title: "Conference Talk",
-      category: "Speaking",
-      description: "Presenting at the annual developer conference."
+  const [galleryItems, setGallery] = useState<GalleryProps[] | any>();
+  const { fetchGalleryItems, isLoading, error } = useApp();
+  useEffect(() => {
+    const handleFetchGallery = async () => {
+        const res = await fetchGalleryItems()
+        setGallery(res?.data?.gallery)
     }
-  ];
+
+    handleFetchGallery();
+}, [galleryItems])
 
   // Function to handle image click and show modal
   const openImageModal = (index: number) => {
@@ -73,7 +41,7 @@ export const Gallery: React.FC = () => {
       {/* Gallery grid */}
       <div className="max-w-[1200px] mx-auto px-4 py-16 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {galleryItems.map((item, index) => (
+          {galleryItems?.map((item: any, index: number) => (
             <div 
               key={item.id}
               className={`relative overflow-hidden rounded-[25px] border border-gray-800 
@@ -96,6 +64,18 @@ export const Gallery: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {error && (
+        <ErrorState title={"Error loading gallery data"} message={"Please try again"} />
+      )}
+
+      {isLoading && (
+        <Skeleton variant={"rectangular"} animation={"pulse"} />
+      )}
+
+      {!galleryItems || galleryItems.length === 0 && (
+        <EmptyState title={"No gallery found"} message={"No gallery available at the moment"}  />
+      )}
 
       {/* Image modal */}
       {selectedImage !== null && (

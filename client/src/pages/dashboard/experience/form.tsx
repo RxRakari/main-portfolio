@@ -87,7 +87,7 @@ const ExperienceForm: React.FC = () => {
           setIsFetching(true);
           
           const response = await fetchExperience(id as string);
-          const experience = response.experience;
+          const experience = response.data?.experience;
           
           if (experience) {
             setFormData({
