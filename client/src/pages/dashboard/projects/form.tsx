@@ -366,7 +366,8 @@ const ProjectForm: React.FC = () => {
         .map(img => img.file!);
       
       for (const file of newImageFiles) {
-        projectData.append('imageFiles', file);
+        // Server expects multer field name 'images' (upload.array('images', 10))
+        projectData.append('images', file);
       }
       
       // Add featured image info

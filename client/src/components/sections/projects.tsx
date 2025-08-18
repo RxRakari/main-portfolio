@@ -68,7 +68,7 @@ import {
 import { DiJava } from "react-icons/di";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 import Heading from "../ui/heading";
-import { projects } from "../../static/projects";
+import { useApp } from "../../context/app-context";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -171,6 +171,7 @@ export const techIcons: { [key: string]: React.JSX.Element } = {
 
 export default function ProjectsSection() {
   const [filter] = useState("all");
+  const { landingPageData } = useApp();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -286,11 +287,23 @@ export default function ProjectsSection() {
     }
   }, [filter]);
 
+  const apiProjects = (landingPageData.projects || []).map((p: any, index: number) => ({
+    id: index,
+    title: p.title,
+    description: p.description,
+    technologies: p.technologies || [],
+    image: (p.images && p.images.length > 0) ? p.images[0].url : "https://via.placeholder.com/800x400?text=Project",
+    github: p.githubUrl,
+    live: p.liveUrl,
+    featured: !!p.featured,
+    slug: p.slug || p._id,
+  }));
+
   const filteredProjects = filter === "all" 
-    ? projects 
+    ? apiProjects 
     : filter === "featured" 
-    ? projects.filter(p => p.featured)
-    : projects.filter(p => !p.featured);
+    ? apiProjects.filter(p => p.featured)
+    : apiProjects.filter(p => !p.featured);
 
   const handleProjectHover = (projectId: number, isEntering: boolean) => {
     if (isEntering) {

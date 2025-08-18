@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projects } from '../../../static/projects';
+import { useApp } from '../../../context/app-context';
 import { FaGithub, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
 import { techIcons } from '../../../components/sections/projects';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { fetchProject } = useApp();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeSection, setActiveSection] = useState('overview');
@@ -20,15 +21,17 @@ const ProjectDetails: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Find the project by id
-    const projectId = parseInt(id || '0');
-    const foundProject = projects.find(p => p.id === projectId);
-    
-    if (foundProject) {
-      setProject(foundProject);
-    }
-    setLoading(false);
-  }, [id]);
+    const load = async () => {
+      try {
+        const res = await fetchProject(id!);
+        const p = res?.data?.project;
+        if (p) setProject(p);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) load();
+  }, [id, fetchProject]);
 
   // Handle scroll to update active section
   useEffect(() => {
@@ -200,7 +203,7 @@ const ProjectDetails: React.FC = () => {
                   My approach to this project began with extensive research and planning. I created detailed wireframes and user flows to ensure a seamless user experience before writing any code.
                 </p>
                 <p className="text-2xl text-gray-300 leading-relaxed font-light">
-                  I adopted a component-based architecture using {project.technologies.includes("React") ? "React" : project.technologies[0]} to ensure maintainability and scalability. This modular approach allowed for efficient development and easier testing throughout the project lifecycle.
+                  I adopted a component-based architecture using {project.technologies?.includes("React") ? "React" : project.technologies?.[0]} to ensure maintainability and scalability. This modular approach allowed for efficient development and easier testing throughout the project lifecycle.
                 </p>
               </div>
               
@@ -232,7 +235,7 @@ const ProjectDetails: React.FC = () => {
           >
             <h2 className="text-4xl font-medium mb-8">Technologies Used</h2>
             <div className="flex flex-wrap gap-4">
-              {project.technologies.map((tech: string) => (
+              {project.technologies?.map((tech: string) => (
                 <span
                   key={tech}
                   className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-gray-800 rounded-[20px] text-gray-300 text-[1.2rem]"
@@ -248,8 +251,9 @@ const ProjectDetails: React.FC = () => {
           
           {/* Project links */}
           <div className="flex flex-wrap gap-6 pb-24">
+            {project.githubUrl && (
             <a
-              href={project.github}
+              href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-8 py-4 backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:bg-white/5 text-xl"
@@ -257,8 +261,10 @@ const ProjectDetails: React.FC = () => {
               <FaGithub className="text-2xl" />
               View Source Code
             </a>
+            )}
+            {project.liveUrl && (
             <a
-              href={project.live}
+              href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-[33px] hover:bg-gray-200 transition-all duration-300 text-xl"
@@ -266,6 +272,7 @@ const ProjectDetails: React.FC = () => {
               <FaExternalLinkAlt className="text-xl" />
               Visit Live Project
             </a>
+            )}
           </div>
         </div>
       </div>

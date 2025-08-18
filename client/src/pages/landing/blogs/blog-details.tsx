@@ -1,39 +1,32 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { doodle } from '../../../assets';
 import { useState, useEffect, useRef } from 'react';
+import { useApp } from '../../../context/app-context';
 
 const BlogDetails = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { fetchBlog } = useApp();
   const [activeSection, setActiveSection] = useState('');
+  const [blog, setBlog] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
   
-  // Placeholder blog data
-  const blog = {
-    date: 'JANUARY 6, 2025',
-    title: 'Character Prefix Conditioning',
-    subtitle: 'A clever algorithm for more accurate code completion sampling.',
-    author: {
-      name: 'Jacob',
-      avatar: doodle,
-    },
-    readTime: '2 minutes read',
-    intro: 'The first in a series of problems that give a glimpse into the work we do at Cursor.',
-    sections: [
-      {
-        id: 'Setup',
-        heading: 'Setup',
-        content:
-          'When using a language model for code completion, we typically want the model to produce a completion that begins with what the user has typed.',
-      },
-      {
-        id: 'Problem',
-        heading: 'Problem',
-        content:
-          'Can you construct an efficient algorithm for sampling from q(tₖ |t₁, ... ,tₖ₋₁), that minimizes calls to the original language model? A description of the algorithm is great. An actual implementation is excellent.',
-        additionalContent: true
-      },
-    ],
-  };
+  // Fetch blog
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetchBlog(id!);
+        const b = res?.data?.blog;
+        if (b) {
+          setBlog(b);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) load();
+  }, [id, fetchBlog]);
 
   // Handle scroll to update active section
   useEffect(() => {
@@ -41,15 +34,15 @@ const BlogDetails = () => {
       const scrollPosition = window.scrollY + 100; // Add offset for better UX
 
       // Find the section that is currently in view
-      for (const section of blog.sections) {
-        const element = sectionRefs.current[section.id];
+      for (const section of (blog?.sections || [])) {
+        const element = sectionRefs.current[section.id || section.title];
         if (element) {
           const { offsetTop, offsetHeight } = element;
           if (
             scrollPosition >= offsetTop &&
             scrollPosition < offsetTop + offsetHeight
           ) {
-            setActiveSection(section.id);
+            setActiveSection(section.id || section.title);
           }
         }
       }
@@ -61,7 +54,7 @@ const BlogDetails = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [blog.sections]);
+  }, [blog]);
 
   // Scroll to section when clicking on sidebar
   const scrollToSection = (sectionId: string) => {
@@ -75,17 +68,33 @@ const BlogDetails = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-2xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-2xl">Blog not found</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Sidebar navigation */}
       <div className="fixed top-[100px] left-0 w-[200px] pt-24 pl-8 h-screen">
-        {blog.sections.map((section) => (
+        {(blog.sections || []).map((section: any) => (
           <div 
-            key={section.id}
-            className={`mb-4 text-[1.5rem] cursor-pointer ${activeSection === section.id ? 'text-white' : 'text-gray-500'}`}
-            onClick={() => scrollToSection(section.id)}
+            key={section.id || section.title}
+            className={`mb-4 text-[1.5rem] cursor-pointer ${activeSection === (section.id || section.title) ? 'text-white' : 'text-gray-500'}`}
+            onClick={() => scrollToSection(section.id || section.title)}
           >
-            {section.heading}
+            {section.title || section.heading}
           </div>
         ))}
       </div>
@@ -100,15 +109,15 @@ const BlogDetails = () => {
             <span>←</span> BACK TO THE MAIN BLOG
           </button>
           
-          <div className="mb-6 text-gray-400 text-[1.5rem] tracking-wider">{blog.date}</div>
+          <div className="mb-6 text-gray-400 text-[1.5rem] tracking-wider">{new Date(blog.createdAt).toDateString().toUpperCase()}</div>
           
           <h1 className="text-7xl font-medium mb-6">{blog.title}</h1>
           <div className="text-2xl text-gray-300 mb-12">{blog.subtitle}</div>
           
           <div className="flex items-center gap-4 mb-10">
-            <img src={blog.author.avatar} alt="avatar" className="rounded-full w-14 h-14 object-cover" />
+            <img src={blog.coverImage || doodle} alt="avatar" className="rounded-full w-14 h-14 object-cover" />
             <div>
-              <div className="text-gray-200">Posted By {blog.author.name}</div>
+              <div className="text-gray-200">Posted By {blog.author}</div>
               <div className="text-gray-400">{blog.readTime}</div>
             </div>
           </div>
@@ -121,14 +130,14 @@ const BlogDetails = () => {
           
           {/* Blog content sections */}
           <div className="space-y-24">
-            {blog.sections.map((section) => (
+            {(blog.sections || []).map((section: any) => (
               <div 
-                key={section.id} 
-                id={section.id}
-                ref={(el) => { sectionRefs.current[section.id] = el; }}
+                key={section.id || section.title} 
+                id={section.id || section.title}
+                ref={(el) => { sectionRefs.current[section.id || section.title] = el; }}
                 className="pb-8"
               >
-                <h2 className="text-5xl font-semibold mb-12">{section.heading}</h2>
+                <h2 className="text-5xl font-semibold mb-12">{section.title || section.heading}</h2>
                 <div className="max-w-[900px]">
                   <p className="text-2xl text-gray-300 leading-relaxed mb-6 font-light">{section.content}</p>
                   {section.additionalContent && (

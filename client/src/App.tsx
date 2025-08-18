@@ -38,7 +38,7 @@ import ContactsManagement from './pages/dashboard/contacts/index';
 // Protected Route
 import ProtectedRoute from './routes/protected';
 import NotFound from './routes/404';
-import Projects  from './pages/landing/projects/projects';
+import Projects from './pages/landing/projects/projects';
 import BlogDetails from './pages/landing/blogs/blog-details';
 import ProjectDetails from './pages/landing/projects/project-details';
 import SettingsPage from './pages/dashboard/settings';
@@ -46,23 +46,14 @@ import NewsletterManagement from './pages/dashboard/newsletter';
 
 // Custom logo for loading screen
 const AppLogo = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    className="w-12 h-12 text-white"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-  </svg>
+  <div className="logo-wrapper">
+    <span className="logo">R</span>
+  </div>
 );
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Simulate initial app loading
   useEffect(() => {
     // You would typically fetch initial data here
@@ -76,14 +67,14 @@ const App = () => {
         setIsLoading(false);
       }
     };
-    
+
     loadAppData();
   }, []);
 
   return (
-    <LoadingWrapper 
-      isLoading={isLoading} 
-      logo={<AppLogo />} 
+    <LoadingWrapper
+      isLoading={isLoading}
+      logo={<AppLogo />}
       minLoadingTime={2500}
       loadingText="Loading Portfolio..."
     >
@@ -98,7 +89,7 @@ const App = () => {
                     {/* Auth routes without layout */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/logout" element={<Logout />} />
-                    
+
                     {/* Public routes with landing layout */}
                     <Route element={<LandingLayout />}>
                       <Route path="/" element={<Home />} />
@@ -108,7 +99,7 @@ const App = () => {
                       <Route path="/blogs/:id" element={<BlogDetails />} />
                       <Route path="/gallery" element={<Gallery />} />
                     </Route>
-                    
+
                     {/* Protected dashboard routes */}
                     <Route path="/dashboard" element={
                       <ProtectedRoute>
@@ -116,27 +107,27 @@ const App = () => {
                       </ProtectedRoute>
                     }>
                       <Route index element={<Dashboard />} />
-                      
+
                       {/* Blog Management Routes */}
                       <Route path="blogs" element={<BlogsManagement />} />
                       <Route path="blogs/form" element={<BlogForm />} />
                       <Route path="blogs/form/:id" element={<BlogForm />} />
-                      
+
                       {/* Project Management Routes */}
                       <Route path="projects" element={<ProjectsManagement />} />
                       <Route path="projects/form" element={<ProjectForm />} />
                       <Route path="projects/form/:id" element={<ProjectForm />} />
-                      
+
                       {/* Experience Management Routes */}
                       <Route path="experience" element={<ExperienceManagement />} />
                       <Route path="experience/form" element={<ExperienceForm />} />
                       <Route path="experience/form/:id" element={<ExperienceForm />} />
-                      
+
                       {/* Gallery Management Routes */}
                       <Route path="gallery" element={<GalleryManagement />} />
                       <Route path="gallery/form" element={<GalleryForm />} />
                       <Route path="gallery/form/:id" element={<GalleryForm />} />
-                      
+
                       {/* Testimonials Management Routes */}
                       <Route path="testimonials" element={<TestimonialsManagement />} />
                       <Route path="testimonials/form" element={<TestimonialForm />} />
@@ -146,14 +137,14 @@ const App = () => {
                       <Route path="newsletter" element={<NewsletterManagement />} />
                       <Route path="newsletter/form" element={<TestimonialForm />} />
                       <Route path="newsletter/form/:id" element={<TestimonialForm />} />
-                      
+
                       {/* Contact Messages Routes */}
                       <Route path="contacts" element={<ContactsManagement />} />
                       <Route path="settings" element={<SettingsPage />} />
                     </Route>
-                    
+
                     {/* 404 route */}
-                    <Route path='/not-found' element={<NotFound /> } />
+                    <Route path='/not-found' element={<NotFound />} />
                     <Route path="*" element={<Navigate to="/not-found" replace />} />
                   </Routes>
                 </ThemeProvider>

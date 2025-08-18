@@ -21,6 +21,7 @@ const TestimonialForm: React.FC = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     position: '',
@@ -86,12 +87,15 @@ const TestimonialForm: React.FC = () => {
   };
 
   // Handle image file selection
-  const handleFileChange = (imageUrl: string) => {
+  const handleFileChange = (imageUrl: string, file?: File) => {
     if (imageUrl) {
       setFormData(prev => ({
         ...prev,
         avatar: imageUrl
       }));
+      if (file) {
+        setAvatarFile(file);
+      }
     }
   };
 
@@ -143,7 +147,9 @@ const TestimonialForm: React.FC = () => {
       testimonialData.append('rating', formData.rating.toString());
       testimonialData.append('featured', formData.featured.toString());
       
-      if (isEditMode && formData.avatar) {
+      if (avatarFile) {
+        testimonialData.append('avatar', avatarFile);
+      } else if (formData.avatar) {
         testimonialData.append('avatar', formData.avatar);
       }
       

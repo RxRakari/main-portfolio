@@ -65,7 +65,7 @@ const BlogForm: React.FC = () => {
     published: false,
     featured: false
   });
-  const [imageFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [categories] = useState([
     { value: '', label: 'Select a category' },
@@ -157,12 +157,15 @@ const BlogForm: React.FC = () => {
   };
 
   // Handle image file selection
-  const handleImageChange = (imageUrl: string) => {
+  const handleImageChange = (imageUrl: string, file?: File) => {
     if (imageUrl) {
       setFormData(prev => ({
         ...prev,
         coverImage: imageUrl
       }));
+      if (file) {
+        setImageFile(file);
+      }
     }
   };
 
@@ -323,7 +326,7 @@ const BlogForm: React.FC = () => {
       
       // Add image file if available
       if (imageFile) {
-        blogData.append('imageFile', imageFile);
+        blogData.append('coverImage', imageFile);
       } else if (formData.coverImage) {
         blogData.append('coverImage', formData.coverImage);
       }
