@@ -46,7 +46,7 @@ export default function ContactSection() {
       
       <div className="max-w-6xl mx-auto">
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-16 md:flex md:flex-col hidden"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

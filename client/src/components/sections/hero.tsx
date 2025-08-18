@@ -139,10 +139,10 @@ export const HeroSection = () => {
 <div className="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between w-full max-w-7xl px-4 md:px-6 lg:px-8 mx-auto py-12 md:min-h-screen">
 
   {/* Content Section */}
-  <div className="flex flex-col gap-6 max-w-2xl">
+  <div className="flex flex-col md:gap-6 gap-2 max-w-2xl items-center justify-center md:items-start md:justify-start mt-[50px] md:mt-0">
     <h1
       ref={titleRef}
-      className="text-5xl md:text-8xl font-bold text-white leading-tight"
+      className="text-4xl md:text-8xl font-bold text-white leading-tight"
     >
       Hey there!
       <span className="inline-block ml-4 animate-wave">👋🏼</span>
@@ -150,7 +150,7 @@ export const HeroSection = () => {
 
     <p
       ref={nameRef}
-      className="text-2xl md:text-5xl font-semibold text-purple-500"
+      className="text-[1rem] md:text-5xl font-semibold text-purple-500"
       style={{
         backgroundSize: "200% 100%",
         backgroundPosition: "0% center",
@@ -161,16 +161,17 @@ export const HeroSection = () => {
 
     <span
       ref={bioRef}
-      className="text-base md:text-[1.4rem] text-gray-300 max-w-[650px] leading-relaxed"
+      className="text-[0.9rem] md:text-left text-center md:text-[1.4rem] text-gray-300 max-w-[650px] leading-relaxed"
     >
       {bio.ShortBio}
     </span>
+
 
     <div
       ref={buttonRef}
       className="flex items-center gap-3 w-fit rounded-[33px] p-4 px-6 mt-8 backdrop-blur-[10px] border border-[#fafafa0d] hover:border-[#fafafa1a] transition-all duration-300 cursor-pointer group"
     >
-      <a href="#about" className="text-sm md:text-base text-white font-medium">
+      <a href="#about" className="text-[0.7rem] md:text-base text-white font-medium">
         More About Me
       </a>
       <BsArrowRightCircle className="text-white text-lg arrow-icon transition-transform duration-300" />
@@ -180,11 +181,11 @@ export const HeroSection = () => {
   {/* Image Section */}
   <div
     ref={imageRef}
-    className="flex items-center justify-center mt-10 md:mt-0"
+    className="flex items-center justify-center mt-10 md:mt-0 mx-auto md:mx-0"
   >
     <div className="relative">
       {/* Glass effect frame */}
-      <div className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full backdrop-blur-[10px] border-4 border-purple-500 flex items-center justify-center relative overflow-hidden">
+      <div className="w-[200px] h-[200px] md:w-[400px] md:h-[400px] rounded-full backdrop-blur-[10px] border-4 border-purple-500 flex items-center justify-center relative overflow-hidden">
         {/* Placeholder for image */}
         <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full flex items-center justify-center">
           <div className="text-5xl sm:text-6xl">👨‍💻</div>
