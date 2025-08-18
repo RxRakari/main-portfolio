@@ -40,7 +40,7 @@ const TestimonialForm: React.FC = () => {
       
       fetchTestimonial(id)
         .then(response => {
-          const item = response.testimonial;
+          const item = response?.data?.testimonial;
           
           if (item) {
             setFormData({

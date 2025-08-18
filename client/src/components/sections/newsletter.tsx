@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FiSend } from "react-icons/fi";
@@ -12,7 +12,6 @@ export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
-  const sectionRef = useRef<HTMLElement>(null);
   const { subscribeToNewsletter } = useApp()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,42 +35,8 @@ export default function NewsletterSection() {
     }
   };
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      timeline
-        .fromTo(
-          ".newsletter-title",
-          { opacity: 0, y: 50 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
-        )
-        .fromTo(
-          ".newsletter-description",
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
-          "-=0.6"
-        )
-        .fromTo(
-          ".newsletter-form",
-          { opacity: 0, scale: 0.9 },
-          { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)" },
-          "-=0.5"
-        );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       id="newsletter"
       className="bg-black text-white py-20 px-4 md:px-10 relative"
       style={{

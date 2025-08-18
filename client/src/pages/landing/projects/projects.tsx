@@ -61,9 +61,9 @@ const Projects: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects?.map((project: any) => (
             <div 
-              key={project.id}
+              key={project._id}
               className="group relative backdrop-blur-[10px] rounded-[20px] overflow-hidden transition-all duration-300 hover:border-[#fafafa15] cursor-pointer flex flex-col h-full text-white bg-white/5 border border-white/10 shadow-xl hover:shadow-2xl hover:transform hover:scale-[1.02]"
-              onClick={() => navigate(`/projects/${project.id}`)}
+              onClick={() => navigate(`/projects/${project._id}`)}
             >
               {/* Project Image */}
               <div className="relative h-48 overflow-hidden">

@@ -83,7 +83,7 @@ const ProjectForm: React.FC = () => {
       
       fetchProject(id)
         .then(response => {
-          const project = response.project;
+          const project = response?.data?.project;
           
           if (project) {
             setFormData({

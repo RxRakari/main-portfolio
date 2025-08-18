@@ -171,12 +171,13 @@ export const techIcons: { [key: string]: React.JSX.Element } = {
 
 export default function ProjectsSection() {
   const [filter] = useState("all");
-  const { landingPageData } = useApp();
+  const { fetchProjects } = useApp();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<(HTMLDivElement | null)[]>([]);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [projects, setProjects] = useState<any[]>([]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -287,7 +288,15 @@ export default function ProjectsSection() {
     }
   }, [filter]);
 
-  const apiProjects = (landingPageData.projects || []).map((p: any, index: number) => ({
+  useEffect(() => {
+    const handleFetchProjects = async () => {
+      const res = await fetchProjects()
+      setProjects(res?.data?.projects)
+    }
+    handleFetchProjects()
+  }, [fetchProjects])
+
+  const apiProjects = (projects || []).map((p: any, index: number) => ({
     id: index,
     title: p.title,
     description: p.description,

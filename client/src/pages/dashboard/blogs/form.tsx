@@ -86,7 +86,7 @@ const BlogForm: React.FC = () => {
       
       fetchBlog(id)
         .then(response => {
-          const blog = response.blog;
+          const blog = response?.data?.blog;
           
           if (blog) {
             setFormData({

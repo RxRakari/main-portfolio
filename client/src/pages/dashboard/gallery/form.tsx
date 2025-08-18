@@ -54,7 +54,7 @@ const GalleryForm: React.FC = () => {
       
       fetchGalleryItem(id)
         .then(response => {
-          const item = response.gallery;
+          const item = response?.data?.gallery;
           
           if (item) {
             setFormData({

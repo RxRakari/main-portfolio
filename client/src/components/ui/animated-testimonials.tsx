@@ -4,11 +4,21 @@ import { motion, AnimatePresence } from "motion/react";
 import { useEffect, useState } from "react";
 
 type Testimonial = {
-  quote: string;
+  testimonial: string;
   name: string;
-  designation: string;
-  src: string;
+  position: string;
+  company?: string;
+  avatar: string;
 };
+
+/*  {
+  quote:
+  "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
+name: "Sarah Chen",
+designation: "Product Manager at TechFlow",
+src: "",
+},
+*/
 export const AnimatedTestimonials = ({
   testimonials,
   autoplay = false,
@@ -48,7 +58,7 @@ export const AnimatedTestimonials = ({
             <AnimatePresence>
               {testimonials.map((testimonial, index) => (
                 <motion.div
-                  key={testimonial.src}
+                  key={testimonial?.avatar}
                   initial={{
                     opacity: 0,
                     scale: 0.9,
@@ -78,8 +88,8 @@ export const AnimatedTestimonials = ({
                   className="absolute inset-0 origin-bottom"
                 >
                   <img
-                    src={testimonial.src}
-                    alt={testimonial.name}
+                    src={testimonial?.avatar}
+                    alt={testimonial?.name}
                     width={500}
                     height={500}
                     draggable={false}
@@ -111,13 +121,13 @@ export const AnimatedTestimonials = ({
             }}
           >
             <h3 className="text-2xl font-bold text-black dark:text-white">
-              {testimonials[active].name}
+              {testimonials[active]?.name}
             </h3>
             <p className="text-sm text-gray-500 dark:text-neutral-500">
-              {testimonials[active].designation}
+              {testimonials[active]?.position} {testimonials[active]?.company && `at ${testimonials[active]?.company}`}
             </p>
             <motion.p className="mt-8 text-lg text-gray-500 dark:text-neutral-300">
-              {testimonials[active].quote.split(" ").map((word, index) => (
+              {testimonials[active]?.testimonial?.split(" ").map((word, index) => (
                 <motion.span
                   key={index}
                   initial={{
