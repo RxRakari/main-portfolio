@@ -166,7 +166,9 @@ export const Sidebar = () => {
             theme === 'dark' ? 'text-white' : 'text-purple-600'
           }`}
         >
-          Caleb Kalejaiye
+          <div className="logo-wrapper">
+            <span className="logo">R</span>
+          </div>
         </Link>
         <span
           className={`text-xs font-medium tracking-widest ${

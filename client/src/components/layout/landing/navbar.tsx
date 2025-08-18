@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logo from "../../../../public/vite.svg";
+// import logo from "../../../../public/vite.svg";
 import { Link } from "react-router-dom";
 import { Icons } from "../../ui/icons";
 import { FaGithub } from "react-icons/fa";
@@ -29,15 +29,17 @@ export default function Navbar() {
   return (
     <div className="md:px-10 px-4">
       <div
-        className={`md:flex hidden fixed w-full right-0 top-[3px] mt-8 px-10 transition-all duration-500 ease-spring z-[100000000] ${
-          isScrollingDown ? "justify-between" : "justify-center gap-4"
-        }`}
+        className={`md:flex hidden fixed w-full right-0 top-[3px] mt-8 px-10 transition-all duration-500 ease-spring z-[100000000] ${isScrollingDown ? "justify-between" : "justify-center gap-4"
+          }`}
         style={{
           transition: "all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)",
         }}
       >
         <Link to={"/"} className="p-3.5 flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
-          <img src={logo} alt="logo" width={24} />
+          {/* <img src={logo} alt="logo" width={24} /> */}
+          <div className="logo-wrapper">
+            <span className="logo">R</span>
+          </div>
           <h4 className="text-[#e5e5e5] text-[20px] leading-[16px]">{bio.FirstName}</h4>
         </Link>
 
@@ -88,7 +90,9 @@ export default function Navbar() {
       </div>
       <div className="md:hidden flex fixed w-full right-0 top-[3px] mt-8 px-4 transition-all duration-500 ease-spring z-[100000000] justify-between items-center">
         <button className="p-[12px] flex h-full gap-[9px] items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d]">
-          <img src={logo} alt="logo" width={24} />
+        <div className="logo-wrapper">
+            <span className="logo">R</span>
+          </div>
           <h4 className="text-[#e5e5e5] text-[14px] leading-[16px]">Caleb</h4>
         </button>
 

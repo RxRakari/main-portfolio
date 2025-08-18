@@ -85,3 +85,23 @@ a, button {
 html, body {
   overflow-x: hidden !important;
 }
+
+.logo-wrapper {
+  background: linear-gradient(135deg, #3a0ca3, #7209b7, #f72585); /* Purple gradient */
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  height: 3rem;
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* hexagon shape */
+  -webkit-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.logo {
+  font-style: italic;  /* gives slant */
+}
