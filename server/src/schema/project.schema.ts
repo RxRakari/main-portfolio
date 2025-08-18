@@ -82,8 +82,8 @@ const ProjectSchema = new Schema(
   { timestamps: true }
 );
 
-// Create a slug from the title
-ProjectSchema.pre('save', function (next) {
+// Ensure slug exists before validation
+ProjectSchema.pre('validate', function (next) {
   if (this.isModified('title') || !this.slug) {
     this.slug = this.title
       .toLowerCase()

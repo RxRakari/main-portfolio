@@ -42,7 +42,8 @@ import Projects from './pages/landing/projects/projects';
 import BlogDetails from './pages/landing/blogs/blog-details';
 import ProjectDetails from './pages/landing/projects/project-details';
 import SettingsPage from './pages/dashboard/settings';
-import NewsletterManagement from './pages/dashboard/newsletter';
+import NewsletterManagement from './pages/dashboard/newsletter/form';
+import NewsletterForm from './pages/dashboard/newsletter/form';
 
 // Custom logo for loading screen
 const AppLogo = () => (
@@ -135,8 +136,8 @@ const App = () => {
 
                       {/* Newsletter Management Routes */}
                       <Route path="newsletter" element={<NewsletterManagement />} />
-                      <Route path="newsletter/form" element={<TestimonialForm />} />
-                      <Route path="newsletter/form/:id" element={<TestimonialForm />} />
+                      <Route path="newsletter/form" element={<NewsletterForm />} />
+                      <Route path="newsletter/form/:id" element={<NewsletterForm />} />
 
                       {/* Contact Messages Routes */}
                       <Route path="contacts" element={<ContactsManagement />} />

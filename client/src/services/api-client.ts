@@ -510,6 +510,16 @@ export const newsletterAPI = {
       throw error;
     }
   },
+  
+  sendToAll: async (subject: string, content: string) => {
+    try {
+      const response = await apiClient.post('/newsletter/admin/send', { subject, content });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending newsletter:', error);
+      throw error;
+    }
+  },
 };
 
 // Auth API endpoints

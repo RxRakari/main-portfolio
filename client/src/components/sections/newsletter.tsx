@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const sectionRef = useRef<HTMLElement>(null);
   const { subscribeToNewsletter } = useApp()

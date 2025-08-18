@@ -64,6 +64,7 @@ interface AdminContextProps {
   
   // Newsletter operations
   sendNewsletterUpdate: (type: string, id: string) => Promise<any>;
+  sendNewsletterToAll: (subject: string, content: string) => Promise<any>;
   // Dashboard operations
   fetchDashboardStats: () => Promise<any>;
   fetchPopularContent: () => Promise<any>;
@@ -585,6 +586,21 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     }
   };
 
+  const sendNewsletterToAll = async (subject: string, content: string) => {
+    try {
+      toast.loading('Sending newsletter...');
+      const response = await newsletterAPI.sendToAll(subject, content);
+      toast.dismiss();
+      toast.success('Newsletter sent successfully');
+      return response;
+    } catch (error) {
+      console.error('Error sending newsletter:', error);
+      toast.dismiss();
+      toast.error('Failed to send newsletter');
+      throw error;
+    }
+  };
+
   // Dashboard operations
   const fetchDashboardStats = async () => {
     try {
@@ -658,6 +674,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     
     // Newsletter operations
     sendNewsletterUpdate,
+    sendNewsletterToAll,
     // Dashboard operations
     fetchDashboardStats,
     fetchPopularContent,

@@ -100,8 +100,8 @@ const BlogSchema = new Schema(
   { timestamps: true }
 );
 
-// Create a slug from the title
-BlogSchema.pre('save', function (next) {
+// Ensure slug exists before validation
+BlogSchema.pre('validate', function (next) {
   if (this.isModified('title') || !this.slug) {
     this.slug = this.title
       .toLowerCase()
