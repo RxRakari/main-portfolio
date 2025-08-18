@@ -8,7 +8,8 @@ import ExperienceManagement from "../pages/dashboard/experience"
 import ExperienceForm from "../pages/dashboard/experience/form"
 import GalleryManagement from "../pages/dashboard/gallery"
 import GalleryForm from "../pages/dashboard/gallery/form"
-import NewsletterManagement from "../pages/dashboard/newsletter/form"
+import NewsletterManagement from "../pages/dashboard/newsletter"
+import NewsletterForm from "../pages/dashboard/newsletter/form"
 import ProjectsManagement from "../pages/dashboard/projects"
 import ProjectForm from "../pages/dashboard/projects/form"
 import SettingsPage from "../pages/dashboard/settings"
@@ -54,8 +55,7 @@ export const DashboardRoutes = () => {
 
                       {/* Newsletter Management Routes */}
                       <Route path="newsletter" element={<NewsletterManagement />} />
-                      <Route path="newsletter/form" element={<TestimonialForm />} />
-                      <Route path="newsletter/form/:id" element={<TestimonialForm />} />
+                      <Route path="newsletter/form" element={<NewsletterForm />} />
                       
                       {/* Contact Messages Routes */}
                       <Route path="contacts" element={<ContactsManagement />} />

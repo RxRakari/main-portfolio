@@ -96,8 +96,6 @@ export const getBlogNewsletterTemplate = (blog: BlogData, unsubscribeUrl: string
     </head>
     <body>
       <div class="header">
-        <div class="logo">Caleb Kalejaiye</div>
-        <p>Portfolio & Blog</p>
       </div>
       
       <p>Hey there!</p>
@@ -190,8 +188,6 @@ export const getProjectNewsletterTemplate = (project: ProjectData, unsubscribeUr
     </head>
     <body>
       <div class="header">
-        <div class="logo">Caleb Kalejaiye</div>
-        <p>Portfolio & Projects</p>
       </div>
       
       <p>Hey there!</p>
@@ -283,8 +279,6 @@ export const getGalleryNewsletterTemplate = (gallery: GalleryData, unsubscribeUr
     </head>
     <body>
       <div class="header">
-        <div class="logo">Caleb Kalejaiye</div>
-        <p>Portfolio Gallery</p>
       </div>
       
       <p>Hey there!</p>

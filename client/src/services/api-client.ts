@@ -481,6 +481,15 @@ export const contactAPI = {
 
 // Newsletter API endpoints
 export const newsletterAPI = {
+  getAll: async (params?: any) => {
+    try {
+      const response = await apiClient.get('/newsletter/admin', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching subscribers:', error);
+      throw error;
+    }
+  },
   subscribe: async (email: string) => {
     try {
       const response = await apiClient.post('/newsletter/subscribe', { email });
@@ -517,6 +526,16 @@ export const newsletterAPI = {
       return response.data;
     } catch (error) {
       console.error('Error sending newsletter:', error);
+      throw error;
+    }
+  },
+  
+  delete: async (id: string) => {
+    try {
+      const response = await apiClient.delete(`/newsletter/admin/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting subscriber:', error);
       throw error;
     }
   },

@@ -65,6 +65,8 @@ interface AdminContextProps {
   // Newsletter operations
   sendNewsletterUpdate: (type: string, id: string) => Promise<any>;
   sendNewsletterToAll: (subject: string, content: string) => Promise<any>;
+  fetchSubscribers: (params?: any) => Promise<any>;
+  deleteSubscriber: (id: string) => Promise<any>;
   // Dashboard operations
   fetchDashboardStats: () => Promise<any>;
   fetchPopularContent: () => Promise<any>;
@@ -601,6 +603,28 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     }
   };
 
+  const fetchSubscribers = async (params?: any) => {
+    try {
+      return await newsletterAPI.getAll(params);
+    } catch (error) {
+      console.error('Error fetching subscribers:', error);
+      toast.error('Failed to fetch subscribers');
+      throw error;
+    }
+  };
+
+  const deleteSubscriber = async (id: string) => {
+    try {
+      const res = await newsletterAPI.delete(id);
+      toast.success('Subscriber deleted');
+      return res;
+    } catch (error) {
+      console.error('Error deleting subscriber:', error);
+      toast.error('Failed to delete subscriber');
+      throw error;
+    }
+  };
+
   // Dashboard operations
   const fetchDashboardStats = async () => {
     try {
@@ -675,6 +699,8 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     // Newsletter operations
     sendNewsletterUpdate,
     sendNewsletterToAll,
+    fetchSubscribers,
+    deleteSubscriber,
     // Dashboard operations
     fetchDashboardStats,
     fetchPopularContent,

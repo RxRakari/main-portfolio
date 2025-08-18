@@ -29,7 +29,7 @@ export default function Navbar() {
   return (
     <div className="md:px-10 px-4">
       <div
-        className={`md:flex hidden fixed w-full right-0 top-[3px] mt-8 px-10 transition-all duration-500 ease-spring z-[100000000] ${isScrollingDown ? "justify-between" : "justify-center gap-4"
+        className={`md:flex hidden fixed w-full right-0 top-[3px] mt-8 px-10 transition-all duration-500 ease-spring z-[100000000] items-center ${isScrollingDown ? "justify-between" : "justify-center gap-4"
           }`}
         style={{
           transition: "all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)",

@@ -103,14 +103,18 @@ export const Sidebar = () => {
       ]
     },
     {
+      title: 'Newsletter',
+      path: '/dashboard/newsletter',
+      icon: <FaNewspaper className="w-5 h-5" />,
+      subMenuItems: [
+        { title: 'Subscribers', path: '/dashboard/newsletter' },
+        { title: 'Compose', path: '/dashboard/newsletter/form' }
+      ]
+    },
+    {
       title: 'Contact Messages',
       path: '/dashboard/contacts',
       icon: <FiMessageSquare className="w-5 h-5" />
-    },
-    {
-      title: 'Newsletter',
-      path: '/dashboard/newsletter',
-      icon: <FaNewspaper className="w-5 h-5" />
     },
     {
       title: 'Settings',
