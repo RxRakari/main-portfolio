@@ -44,14 +44,16 @@ import SettingsPage from './pages/dashboard/settings';
 import NewsletterManagement from './pages/dashboard/newsletter/index';
 import NewsletterForm from './pages/dashboard/newsletter/form';
 
-// Custom logo for loading screen
 const AppLogo = () => (
-  <div className="logo-wrapper">
-    <span className="logo">R</span>
+  <div className="flex items-center justify-center h-20 w-20">
+    <div className="relative w-12 h-12">
+      <div className="absolute top-0 left-1/2 w-3 h-3 bg-white rounded-full animate-spin-slow origin-[0_-16px]" />
+      <div className="absolute top-0 left-1/2 w-3 h-3 bg-white/70 rounded-full animate-spin-slow origin-[0_-16px] delay-150" />
+      <div className="absolute top-0 left-1/2 w-3 h-3 bg-white/40 rounded-full animate-spin-slow origin-[0_-16px] delay-300" />
+    </div>
   </div>
 );
 
-// New inner component that uses useApp
 const AppContent = () => {
   const { isLoading, error } = useApp();
 

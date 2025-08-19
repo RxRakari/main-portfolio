@@ -8,6 +8,7 @@ import { TextInput, Select } from '../../../components/ui/dashboard/form-element
 import { TableSkeleton } from '../../../components/ui/dashboard/skeleton';
 import { useAdmin } from '../../../context/admin-context';
 import { toast } from 'sonner';
+import DeleteModal from '../../../components/modals/delete-modal';
 
 // Status badge component
 interface StatusBadgeProps {
@@ -59,6 +60,7 @@ const ProjectsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{value: string, label: string}[]>([
     { value: '', label: 'All Categories' }
   ]);
@@ -204,13 +206,13 @@ const ProjectsManagement: React.FC = () => {
             </a>
           )}
           <button
-            onClick={() => handleDelete(row._id)}
-            className="p-1 text-red-400 hover:text-red-300"
-            title="Delete"
-            disabled={isLoading}
-          >
-            <FiTrash2 size={18} />
-          </button>
+  onClick={() => setSelectedId(row._id)}
+  className="p-1 text-red-400 hover:text-red-300"
+  title="Delete"
+  disabled={isLoading}
+>
+  <FiTrash2 size={18} />
+</button>
         </div>
       ),
     },
@@ -218,20 +220,19 @@ const ProjectsManagement: React.FC = () => {
 
   // Handle project deletion
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      try {
-        setIsLoading(true);
-        await deleteProject(id);
-        setProjects(prevProjects => prevProjects.filter(project => project._id !== id));
-        toast.success('Project deleted successfully');
-      } catch (error) {
-        console.error('Failed to delete project:', error);
-        toast.error('Failed to delete project');
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      setIsLoading(true);
+      await deleteProject(id);
+      setProjects(prev => prev.filter(p => p._id !== id));
+      toast.success("Project deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      toast.error("Failed to delete project");
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   // Handle toggle featured
   const handleToggleFeatured = async (id: string) => {
@@ -338,6 +339,18 @@ const ProjectsManagement: React.FC = () => {
           <p className="mt-1 text-sm text-red-300">{error}</p>
         </div>
       )}
+
+<DeleteModal
+  isOpen={!!selectedId}
+  onClose={() => setSelectedId(null)}
+  onConfirm={() => {
+    if (selectedId) {
+      handleDelete(selectedId);
+    }
+  }}
+  title="Delete Project"
+  message="Are you sure you want to delete this project? This action cannot be undone."
+/>
     </div>
   );
 };

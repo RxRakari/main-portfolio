@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../../context/app-context';
 import { FaGithub, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
-import { techIcons } from '../../../components/sections/projects';
+import { techIcons } from '../../../config/tech-icons';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

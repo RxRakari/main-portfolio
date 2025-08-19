@@ -3,12 +3,14 @@ import SectionHeader from '../../../components/ui/dashboard/section-header';
 import { FiTrash2, FiUsers } from 'react-icons/fi';
 import { useAdmin } from '../../../context/admin-context';
 import { useTheme } from '../../../context/theme-context';
+import DeleteModal from '../../../components/modals/delete-modal';
 
 const NewsletterManagement = () => {
   const { fetchSubscribers, deleteSubscriber } = useAdmin();
   const { theme } = useTheme();
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -71,6 +73,14 @@ const NewsletterManagement = () => {
               </div>
             ))
           )}
+
+          <DeleteModal
+            isOpen={!!selectedId}
+            onClose={() => setSelectedId(null)}
+            onConfirm={() => selectedId && handleDelete(selectedId)}
+            title="Delete Subscriber"
+            message="Are you sure you want to delete this subscriber? This action cannot be undone."
+          />
         </div>
       </div>
     </div>

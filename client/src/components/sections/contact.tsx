@@ -215,20 +215,20 @@ export default function ContactSection() {
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="flex items-center gap-2 z-10">
                   {status === "loading" ? (
-                    <span className="animate-pulse flex items-center gap-2">
+                    <span className="animate-pulse flex items-center gap-2 md:text-[1.2rem] text-[0.9rem]">
                       <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
                       Sending...
                     </span>
                   ) : status === "success" ? (
-                    <span className="flex items-center gap-2 text-green-400">
+                    <span className="flex items-center gap-2 text-green-400 md:text-[1.2rem] text-[0.9rem]">
                       <FaCheck />
                       Message Sent!
                     </span>
                   ) : (
-                    <>
+                    <span className="md:text-[1.2rem] text-[0.9rem]">
                       <FaPaperPlane />
                       Send Message
-                    </>
+                    </span>
                   )}
                 </span>
               </motion.button>

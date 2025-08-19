@@ -2,27 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { PageHeader } from '../../../components/ui/page-header';
 import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import { techIcons } from '../../../components/sections/projects';
 import { ProjectProps } from '../../../types/project';
 import EmptyState from '../../../components/states/empty';
-import Skeleton from '../../../components/states/skeleton-loading';
+import { ProjectSkeleton } from '../../../components/states/skeleton-loading';
 import ErrorState from '../../../components/states/error';
 import { useApp } from '../../../context/app-context';
+import { useToast } from '../../../context/toast-context';
+import { techIcons } from '../../../config/tech-icons';
 
 const Projects: React.FC = () => {
   const [filter, setFilter] = useState("all");
   const [projects, setProjects]= useState<ProjectProps[] | any>();
   const navigate = useNavigate();
   const { fetchProjects, isLoading, error } = useApp();
+  const { showErrorToast } = useToast();
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const handleFetchProjects = async () => {
+      setLoading(true);
+      try{
         const res = await fetchProjects()
-        setProjects(res?.data?.projects)
+        setProjects(res?.data?.projects);
+      } catch (err: any){
+        showErrorToast(err.message);
+      } finally{
+        setLoading(false)
+      }
     }
 
     handleFetchProjects();
-}, [projects])
+}, [])
 
   const filteredProjects = filter === "all" 
     ? projects 
@@ -142,8 +152,8 @@ const Projects: React.FC = () => {
         <ErrorState title={"Error loading project data"} message={"Please try again"} />
       )}
 
-      {isLoading && (
-        <Skeleton variant={"rectangular"} animation={"pulse"} />
+      {isLoading || loading && (
+        <ProjectSkeleton />
       )}
 
       {!projects || projects.length === 0 && (

@@ -89,7 +89,7 @@ export const ProfileSkeleton: React.FC<{ className?: string }> = ({ className = 
 );
 
 export const BlogSkeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`bg-white/5 border border-gray-800 rounded-[25px] p-6 ${className}`}>
+  <div className={`bg-transparent border border-gray-800 rounded-[25px] p-6 ${className}`}>
     <Skeleton variant="text" width="60%" height={30} className="mb-4" />
     <Skeleton variant="text" width="40%" height={20} className="mb-6" />
     <Skeleton variant="rectangular" height={200} className="mb-6" />
@@ -101,7 +101,7 @@ export const BlogSkeleton: React.FC<{ className?: string }> = ({ className = '' 
 );
 
 export const ProjectSkeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`bg-white/5 border border-gray-800 rounded-[25px] overflow-hidden ${className}`}>
+  <div className={`bg-transparent border border-gray-800 rounded-[25px] overflow-hidden ${className}`}>
     <Skeleton variant="image" height={200} width="100%" />
     <div className="p-6">
       <Skeleton variant="text" width="70%" height={24} className="mb-2" />

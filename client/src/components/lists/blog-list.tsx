@@ -4,32 +4,43 @@ import { useApp } from "../../context/app-context";
 import { useEffect, useState } from "react";
 import { BlogProps } from "../../types/blog";
 import EmptyState from "../states/empty";
-import Skeleton from "../states/skeleton-loading";
+import { BlogSkeleton } from "../states/skeleton-loading";
 import ErrorState from "../states/error";
+import { useToast } from "../../context/toast-context";
 
 const BlogList = () => {
     const navigate = useNavigate();
     const [blogs, setBlogs] = useState<BlogProps[]>();
     const { fetchBlogs, isLoading, error } = useApp();
+    const [loading, setLoading] = useState(false);
+    const {showErrorToast} = useToast();
 
     useEffect(() => {
         const handleFetchBlogs = async () => {
+          setLoading(true)
+          try {
             const res = await fetchBlogs()
             setBlogs(res?.data?.blogs)
+          } catch (err: any) {
+            showErrorToast(err.message);
+            console.error(err)
+          } finally {
+            setLoading(false)
+          }
         }
+      
+        handleFetchBlogs()
+      }, [])      
 
-        handleFetchBlogs();
-    }, [])
-
-    if(!blogs || blogs.length === 0){
+    if(isLoading || loading){
         return(
-        <EmptyState title={"No blogs found"} message={"No blogs available at the moment"}  />
+            <BlogSkeleton />
         )
     }
 
-    if(isLoading){
+    if(!blogs || blogs?.length === 0){
         return(
-            <Skeleton variant={"rectangular"} animation={"pulse"} />
+        <EmptyState title={"No blogs found"} message={"No blogs available at the moment"}  />
         )
     }
 

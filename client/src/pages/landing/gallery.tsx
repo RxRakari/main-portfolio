@@ -3,32 +3,41 @@ import { PageHeader } from '../../components/ui/page-header';
 import { useApp } from '../../context/app-context';
 import EmptyState from '../../components/states/empty';
 import ErrorState from '../../components/states/error';
-import Skeleton from '../../components/states/skeleton-loading';
+import { BlogSkeleton } from '../../components/states/skeleton-loading';
 import { GalleryProps } from '../../types/gallery';
+import { useToast } from '../../context/toast-context';
 
 export const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [galleryItems, setGallery] = useState<GalleryProps[] | any>();
   const { fetchGalleryItems, isLoading, error } = useApp();
+  const {showErrorToast} = useToast();
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const handleFetchGallery = async () => {
+      setLoading(true)
+      try{
         const res = await fetchGalleryItems()
         setGallery(res?.data?.gallery)
+      } catch(err: any) {
+        showErrorToast(err)
+      } finally {
+        setLoading(false)
+      }
     }
 
     handleFetchGallery();
-}, [galleryItems])
+}, [])
 
-  // Function to handle image click and show modal
   const openImageModal = (index: number) => {
     setSelectedImage(index);
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    document.body.style.overflow = 'hidden'; 
   };
 
-  // Function to close modal
   const closeImageModal = () => {
     setSelectedImage(null);
-    document.body.style.overflow = 'auto'; // Re-enable scrolling
+    document.body.style.overflow = 'auto';
   };
 
   return (
@@ -69,8 +78,8 @@ export const Gallery: React.FC = () => {
         <ErrorState title={"Error loading gallery data"} message={"Please try again"} />
       )}
 
-      {isLoading && (
-        <Skeleton variant={"rectangular"} animation={"pulse"} />
+      {isLoading || loading && (
+        <BlogSkeleton />
       )}
 
       {!galleryItems || galleryItems.length === 0 && (
