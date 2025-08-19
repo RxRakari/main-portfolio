@@ -225,7 +225,7 @@ export default function ContactSection() {
                       Message Sent!
                     </span>
                   ) : (
-                    <span className="md:text-[1.2rem] text-[0.9rem]">
+                    <span className="md:text-[1.2rem] text-[0.9rem] flex gap-2 items-center">
                       <FaPaperPlane />
                       Send Message
                     </span>
