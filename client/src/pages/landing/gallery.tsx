@@ -51,7 +51,7 @@ export const Gallery: React.FC = () => {
               onClick={() => openImageModal(index)}
             >
               <img 
-                src={item.image} 
+                src={item.imageUrl} 
                 alt={item.title} 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
@@ -94,7 +94,7 @@ export const Gallery: React.FC = () => {
               &times;
             </button>
             <img 
-              src={galleryItems[selectedImage].image} 
+              src={galleryItems[selectedImage].imageUrl} 
               alt={galleryItems[selectedImage].title} 
               className="w-full h-full object-contain"
             />

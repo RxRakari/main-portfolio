@@ -218,7 +218,7 @@ export const ExperienceSection = () => {
                   viewport={{ once: true }}
                   key={index}
                   onClick={() => setActiveExperience(index)}
-                  className={`w-full text-left py-5 px-8 text-[1.5rem] transition-all duration-300 rounded-r-lg relative overflow-hidden ${
+                  className={`w-full text-left py-5 px-8 text-[0.9rem] md:text-[1.2rem] transition-all duration-300 rounded-r-lg relative overflow-hidden ${
                     activeExperience === index 
                       ? "bg-white/5 text-white border-l-4 border-purple-500" 
                       : "text-gray-400 hover:text-gray-200 border-l-4 border-transparent hover:bg-white/5 hover:pl-10"
@@ -302,7 +302,7 @@ export const ExperienceSection = () => {
                 {experiences[activeExperience].technologies.map((tech, index) => (
                   <motion.span 
                     key={index} 
-                    className="px-6 py-3 bg-white/5 border border-gray-800 rounded-[20px] text-gray-300 text-[0.9rem] transition-all hover:bg-white/10 hover:border-purple-500/50"
+                    className="flex items-center gap-2 px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all duration-300"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}

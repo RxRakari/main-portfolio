@@ -86,16 +86,16 @@ export default function ContactSection() {
                       {item.icon}
                     </div>
                     <div>
-                      <h4 className="text-lg font-medium text-gray-300">{item.label}</h4>
+                      <h4 className="md:text-lg text-[1rem] font-medium text-gray-300">{item.label}</h4>
                       {item.link ? (
                         <a 
                           href={item.link} 
-                          className="text-xl hover:text-purple-400 transition-colors"
+                          className="md:text-xl text-[0.9rem] hover:text-purple-400 transition-colors"
                         >
                           {item.value}
                         </a>
                       ) : (
-                        <p className="text-xl">{item.value}</p>
+                        <p className="md:text-xl text-[0.9rem]">{item.value}</p>
                       )}
                     </div>
                   </motion.div>
@@ -105,7 +105,7 @@ export default function ContactSection() {
             
             {/* Social Links */}
             <div>
-              <h3 className="text-2xl font-medium mb-6">Connect with me</h3>
+              <h3 className="md:text-2xl text-xl font-medium mb-6">Connect with me</h3>
               <div className="flex gap-4">
                 {socialLinks.map((social, index) => (
                   <motion.a
@@ -121,7 +121,7 @@ export default function ContactSection() {
                     viewport={{ once: true }}
                     whileHover={{ y: -5 }}
                   >
-                    <span className="text-xl">{social.icon}</span>
+                    <span className="md:text-xl text-[0.9rem]">{social.icon}</span>
                   </motion.a>
                 ))}
               </div>
@@ -136,7 +136,7 @@ export default function ContactSection() {
             viewport={{ once: true }}
             className="bg-white/5 border border-gray-800 rounded-[25px] p-8"
           >
-            <h3 className="text-3xl font-medium mb-8">Send me a message</h3>
+            <h3 className="md:text-3xl text-[1.5rem] font-medium mb-8">Send me a message</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <motion.div

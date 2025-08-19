@@ -139,7 +139,7 @@ const ProjectDetails: React.FC = () => {
           {/* Project image */}
           <div className="rounded-[25px] overflow-hidden mb-16 border border-gray-800">
             <img 
-              src={project.image || "https://via.placeholder.com/1200x600/1a1a1a/ffffff?text=" + project.title} 
+             src={project.images?.[0]?.url || "https://via.placeholder.com/400x200/1a1a1a/ffffff?text=" + project.title} 
               alt={project.title} 
               className="w-full h-auto object-cover"
             />
