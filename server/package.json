@@ -6,8 +6,6 @@
     "start": "node dist/main.js",
     "dev": "ts-node-dev --respawn src/main.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "setup": "echo \"PORT=5000\nMONGODB_URI=mongodb://localhost:27017/monochrome-portfolio\nJWT_SECRET=your_jwt_secret_key_here\nAPI_URL=http://localhost:5000\n\n# Cloudinary Configuration\nCLOUDINARY_CLOUD_NAME=your_cloud_name\nCLOUDINARY_API_KEY=your_api_key\nCLOUDINARY_API_SECRET=your_api_secret\n\n# Nodemailer Configuration\nEMAIL_SERVICE=gmail\nEMAIL_USER=your_email@gmail.com\nEMAIL_PASS=your_app_password\nEMAIL_FROM=your_email@gmail.com\" > .env && echo \".env file created successfully\"",
     "create-admin": "ts-node src/scripts/create-admin.ts"
   },
   "keywords": [],
