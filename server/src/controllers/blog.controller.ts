@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AppError } from '../middleware/error.middleware';
+import { invalidateRelatedCache } from '../middleware/cache.middleware';
 import Blog from '../schema/blog.schema';
 import { sendNewsletterNotification } from './newsletter.controller';
 
@@ -152,6 +153,9 @@ export const createBlog = async (req: Request, res: Response) => {
       }
     }
     
+    // Invalidate related cache
+    await invalidateRelatedCache('blog', newBlog.id);
+    
     res.status(201).json({
       status: 'success',
       data: {
@@ -228,6 +232,9 @@ export const updateBlog = async (req: Request, res: Response) => {
       }
     }
     
+    // Invalidate related cache
+    await invalidateRelatedCache('blog', id);
+    
     res.status(200).json({
       status: 'success',
       data: {
@@ -254,6 +261,9 @@ export const deleteBlog = async (req: Request, res: Response) => {
     if (!blog) {
       throw new AppError('Blog not found', 404);
     }
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('blog', id);
     
     res.status(200).json({
       status: 'success',
@@ -282,6 +292,9 @@ export const toggleFeatured = async (req: Request, res: Response) => {
     
     blog.featured = !blog.featured;
     await blog.save();
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('blog', id);
     
     res.status(200).json({
       status: 'success',
@@ -323,6 +336,9 @@ export const togglePublished = async (req: Request, res: Response) => {
         // Don't throw error, just log it
       }
     }
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('blog', id);
     
     res.status(200).json({
       status: 'success',

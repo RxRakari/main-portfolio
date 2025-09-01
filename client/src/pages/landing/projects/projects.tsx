@@ -6,33 +6,20 @@ import { ProjectProps } from '../../../types/project';
 import EmptyState from '../../../components/states/empty';
 import { ProjectSkeleton } from '../../../components/states/skeleton-loading';
 import ErrorState from '../../../components/states/error';
-import { useApp } from '../../../context/app-context';
-import { useToast } from '../../../context/toast-context';
+import { useProjects } from '../../../hooks/queries/use-portfolio-data';
 import { techIcons } from '../../../config/tech-icons';
 
 const Projects: React.FC = () => {
   const [filter, setFilter] = useState("all");
   const [projects, setProjects]= useState<ProjectProps[] | any>();
   const navigate = useNavigate();
-  const { fetchProjects, isLoading, error } = useApp();
-  const { showErrorToast } = useToast();
-  const [loading, setLoading] = useState(false)
+  const { data: projectsData, isLoading, error } = useProjects();
 
   useEffect(() => {
-    const handleFetchProjects = async () => {
-      setLoading(true);
-      try{
-        const res = await fetchProjects()
-        setProjects(res?.data?.projects);
-      } catch (err: any){
-        showErrorToast(err.message);
-      } finally{
-        setLoading(false)
-      }
+    if (projectsData?.data?.projects) {
+      setProjects(projectsData.data.projects);
     }
-
-    handleFetchProjects();
-}, [])
+  }, [projectsData])
 
   const filteredProjects = filter === "all" 
     ? projects 
@@ -152,7 +139,7 @@ const Projects: React.FC = () => {
         <ErrorState title={"Error loading project data"} message={"Please try again"} />
       )}
 
-      {isLoading || loading && (
+      {isLoading && (
         <ProjectSkeleton />
       )}
 

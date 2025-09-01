@@ -3,6 +3,7 @@ import { AppError } from '../middleware/error.middleware';
 import Gallery from '../schema/gallery.schema';
 import cloudinary from '../config/cloudinary';
 import { sendNewsletterNotification } from './newsletter.controller';
+import { invalidateRelatedCache } from '../middleware/cache.middleware';
 
 /**
  * Get all gallery items
@@ -111,6 +112,9 @@ export const createGalleryItem = async (req: Request, res: Response) => {
       // Don't throw error, just log it
     }
     
+    // Invalidate related cache
+    await invalidateRelatedCache('gallery', newGalleryItem.id);
+    
     res.status(201).json({
       status: 'success',
       data: {
@@ -160,6 +164,9 @@ export const updateGalleryItem = async (req: Request, res: Response) => {
       { new: true, runValidators: true }
     );
     
+    // Invalidate related cache
+    await invalidateRelatedCache('gallery', id);
+    
     res.status(200).json({
       status: 'success',
       data: {
@@ -194,6 +201,9 @@ export const deleteGalleryItem = async (req: Request, res: Response) => {
     
     await Gallery.findByIdAndDelete(id);
     
+    // Invalidate related cache
+    await invalidateRelatedCache('gallery', id);
+    
     res.status(200).json({
       status: 'success',
       data: null,
@@ -221,6 +231,18 @@ export const toggleFeatured = async (req: Request, res: Response) => {
     
     galleryItem.featured = !galleryItem.featured;
     await galleryItem.save();
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('gallery', id);
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('gallery', id);
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('landing_page');
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('landing_page');
     
     res.status(200).json({
       status: 'success',

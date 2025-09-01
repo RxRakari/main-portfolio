@@ -2,6 +2,7 @@ import express from 'express';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.middleware';
 import { upload, cloudinaryUpload } from '../middleware/upload.middleware';
 import { catchAsync } from '../middleware/error.middleware';
+import { cacheMiddleware } from '../middleware/cache.middleware';
 import {
   getAllTestimonials,
   getTestimonial,
@@ -14,8 +15,8 @@ import {
 const router = express.Router();
 
 // Public routes
-router.get('/', catchAsync(getAllTestimonials));
-router.get('/:id', catchAsync(getTestimonial));
+router.get('/', cacheMiddleware({ ttl: 300 }), catchAsync(getAllTestimonials));
+router.get('/:id', cacheMiddleware({ ttl: 600 }), catchAsync(getTestimonial));
 
 // Admin routes
 router.use('/admin', authMiddleware, adminMiddleware);

@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useApp } from '../../../context/app-context';
+import { useProject } from '../../../hooks/queries/use-portfolio-data';
 import { FaGithub, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
 import { techIcons } from '../../../config/tech-icons';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { fetchProject } = useApp();
+  const { data: projectData, isLoading, error } = useProject(id!);
   const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
   const [activeSection, setActiveSection] = useState('overview');
   const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
   
@@ -23,15 +22,14 @@ const ProjectDetails: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetchProject(id!);
+        const res = await projectData;
         const p = res?.data?.project;
         if (p) setProject(p);
       } finally {
-        setLoading(false);
       }
     };
     if (id) load();
-  }, [id, fetchProject]);
+  }, [id, projectData]);
 
   // Handle scroll to update active section
   useEffect(() => {
@@ -75,7 +73,7 @@ const ProjectDetails: React.FC = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-2xl">Loading...</div>
@@ -83,7 +81,7 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  if (!project) {
+  if (!project || error) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
         <div className="text-3xl mb-6">Project not found</div>
@@ -101,7 +99,7 @@ const ProjectDetails: React.FC = () => {
     <div className="min-h-screen bg-black text-white">
       {/* Sidebar navigation */}
       <div className="fixed top-[100px] left-0 w-[200px] pt-24 pl-8 h-screen">
-        {sections.map((section) => (
+        {sections.map((section: any) => (
           <div 
             key={section.id}
             className={`mb-4 text-[1.5rem] cursor-pointer ${activeSection === section.id ? 'text-white' : 'text-gray-500'}`}
@@ -126,21 +124,21 @@ const ProjectDetails: React.FC = () => {
           {/* Project header */}
           <div className="mb-12">
             <div className="flex flex-col flex-wrap items-start gap-4 mb-6">
-              {project.featured && (
+              {project?.featured && (
                 <span className="px-4 py-1 bg-white/10 border border-white/20 rounded-full text-sm">
                   Featured Project
                 </span>
               )}
-              <h1 className="text-6xl font-medium">{project.title}</h1>
+              <h1 className="text-6xl font-medium">{project?.title}</h1>
             </div>
-            <p className="text-2xl text-gray-300 mb-8">{project.description}</p>
+            <p className="text-2xl text-gray-300 mb-8">{project?.description}</p>
           </div>
           
           {/* Project image */}
           <div className="rounded-[25px] overflow-hidden mb-16 border border-gray-800">
             <img 
-             src={project.images?.[0]?.url || "https://via.placeholder.com/400x200/1a1a1a/ffffff?text=" + project.title} 
-              alt={project.title} 
+             src={project?.images?.[0]?.url || "https://via.placeholder.com/400x200/1a1a1a/ffffff?text=" + project?.title} 
+              alt={project?.title} 
               className="w-full h-auto object-cover"
             />
           </div>
@@ -153,7 +151,7 @@ const ProjectDetails: React.FC = () => {
           >
             <h2 className="text-4xl font-medium mb-8">Project Overview</h2>
             <p className="text-2xl text-gray-300 leading-relaxed font-light">
-              {project.description}
+              {project?.description}
               {/* Extended description would go here */}
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, 
               nunc nisl aliquet nunc, quis aliquam nisl nisl vitae nisl. Nullam euismod, nisl eget aliquam ultricies,
@@ -203,7 +201,7 @@ const ProjectDetails: React.FC = () => {
                   My approach to this project began with extensive research and planning. I created detailed wireframes and user flows to ensure a seamless user experience before writing any code.
                 </p>
                 <p className="text-2xl text-gray-300 leading-relaxed font-light">
-                  I adopted a component-based architecture using {project.technologies?.includes("React") ? "React" : project.technologies?.[0]} to ensure maintainability and scalability. This modular approach allowed for efficient development and easier testing throughout the project lifecycle.
+                  I adopted a component-based architecture using {project?.technologies?.includes("React") ? "React" : project?.technologies?.[0]} to ensure maintainability and scalability. This modular approach allowed for efficient development and easier testing throughout the project lifecycle.
                 </p>
               </div>
               
@@ -235,7 +233,7 @@ const ProjectDetails: React.FC = () => {
           >
             <h2 className="text-4xl font-medium mb-8">Technologies Used</h2>
             <div className="flex flex-wrap gap-4">
-              {project.technologies?.map((tech: string) => (
+              {project?.technologies?.map((tech: string) => (
                 <span
                   key={tech}
                   className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-gray-800 rounded-[20px] text-gray-300 text-[1.2rem]"
@@ -251,9 +249,9 @@ const ProjectDetails: React.FC = () => {
           
           {/* Project links */}
           <div className="flex flex-wrap gap-6 pb-24">
-            {project.githubUrl && (
+            {project?.githubUrl && (
             <a
-              href={project.githubUrl}
+              href={project?.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-8 py-4 backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:bg-white/5 text-xl"
@@ -262,9 +260,9 @@ const ProjectDetails: React.FC = () => {
               View Source Code
             </a>
             )}
-            {project.liveUrl && (
+            {project?.liveUrl && (
             <a
-              href={project.liveUrl}
+              href={project?.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-[33px] hover:bg-gray-200 transition-all duration-300 text-xl"

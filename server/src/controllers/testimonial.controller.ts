@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AppError } from '../middleware/error.middleware';
 import Testimonial from '../schema/testimonial.schema';
 import cloudinary from '../config/cloudinary';
+import { invalidateRelatedCache } from '../middleware/cache.middleware';
 
 /**
  * Get all testimonials
@@ -100,6 +101,9 @@ export const createTestimonial = async (req: Request, res: Response) => {
       featured: featured === 'true',
     });
     
+    // Invalidate related cache
+    await invalidateRelatedCache('testimonial', newTestimonial.id);
+    
     res.status(201).json({
       status: 'success',
       data: {
@@ -151,6 +155,9 @@ export const updateTestimonial = async (req: Request, res: Response) => {
       { new: true, runValidators: true }
     );
     
+    // Invalidate related cache
+    await invalidateRelatedCache('testimonial', id);
+    
     res.status(200).json({
       status: 'success',
       data: {
@@ -185,6 +192,9 @@ export const deleteTestimonial = async (req: Request, res: Response) => {
     
     await Testimonial.findByIdAndDelete(id);
     
+    // Invalidate related cache
+    await invalidateRelatedCache('testimonial', id);
+    
     res.status(200).json({
       status: 'success',
       data: null,
@@ -212,6 +222,15 @@ export const toggleFeatured = async (req: Request, res: Response) => {
     
     testimonial.featured = !testimonial.featured;
     await testimonial.save();
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('testimonial', id);
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('testimonial', id);
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('landing_page');
     
     res.status(200).json({
       status: 'success',

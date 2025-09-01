@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppError } from '../middleware/error.middleware';
 import Experience from '../schema/experience.schema';
+import { invalidateRelatedCache } from '../middleware/cache.middleware';
 
 /**
  * Generate period string from dates
@@ -126,6 +127,9 @@ export const createExperience = async (req: Request, res: Response) => {
       featured: featured === true || featured === 'true',
     });
     
+    // Invalidate related cache
+    await invalidateRelatedCache('experience', newExperience.id);
+    
     res.status(201).json({
       status: 'success',
       data: {
@@ -195,6 +199,9 @@ export const updateExperience = async (req: Request, res: Response) => {
       { new: true, runValidators: true }
     );
     
+    // Invalidate related cache
+    await invalidateRelatedCache('experience', id);
+    
     res.status(200).json({
       status: 'success',
       data: {
@@ -221,6 +228,9 @@ export const deleteExperience = async (req: Request, res: Response) => {
     if (!experience) {
       throw new AppError('Experience not found', 404);
     }
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('experience', id);
     
     res.status(200).json({
       status: 'success',
@@ -249,6 +259,12 @@ export const toggleFeatured = async (req: Request, res: Response) => {
     
     experience.featured = !experience.featured;
     await experience.save();
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('experience', id);
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('landing_page');
     
     res.status(200).json({
       status: 'success',

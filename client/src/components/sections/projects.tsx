@@ -3,7 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 import Heading from "../ui/heading";
-import { useApp } from "../../context/app-context";
+import { useFeaturedProjects } from "../../hooks/queries/use-portfolio-data";
 import { techIcons } from "../../config/tech-icons";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
 
@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function ProjectsSection() {
   const [filter] = useState("all");
-  const { fetchProjects } = useApp();
+  const { data: projectsData, isLoading } = useFeaturedProjects();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -129,12 +129,11 @@ export default function ProjectsSection() {
   }, [filter]);
 
   useEffect(() => {
-    const handleFetchProjects = async () => {
-      const res = await fetchProjects()
-      setProjects(res?.data?.projects)
+    if (projectsData?.data?.projects) {
+      setProjects(projectsData.data.projects);
     }
-    handleFetchProjects()
-  }, [fetchProjects])
+  }, [projectsData])
+  console.log(projects)
 
   const apiProjects = (projects || []).map((p: any, index: number) => ({
     id: index,
@@ -268,6 +267,12 @@ export default function ProjectsSection() {
             )}
           />
         </div>
+
+        {!projectsData?.data?.projects && !isLoading && (
+          <div className="flex justify-center items-center h-full">
+            <p>No featured projects found</p>
+          </div>
+        )}
 
         {/* Load More Button */}
         {/* <div ref={loadMoreRef} className="text-center mt-16">

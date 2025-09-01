@@ -1,34 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { PageHeader } from '../../components/ui/page-header';
-import { useApp } from '../../context/app-context';
+import { useGalleryItems } from '../../hooks/queries/use-portfolio-data';
 import EmptyState from '../../components/states/empty';
 import ErrorState from '../../components/states/error';
 import { BlogSkeleton } from '../../components/states/skeleton-loading';
 import { GalleryProps } from '../../types/gallery';
-import { useToast } from '../../context/toast-context';
 
 export const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [galleryItems, setGallery] = useState<GalleryProps[] | any>();
-  const { fetchGalleryItems, isLoading, error } = useApp();
-  const {showErrorToast} = useToast();
-  const [loading, setLoading] = useState(false);
+  const { data: galleryData, isLoading, error } = useGalleryItems();
 
   useEffect(() => {
-    const handleFetchGallery = async () => {
-      setLoading(true)
-      try{
-        const res = await fetchGalleryItems()
-        setGallery(res?.data?.gallery)
-      } catch(err: any) {
-        showErrorToast(err)
-      } finally {
-        setLoading(false)
-      }
+    if (galleryData?.data?.gallery) {
+      setGallery(galleryData.data.gallery);
     }
-
-    handleFetchGallery();
-}, [])
+  }, [galleryData])
 
   const openImageModal = (index: number) => {
     setSelectedImage(index);
@@ -78,7 +65,7 @@ export const Gallery: React.FC = () => {
         <ErrorState title={"Error loading gallery data"} message={"Please try again"} />
       )}
 
-      {isLoading || loading && (
+      {isLoading && (
         <BlogSkeleton />
       )}
 

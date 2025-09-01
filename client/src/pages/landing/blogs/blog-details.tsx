@@ -1,32 +1,30 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { doodle } from '../../../assets';
 import { useState, useEffect, useRef } from 'react';
-import { useApp } from '../../../context/app-context';
+import { useBlog } from '../../../hooks/queries/use-portfolio-data';
 
 const BlogDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { fetchBlog } = useApp();
+  const { data: blogData, isLoading, error } = useBlog(id!);
   const [activeSection, setActiveSection] = useState('');
   const [blog, setBlog] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
   const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
   
   // Fetch blog
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetchBlog(id!);
+        const res = await blogData;
         const b = res?.data?.blog;
         if (b) {
           setBlog(b);
         }
       } finally {
-        setLoading(false);
       }
     };
     if (id) load();
-  }, [id, fetchBlog]);
+  }, [id, blogData]);
 
   // Handle scroll to update active section
   useEffect(() => {
@@ -68,7 +66,7 @@ const BlogDetails = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-2xl">Loading...</div>
@@ -76,7 +74,7 @@ const BlogDetails = () => {
     );
   }
 
-  if (!blog) {
+  if (!blog || error) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-2xl">Blog not found</div>
@@ -88,7 +86,7 @@ const BlogDetails = () => {
     <div className="min-h-screen bg-black text-white">
       {/* Sidebar navigation */}
       <div className="fixed top-[100px] left-0 w-[200px] pt-24 pl-8 h-screen">
-        {(blog.sections || []).map((section: any) => (
+        {(blog?.sections || []).map((section: any) => (
           <div 
             key={section.id || section.title}
             className={`mb-4 text-[1.5rem] cursor-pointer ${activeSection === (section.id || section.title) ? 'text-white' : 'text-gray-500'}`}
@@ -109,16 +107,16 @@ const BlogDetails = () => {
             <span>←</span> BACK TO THE MAIN BLOG
           </button>
           
-          <div className="mb-6 text-gray-400 text-[1.5rem] tracking-wider">{new Date(blog.createdAt).toDateString().toUpperCase()}</div>
+          <div className="mb-6 text-gray-400 text-[1.5rem] tracking-wider">{new Date(blog?.createdAt).toDateString().toUpperCase()}</div>
           
-          <h1 className="text-7xl font-medium mb-6">{blog.title}</h1>
-          <div className="text-2xl text-gray-300 mb-12">{blog.subtitle}</div>
+          <h1 className="text-7xl font-medium mb-6">{blog?.title}</h1>
+          <div className="text-2xl text-gray-300 mb-12">{blog?.subtitle}</div>
           
           <div className="flex items-center gap-4 mb-10">
-            <img src={blog.coverImage || doodle} alt="avatar" className="rounded-full w-14 h-14 object-cover" />
+            <img src={blog?.coverImage || doodle} alt="avatar" className="rounded-full w-14 h-14 object-cover" />
             <div>
-              <div className="text-gray-200">Posted By {blog.author}</div>
-              <div className="text-gray-400">{blog.readTime}</div>
+              <div className="text-gray-200">Posted By {blog?.author}</div>
+              <div className="text-gray-400">{blog?.readTime}</div>
             </div>
           </div>
           

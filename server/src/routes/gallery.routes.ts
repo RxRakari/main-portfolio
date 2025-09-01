@@ -2,6 +2,7 @@ import express from 'express';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.middleware';
 import { upload, cloudinaryUpload } from '../middleware/upload.middleware';
 import { catchAsync } from '../middleware/error.middleware';
+import { cacheMiddleware } from '../middleware/cache.middleware';
 import {
   getAllGalleryItems,
   getGalleryItem,
@@ -13,9 +14,9 @@ import {
 
 const router = express.Router();
 
-// Public routes
-router.get('/', catchAsync(getAllGalleryItems));
-router.get('/:id', catchAsync(getGalleryItem));
+// Public routes with caching
+router.get('/', cacheMiddleware({ ttl: 300 }), catchAsync(getAllGalleryItems));
+router.get('/:id', cacheMiddleware({ ttl: 600 }), catchAsync(getGalleryItem));
 
 // Admin routes
 router.use('/admin', authMiddleware, adminMiddleware);

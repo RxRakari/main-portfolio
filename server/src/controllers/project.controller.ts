@@ -3,6 +3,7 @@ import { AppError } from '../middleware/error.middleware';
 import Project from '../schema/project.schema';
 import { sendNewsletterNotification } from './newsletter.controller';
 import cloudinary from '../config/cloudinary';
+import { invalidateRelatedCache } from '../middleware/cache.middleware';
 
 /**
  * Get all projects
@@ -132,6 +133,9 @@ export const createProject = async (req: Request, res: Response) => {
       // Don't throw error, just log it
     }
     
+    // Invalidate related cache
+    await invalidateRelatedCache('project', newProject.id);
+    
     res.status(201).json({
       status: 'success',
       data: {
@@ -189,6 +193,9 @@ export const updateProject = async (req: Request, res: Response) => {
       { new: true, runValidators: true }
     );
     
+    // Invalidate related cache
+    await invalidateRelatedCache('project', id);
+    
     res.status(200).json({
       status: 'success',
       data: {
@@ -227,6 +234,9 @@ export const deleteProject = async (req: Request, res: Response) => {
     
     await Project.findByIdAndDelete(id);
     
+    // Invalidate related cache
+    await invalidateRelatedCache('project', id);
+    
     res.status(200).json({
       status: 'success',
       data: null,
@@ -254,6 +264,12 @@ export const toggleFeatured = async (req: Request, res: Response) => {
     
     project.featured = !project.featured;
     await project.save();
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('project', id);
+    
+    // Invalidate related cache
+    await invalidateRelatedCache('landing_page');
     
     res.status(200).json({
       status: 'success',

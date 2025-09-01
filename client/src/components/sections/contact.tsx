@@ -4,12 +4,12 @@ import { FaPaperPlane, FaCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { socialLinks } from "../../config/contact/social-links";
 import { contactInfo } from "../../config/contact/contact-info";
-import { useApp } from "../../context/app-context";
+import { useSubmitContact } from "../../hooks/mutations/use-portfolio-mutations";
 
 export default function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("idle");
-  const { submitContactForm } = useApp();
+  const submitContactMutation = useSubmitContact();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,7 +20,7 @@ export default function ContactSection() {
     setStatus("loading");
   
     try {
-      const response = await submitContactForm(form);
+      const response = await submitContactMutation.mutateAsync(form);
       if (response.status === "success") {
         setStatus("success");
         setForm({ name: "", email: "", message: "" });

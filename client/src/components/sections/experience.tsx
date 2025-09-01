@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaCalendarAlt, FaMapMarkerAlt, FaAward, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import { experienceAPI } from '../../services/api-client';
+import { useFeaturedExperiences } from '../../hooks/queries/use-portfolio-data';
 import Heading from '../ui/heading';
 
 // Interface for experience data
@@ -20,36 +20,20 @@ interface ExperienceData {
 export const ExperienceSection = () => {
   const [activeExperience, setActiveExperience] = useState(0);
   const [experiences, setExperiences] = useState<ExperienceData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: experiencesData, isLoading, error } = useFeaturedExperiences();
   const sectionRef = useRef<HTMLElement>(null);
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   
-  // Fetch experiences from the API
+  // Update experiences when data changes
   useEffect(() => {
-    const fetchExperiences = async () => {
-      try {
-        setIsLoading(true);
-        const response = await experienceAPI.getFeatured();
-        if (response.data.experiences && response.data.experiences.length > 0) {
-          setExperiences(response.data.experiences);
-        } else {
-          // Fallback to mock data if no experiences are returned
-          setExperiences(mockExperiences);
-        }
-        setError(null);
-      } catch (err) {
-        console.error('Failed to fetch experiences:', err);
-        setError('Failed to load experiences. Using mock data instead.');
-        setExperiences(mockExperiences);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchExperiences();
-  }, []);
+    if (experiencesData?.data?.experiences && experiencesData.data.experiences.length > 0) {
+      setExperiences(experiencesData.data.experiences);
+    } else if (!isLoading && !error) {
+      // Fallback to mock data if no experiences are returned
+      setExperiences(mockExperiences);
+    }
+  }, [experiencesData, isLoading, error]);
 
   // Mock data as fallback
   const mockExperiences = [
@@ -253,22 +237,22 @@ export const ExperienceSection = () => {
                 <FaAward />
                 <span className="text-[1rem] font-medium uppercase tracking-wider">Position</span>
               </div>
-              <h3 className="text-[1.5rem] font-medium mb-2">{experiences[activeExperience].title}</h3>
+              <h3 className="text-[1.5rem] font-medium mb-2">{experiences[activeExperience]?.title}</h3>
               <div className="flex flex-wrap gap-6 mt-4 text-[1rem] text-gray-400">
                 <div className="flex items-center gap-2">
                   <FaCalendarAlt className="text-gray-500" />
-                  {experiences[activeExperience].period}
+                  {experiences[activeExperience]?.period}
                 </div>
                 <div className="flex items-center gap-2">
                   <FaMapMarkerAlt className="text-gray-500" />
-                  {experiences[activeExperience].location}
+                    {experiences[activeExperience]?.location}
                 </div>
               </div>
             </div>
             
             <div className="bg-white/5 border border-gray-800 rounded-[25px] p-8 mb-12">
               <p className="text-[1.2rem] text-gray-300 leading-relaxed font-light">
-                {experiences[activeExperience].description}
+                {experiences[activeExperience]?.description}
               </p>
             </div>
             
@@ -282,7 +266,7 @@ export const ExperienceSection = () => {
                 initial="hidden"
                 animate="visible"
               >
-                {experiences[activeExperience].achievements.map((achievement, index) => (
+                  {experiences[activeExperience]?.achievements.map((achievement, index) => (
                   <motion.li 
                     key={index} 
                     className="text-[1rem] text-gray-300 leading-relaxed font-light list-disc pl-2"
@@ -299,7 +283,7 @@ export const ExperienceSection = () => {
                 <span className="text-purple-400">⚙</span> Technologies Used
               </h4>
               <div className="flex flex-wrap gap-4">
-                {experiences[activeExperience].technologies.map((tech, index) => (
+                {experiences[activeExperience]?.technologies.map((tech, index) => (
                   <motion.span 
                     key={index} 
                     className="flex items-center gap-2 px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all duration-300"

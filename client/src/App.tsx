@@ -1,11 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ScrollToTop from './components/ui/scroll-to-top';
 import LoadingWrapper from './components/states/loading-wrapper';
 import { ToastProvider } from './context/toast-context';
 import { AdminProvider } from './context/admin-context';
 import { AuthProvider } from './context/auth-context';
-import { AppProvider, useApp } from './context/app-context';
+import { OptimizedAppProvider, useOptimizedApp } from './context/optimized-app-context';
 import { ThemeProvider } from './context/theme-context';
+import { queryClient } from './lib/query-client';
 
 // Layouts
 import { LandingLayout } from './layout/landing-layout';
@@ -55,7 +58,7 @@ const AppLogo = () => (
 );
 
 const AppContent = () => {
-  const { isLoading, error } = useApp();
+  const { isLoading, error } = useOptimizedApp();
 
   return (
     <LoadingWrapper
@@ -142,9 +145,12 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <QueryClientProvider client={queryClient}>
+      <OptimizedAppProvider>
+        <AppContent />
+      </OptimizedAppProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
 

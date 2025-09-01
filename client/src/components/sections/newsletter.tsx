@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FiSend } from "react-icons/fi";
 import { doodle } from "../../assets";
 import Heading from "../ui/heading";
-import { useApp } from "../../context/app-context";
+import { useSubscribeNewsletter } from "../../hooks/mutations/use-portfolio-mutations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +12,7 @@ export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
-  const { subscribeToNewsletter } = useApp()
+  const subscribeNewsletterMutation = useSubscribeNewsletter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export default function NewsletterSection() {
     setMessage("");
 
     try {
-      const response = await subscribeToNewsletter(email);
+      const response = await subscribeNewsletterMutation.mutateAsync(email);
       
       if (response.status === "success") {
         setStatus("success");

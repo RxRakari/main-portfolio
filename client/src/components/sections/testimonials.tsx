@@ -1,20 +1,18 @@
 import { AnimatedTestimonials } from "../ui/animated-testimonials";
 import Heading from "../ui/heading";
-import { useApp } from "../../context/app-context";
+import { useTestimonials } from "../../hooks/queries/use-portfolio-data";
 import { useState, useEffect } from "react";
 
 
 export function Testimonials() {
-  const { fetchTestimonials } = useApp();
+  const { data: testimonialsData } = useTestimonials();
   const [testimonials, setTestimonials] = useState<any[]>([]);
 
   useEffect(() => {
-    const handleFetchTestimonials = async () => {
-      const res = await fetchTestimonials()
-      setTestimonials(res?.data?.testimonials)
+    if (testimonialsData?.data?.testimonials) {
+      setTestimonials(testimonialsData.data.testimonials);
     }
-    handleFetchTestimonials()
-  }, [fetchTestimonials])
+  }, [testimonialsData])
   
   return (
     <section className="flex flex-col items-center justify-center">

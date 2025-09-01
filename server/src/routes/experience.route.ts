@@ -1,6 +1,7 @@
 import express from 'express';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.middleware';
 import { catchAsync } from '../middleware/error.middleware';
+import { cacheMiddleware } from '../middleware/cache.middleware';
 import {
   getAllExperiences,
   getExperience,
@@ -13,8 +14,8 @@ import {
 const router = express.Router();
 
 // Public routes
-router.get('/', catchAsync(getAllExperiences));
-router.get('/:id', catchAsync(getExperience));
+router.get('/', cacheMiddleware({ ttl: 300 }), catchAsync(getAllExperiences));
+router.get('/:id', cacheMiddleware({ ttl: 600 }), catchAsync(getExperience));
 
 // Admin routes
 router.use('/admin', authMiddleware, adminMiddleware);

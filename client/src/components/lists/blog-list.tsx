@@ -1,38 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import BlogCard from "../ui/blog-card";
-import { useApp } from "../../context/app-context";
+import { useBlogs } from "../../hooks/queries/use-portfolio-data";
 import { useEffect, useState } from "react";
 import { BlogProps } from "../../types/blog";
 import EmptyState from "../states/empty";
 import { BlogSkeleton } from "../states/skeleton-loading";
 import ErrorState from "../states/error";
-import { useToast } from "../../context/toast-context";
 
 const BlogList = () => {
     const navigate = useNavigate();
     const [blogs, setBlogs] = useState<BlogProps[]>();
-    const { fetchBlogs, isLoading, error } = useApp();
-    const [loading, setLoading] = useState(false);
-    const {showErrorToast} = useToast();
+    const { data: blogsData, isLoading, error } = useBlogs();
 
     useEffect(() => {
-        const handleFetchBlogs = async () => {
-          setLoading(true)
-          try {
-            const res = await fetchBlogs()
-            setBlogs(res?.data?.blogs)
-          } catch (err: any) {
-            showErrorToast(err.message);
-            console.error(err)
-          } finally {
-            setLoading(false)
-          }
+        if (blogsData?.data?.blogs) {
+            setBlogs(blogsData.data.blogs);
         }
-      
-        handleFetchBlogs()
-      }, [])      
+    }, [blogsData])      
 
-    if(isLoading || loading){
+    if(isLoading){
         return(
             <BlogSkeleton />
         )

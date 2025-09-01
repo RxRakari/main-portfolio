@@ -1,4 +1,4 @@
-# Caleb's Smooth monochrome portfolio
+# Rapto's Smooth monochrome portfolio
 
 # --- Features --- #
 
@@ -10,8 +10,8 @@
 - view contact submissions
 - have control of the whole website
 
-2. Monchrome, Smooth & Minimal UI/UX
-- color scheme (black & white)
+2. Monochrome, Smooth & Minimal UI/UX
+- color scheme (black & purple)
 
 # --- Pages --- #
 
