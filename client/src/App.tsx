@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ScrollToTop from './components/ui/scroll-to-top';
 import LoadingWrapper from './components/states/loading-wrapper';
 import { ToastProvider } from './context/toast-context';
@@ -149,7 +148,6 @@ const App = () => {
       <OptimizedAppProvider>
         <AppContent />
       </OptimizedAppProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };
