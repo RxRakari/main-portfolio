@@ -386,7 +386,7 @@ const BlogForm: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="bg-black/20 backdrop-blur-lg rounded-xl border border-white/10 shadow-lg p-6 mt-6 z-10">
         <FormSection title="Basic Information">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <TextInput
               id="title"
               name="title"
@@ -398,7 +398,7 @@ const BlogForm: React.FC = () => {
               error={errors.title}
             />
             
-            <div className="flex items-end gap-2">
+            <div className="flex gap-2 items-center">
               <TextInput
                 id="slug"
                 name="slug"
@@ -549,7 +549,7 @@ const BlogForm: React.FC = () => {
             ))}
           </div>
           
-          <div className="flex items-end gap-2">
+          <div className="flex gap-2 items-center">
             <TextInput
               id="newTag"
               name="newTag"

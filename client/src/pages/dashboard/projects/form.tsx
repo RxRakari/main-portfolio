@@ -468,7 +468,7 @@ const ProjectForm: React.FC = () => {
               className="md:col-span-2"
             />
             
-            <div className="flex items-end gap-4">
+            <div className="flex items-center gap-4">
               <TextInput
                 id="slug"
                 name="slug"
@@ -564,7 +564,7 @@ const ProjectForm: React.FC = () => {
             </div>
           )}
 
-          <div className="flex items-end gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4">
             <TextInput
               id="newFeature"
               name="newFeature"
@@ -610,7 +610,7 @@ const ProjectForm: React.FC = () => {
             ))}
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <TextInput
               id="newTechnology"
               name="newTechnology"
@@ -619,11 +619,12 @@ const ProjectForm: React.FC = () => {
               onChange={handleChange}
               placeholder="e.g., React, Node.js, MongoDB"
               error={errors.newTechnology}
+              className="flex-1"
             />
             <button
               type="button"
               onClick={addTechnology}
-              className="mt-7 px-4 py-3 border border-white/20 rounded-lg text-white bg-white/10 hover:bg-white/20 flex items-center transition-colors"
+              className="mt-7 px-4 py-2.5 border border-white/20 rounded-lg text-white bg-white/10 hover:bg-white/20 flex items-center transition-colors"
             >
               <FiPlus className="mr-1" /> Add
             </button>
