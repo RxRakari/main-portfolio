@@ -84,7 +84,7 @@ export default function AboutSection() {
               className="skill-card group relative p-6 bg-white/5 border border-white/10 rounded-2xl shadow-xl transition-all duration-300 hover:bg-white/10 hover:border-white/20"
             >
               <div className="text-4xl mb-4">{skill.icon}</div>
-              <h3 className="text-xl font-bold mb-2">{skill.title}</h3>
+              <h3 className="md:text-xl text-[15px] font-bold mb-2">{skill.title}</h3>
               <p className="text-gray-400 text-sm">{skill.description}</p>
             </div>
           ))}
@@ -93,14 +93,14 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="space-y-8">
             <div className="professional-focus">
-              <h3 className="text-2xl font-bold mb-4 text-purple-400">Professional Focus</h3>
-              <p className="text-gray-400">
+              <h3 className="md:text-2xl text-xl font-bold mb-4 text-purple-400">Professional Focus</h3>
+              <p className="text-gray-400 ">
                 Caleb specializes in both front-end and back-end development. He has worked with several technologies and tools, focusing on building responsive, scalable, and high-performance applications.
               </p>
             </div>
 
             <div className="technical-skills">
-              <h3 className="text-2xl font-bold mb-4 text-purple-400">Technical Skills</h3>
+              <h3 className="md:text-2xl text-xl font-bold mb-4 text-purple-400">Technical Skills</h3>
               <ul className="grid grid-cols-2 gap-4 text-gray-300">
                 <li className="flex items-center gap-2"><SiJavascript className="text-yellow-400" /> JavaScript</li>
                 <li className="flex items-center gap-2"><SiTypescript className="text-blue-400" /> Typescript</li>
@@ -116,14 +116,14 @@ export default function AboutSection() {
 
           <div className="space-y-8">
             <div className="community-contribution">
-              <h3 className="text-2xl font-bold mb-4 text-purple-400">Community & Open Source</h3>
+              <h3 className="md:text-2xl text-xl font-bold mb-4 text-purple-400">Community & Open Source</h3>
               <p className="text-gray-400">
                 Caleb is committed to contributing to the tech community. His projects, such as the open-source Bannerly, highlight his dedication to sharing knowledge and resources with other developers.
               </p>
             </div>
 
             <div className="online-presence">
-              <h3 className="text-2xl font-bold mb-4 text-purple-400">Online Presence</h3>
+              <h3 className="md:text-2xl text-xl font-bold mb-4 text-purple-400">Online Presence</h3>
               <div className="flex flex-wrap gap-4">
                 {socialLinks.map((link) => (
                   <a
