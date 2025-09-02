@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 
 export function Testimonials() {
-  const { data: testimonialsData } = useTestimonials();
+  const { data: testimonialsData, isLoading } = useTestimonials();
   const [testimonials, setTestimonials] = useState<any[]>([]);
 
   useEffect(() => {
@@ -13,6 +13,18 @@ export function Testimonials() {
       setTestimonials(testimonialsData.data.testimonials);
     }
   }, [testimonialsData])
+
+  if (isLoading) {
+    return (
+      <section className="relative overflow-hidden">
+        <Heading
+        className="md:hidden flex flex-col"
+        heading={"Testimonials"}
+        paragraph={"Loading testimonials data..."}
+         />
+      </section>
+    );
+  }
   
   return (
     <section className="flex flex-col items-center justify-center">

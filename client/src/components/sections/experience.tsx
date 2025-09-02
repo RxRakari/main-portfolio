@@ -138,10 +138,11 @@ export const ExperienceSection = () => {
   if (isLoading) {
     return (
       <section id="experience" className="relative overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-4">
-          <h2 className="text-6xl font-medium mb-6">Experience</h2>
-          <p className="text-2xl text-gray-400 mb-24">Loading experience data...</p>
-        </div>
+        <Heading
+        className="md:hidden flex flex-col"
+        heading={"Experience"}
+        paragraph={"Loading experience data..."}
+         />
       </section>
     );
   }
@@ -250,7 +251,7 @@ export const ExperienceSection = () => {
               </div>
             </div>
             
-            <div className="bg-white/5 border border-gray-800 rounded-[25px] p-8 mb-12">
+            <div className="bg-white/5 border border-gray-800 rounded-[25px] md:p-8 p-4 mb-12">
               <p className="text-[1.2rem] text-gray-300 leading-relaxed font-light">
                 {experiences[activeExperience]?.description}
               </p>

@@ -10,7 +10,7 @@ import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function ProjectsSection() {
-  const [filter] = useState("all");
+  const [filter] = useState("featured");
   const { data: projectsData, isLoading } = useFeaturedProjects();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -268,18 +268,18 @@ export default function ProjectsSection() {
           />
         </div>
 
-        {!projectsData?.data?.projects && !isLoading && (
+        {!filteredProjects || projects && !isLoading && (
           <div className="flex justify-center items-center h-full">
             <p>No featured projects found</p>
           </div>
         )}
 
         {/* Load More Button */}
-        {/* <div ref={loadMoreRef} className="text-center mt-16">
+        <div ref={loadMoreRef} className="text-center mt-16 md:flex hidden">
           <button className="px-8 py-4 backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:bg-white/5 text-gray-300 hover:text-white">
             View All Projects
           </button>
-        </div> */}
+        </div>
       </div>
     </section>
   );
