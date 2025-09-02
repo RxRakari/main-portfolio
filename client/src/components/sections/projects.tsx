@@ -275,7 +275,7 @@ export default function ProjectsSection() {
         )}
 
         {/* Load More Button */}
-        <div ref={loadMoreRef} className="text-center mt-16 md:flex hidden">
+        <div ref={loadMoreRef} className="text-center mt-16 md:flex justify-center hidden">
           <button className="px-8 py-4 backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] hover:border-[#fafafa20] transition-all duration-300 hover:bg-white/5 text-gray-300 hover:text-white">
             View All Projects
           </button>
