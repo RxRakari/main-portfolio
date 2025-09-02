@@ -260,6 +260,12 @@ export const useAllLandingData = () => {
   const testimonialsQuery = useTestimonials();
   const experiencesQuery = useExperiences();
 
+  const allQueries = [landingPageQuery, blogsQuery, projectsQuery, galleryQuery, testimonialsQuery, experiencesQuery];
+  const isAllSettled = allQueries.every(q => q.isSuccess || q.isError);
+  const isLoading = !isAllSettled;
+  const isError = allQueries.some(q => q.isError);
+  const error = allQueries.find(q => q.isError)?.error;
+
   return {
     landingPage: landingPageQuery,
     blogs: blogsQuery,
@@ -267,8 +273,8 @@ export const useAllLandingData = () => {
     gallery: galleryQuery,
     testimonials: testimonialsQuery,
     experiences: experiencesQuery,
-    isLoading: landingPageQuery.isLoading || blogsQuery.isLoading || projectsQuery.isLoading || galleryQuery.isLoading || testimonialsQuery.isLoading || experiencesQuery.isLoading,
-    isError: landingPageQuery.isError || blogsQuery.isError || projectsQuery.isError || galleryQuery.isError || testimonialsQuery.isError || experiencesQuery.isError,
-    error: landingPageQuery.error || blogsQuery.error || projectsQuery.error || galleryQuery.error || testimonialsQuery.error || experiencesQuery.error,
+    isLoading,
+    isError,
+    error,
   };
 };
