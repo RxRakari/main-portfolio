@@ -192,6 +192,7 @@ export default function ProjectsSection() {
          />
       </section>
     )
+    }
 
   return (
     <section 
