@@ -22,8 +22,11 @@ export const techIcons: { [key: string]: React.JSX.Element } = {
     
     // Styling & UI
     "HTML5": <FaHtml5 className="text-[#E34F26]" />,
+    "HTML": <FaHtml5 className="text-[#E34F26]" />,
     "CSS3": <FaCss3Alt className="text-[#1572B6]" />,
+    "CSS": <FaCss3Alt className="text-[#1572B6]" />,
     "TailwindCSS": <SiTailwindcss className="text-[#06B6D4]" />,
+    "Tailwind": <SiTailwindcss className="text-[#06B6D4]" />,
     "Bootstrap": <FaBootstrap className="text-[#7952B3]" />,
     "Sass": <FaSass className="text-[#CC6699]" />,
     "Styled Components": <SiStyledcomponents className="text-[#DB7093]" />,
@@ -34,6 +37,7 @@ export const techIcons: { [key: string]: React.JSX.Element } = {
     
     // Backend & APIs
     "Node.js": <FaNodeJs className="text-[#339933]" />,
+    "Node": <FaNodeJs className="text-[#339933]" />,
     "Express": <SiExpress className="text-white" />,
     "NestJS": <SiNestjs className="text-[#E0234E]" />,
     "Django": <SiDjango className="text-[#092E20]" />,
