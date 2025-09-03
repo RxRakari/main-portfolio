@@ -186,8 +186,8 @@ export default function ProjectsSection() {
       <section id="experience" className="relative overflow-hidden">
         <Heading
         className="md:hidden flex flex-col"
-        heading={"Experience"}
-        paragraph={"Loading experience data..."}
+        heading={"Projects"}
+        paragraph={"Loading projects data..."}
          />
       </section>
     )
