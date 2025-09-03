@@ -6,6 +6,7 @@ import Heading from "../ui/heading";
 import { useFeaturedProjects } from "../../hooks/queries/use-portfolio-data";
 import { techIcons } from "../../config/tech-icons";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
+import { getTechIcon } from "../../utils/tech-icons"
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -244,7 +245,7 @@ export default function ProjectsSection() {
                         title={tech}
                       >
                         <span className="text-sm">
-                          {techIcons[tech] || <span className="text-gray-400">•</span>}
+                          {getTechIcon(tech)}
                         </span>
                         {tech}
                       </span>
