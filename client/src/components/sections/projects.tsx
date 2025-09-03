@@ -181,6 +181,17 @@ export default function ProjectsSection() {
 
   console.log(handleProjectHover)
 
+    if (isLoading) {
+    return (
+      <section id="experience" className="relative overflow-hidden">
+        <Heading
+        className="md:hidden flex flex-col"
+        heading={"Experience"}
+        paragraph={"Loading experience data..."}
+         />
+      </section>
+    )
+
   return (
     <section 
       ref={sectionRef}
