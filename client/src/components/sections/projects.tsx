@@ -4,7 +4,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 import Heading from "../ui/heading";
 import { useFeaturedProjects } from "../../hooks/queries/use-portfolio-data";
-import { techIcons } from "../../config/tech-icons";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
 import { getTechIcon } from "../../utils/tech-icons"
 
