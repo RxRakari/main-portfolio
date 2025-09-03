@@ -268,7 +268,7 @@ export default function ProjectsSection() {
           />
         </div>
 
-        {!filteredProjects || projects && !isLoading && (
+        {!filteredProjects && !isLoading && (
           <div className="flex justify-center items-center h-full">
             <p>No featured projects found</p>
           </div>
