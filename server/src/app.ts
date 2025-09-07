@@ -18,7 +18,18 @@ import { errorHandler } from './middleware/error.middleware';
 
 const app: Express = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "https://raptomx.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
