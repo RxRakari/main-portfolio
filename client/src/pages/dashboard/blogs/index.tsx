@@ -58,7 +58,6 @@ const BlogsManagement: React.FC = () => {
     const getBlogs = async () => {
       try {
         setIsLoading(true);
-        setError(null);
         
         const response = await fetchBlogs();
         if (response?.data?.blogs) {
