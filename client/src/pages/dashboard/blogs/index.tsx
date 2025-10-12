@@ -47,7 +47,6 @@ const BlogsManagement: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<{value: string, label: string}[]>([
     { value: '', label: 'All Categories' }
   ]);
@@ -78,11 +77,9 @@ const BlogsManagement: React.FC = () => {
             ...uniqueCategories
           ]);
         } else {
-          setError('No blogs found');
         }
       } catch (err) {
         console.error('Failed to fetch blogs:', err);
-        setError('Failed to load blogs');
       } finally {
         setIsLoading(false);
       }
