@@ -349,13 +349,6 @@ const BlogsManagement: React.FC = () => {
         onRowClick={() => {}}
         rowKey="_id"
       />
-
-      {error && !isLoading && blogs.length === 0 && (
-        <div className="bg-red-900/20 backdrop-blur-lg border border-red-900/30 rounded-xl shadow-lg p-6 text-center mt-4">
-          <h3 className="text-lg font-medium text-red-400">Error</h3>
-          <p className="mt-1 text-sm text-red-300">{error}</p>
-        </div>
-      )}
     </div>
   );
 };
