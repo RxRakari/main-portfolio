@@ -67,7 +67,7 @@ const BlogsManagement: React.FC = () => {
           
           // Extract unique categories
           const uniqueCategories = Array.from(
-            new Set(response.blogs.map((blog: any) => blog.category))
+            new Set(response?.blogs?.map((blog: any) => blog.category))
           ).map(category => ({
             value: category as string,
             label: category as string,
@@ -92,7 +92,7 @@ const BlogsManagement: React.FC = () => {
   }, [fetchBlogs]);
 
   // Filter blogs based on search query and filters
-  const filteredBlogs = blogs.filter((blog) => {
+  const filteredBlogs = blogs?.filter((blog) => {
     const matchesSearch = 
       blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (blog.subtitle && blog.subtitle.toLowerCase().includes(searchQuery.toLowerCase()));
