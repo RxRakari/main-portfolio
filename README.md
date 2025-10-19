@@ -1,4 +1,4 @@
-# Monochrome Portfolio
+# Full-stack Sleek Portfolio
 
 A sleek, minimalist portfolio website with a black and white theme, featuring an admin dashboard for content management.
 
