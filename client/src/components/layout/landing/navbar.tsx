@@ -40,7 +40,7 @@ export default function Navbar() {
           <div className="logo-wrapper">
             <span className="logo">R</span>
           </div>
-          <h4 className="text-[#e5e5e5] text-[20px] leading-[16px]">{bio.FirstName}</h4>
+          <h4 className="text-[#e5e5e5] text-[20px] leading-[16px]">{bio.NickName}</h4>
         </Link>
 
         <nav

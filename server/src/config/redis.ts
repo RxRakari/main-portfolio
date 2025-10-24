@@ -1,12 +1,25 @@
 import { createClient, RedisClientType } from 'redis';
+import dotenv from 'dotenv';
 
 class RedisCache {
   private client: RedisClientType;
   private isConnected: boolean = false;
 
   constructor() {
+    // Normalize REDIS_URL: createClient expects a URL with protocol (redis:// or rediss://)
+    const rawUrl = process.env.REDIS_URL ? process.env.REDIS_URL.trim() : undefined;
+    const normalizedUrl = rawUrl
+      ? rawUrl.includes('://')
+        ? rawUrl
+        : `redis://${rawUrl}`
+      : undefined;
+
+    if (rawUrl && !rawUrl.includes('://')) {
+      console.warn('WARN: REDIS_URL missing protocol, automatically prepending redis://');
+    }
+
     this.client = createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      url: normalizedUrl,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 10) {

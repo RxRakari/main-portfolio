@@ -3,8 +3,6 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaAward, FaArrowRight } from 'react-icon
 import { motion } from 'framer-motion';
 import { useFeaturedExperiences } from '../../hooks/queries/use-portfolio-data';
 import Heading from '../ui/heading';
-
-// Interface for experience data
 interface ExperienceData {
   id: string;
   title: string;
@@ -25,17 +23,14 @@ export const ExperienceSection = () => {
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   
-  // Update experiences when data changes
   useEffect(() => {
     if (experiencesData?.data?.experiences && experiencesData.data.experiences.length > 0) {
       setExperiences(experiencesData.data.experiences);
     } else if (!isLoading && !error) {
-      // Fallback to mock data if no experiences are returned
       setExperiences(mockExperiences);
     }
   }, [experiencesData, isLoading, error]);
 
-  // Mock data as fallback
   const mockExperiences = [
     {
       id: '1',
@@ -152,7 +147,7 @@ export const ExperienceSection = () => {
     return (
       <section id="experience" className="relative overflow-hidden">
         <div className="max-w-[1200px] mx-auto px-4">
-          <h2 className="text-6xl font-medium mb-6">Experience</h2>
+          <h2 className="text-6xl font-medium mb-6 text-center">Experience</h2>
           <p className="text-2xl text-gray-400 mb-24">Failed to load experience data.</p>
         </div>
       </section>
