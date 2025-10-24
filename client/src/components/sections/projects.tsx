@@ -9,15 +9,63 @@ import { getTechIcon } from "../../utils/tech-icons"
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface Project {
+  id: string | number;
+  title: string;
+  description: string;
+  technologies: string[];
+  image: string;
+  github: string;
+  live: string;
+  featured: boolean;
+  slug: string;
+}
+
+const mockProjects: Project[] = [
+  {
+    id: '1',
+    title: "AI-Powered Code Assistant",
+    description: "An intelligent code completion and suggestion tool that leverages machine learning to assist developers in writing better code faster.",
+    technologies: ["TypeScript", "Python", "React", "TensorFlow", "FastAPI"],
+    image: "https://picsum.photos/800/400?random=1",
+    github: "https://github.com/example/code-assistant",
+    live: "https://code-assistant.demo.com",
+    featured: true,
+    slug: "ai-code-assistant"
+  },
+  {
+    id: '2',
+    title: "Cloud Infrastructure Dashboard",
+    description: "Real-time monitoring and management dashboard for cloud infrastructure with cost optimization insights and automated scaling.",
+    technologies: ["React", "Node.js", "AWS", "D3.js", "GraphQL"],
+    image: "https://picsum.photos/800/400?random=2",
+    github: "https://github.com/example/cloud-dashboard",
+    live: "https://cloud-dashboard.demo.com",
+    featured: true,
+    slug: "cloud-dashboard"
+  },
+  {
+    id: '3',
+    title: "E-commerce Platform",
+    description: "Modern e-commerce platform with real-time inventory, AI-powered recommendations, and seamless payment integration.",
+    technologies: ["Next.js", "MongoDB", "Stripe", "Redis", "TailwindCSS"],
+    image: "https://picsum.photos/800/400?random=3",
+    github: "https://github.com/example/ecommerce",
+    live: "https://ecommerce.demo.com",
+    featured: true,
+    slug: "ecommerce-platform"
+  }
+];
+
 export default function ProjectsSection() {
   const [filter] = useState("featured");
-  const { data: projectsData, isLoading } = useFeaturedProjects();
+  const { data: projectsData, isLoading, error } = useFeaturedProjects();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<(HTMLDivElement | null)[]>([]);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>(mockProjects);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -129,79 +177,53 @@ export default function ProjectsSection() {
   }, [filter]);
 
   useEffect(() => {
-    if (projectsData?.data?.projects) {
-      setProjects(projectsData.data.projects);
+    if (projectsData?.data?.projects && projectsData.data.projects.length > 0) {
+      const apiProjects = projectsData.data.projects.map((p: any, index: number) => ({
+        id: index,
+        title: p.title,
+        description: p.description,
+        technologies: p.technologies || [],
+        image: (p.images && p.images.length > 0) ? p.images[0].url : "https://via.placeholder.com/800x400?text=Project",
+        github: p.githubUrl,
+        live: p.liveUrl,
+        featured: !!p.featured,
+        slug: p.slug || p._id,
+      }));
+      setProjects(apiProjects);
+    } else if (error) {
+      console.warn('Failed to load projects, using mock data', error);
+      if (projects.length === 0) setProjects(mockProjects);
     }
-  }, [projectsData])
-  console.log(projects)
-
-  const apiProjects = (projects || []).map((p: any, index: number) => ({
-    id: index,
-    title: p.title,
-    description: p.description,
-    technologies: p.technologies || [],
-    image: (p.images && p.images.length > 0) ? p.images[0].url : "https://via.placeholder.com/800x400?text=Project",
-    github: p.githubUrl,
-    live: p.liveUrl,
-    featured: !!p.featured,
-    slug: p.slug || p._id,
-  }));
+  }, [projectsData, error, projects.length]);
 
   const filteredProjects = filter === "all" 
-    ? apiProjects 
+    ? projects 
     : filter === "featured" 
-    ? apiProjects.filter(p => p.featured)
-    : apiProjects.filter(p => !p.featured);
-
-  const handleProjectHover = (projectId: number, isEntering: boolean) => {
-    if (isEntering) {
-      const projectCard = projectsRef.current.find(ref => 
-        ref && ref.getAttribute('data-project-id') === projectId.toString()
-      );
-      if (projectCard) {
-        gsap.to(projectCard, {
-          scale: 1.05,
-          duration: 0.3,
-          ease: "power2.out"
-        });
-      }
-    } else {
-      const projectCard = projectsRef.current.find(ref => 
-        ref && ref.getAttribute('data-project-id') === projectId.toString()
-      );
-      if (projectCard) {
-        gsap.to(projectCard, {
-          scale: 1,
-          duration: 0.3,
-          ease: "power2.out"
-        });
-      }
-    }
-  };
-
-  console.log(handleProjectHover)
-
-    if (isLoading) {
-    return (
-      <section id="experience" className="relative overflow-hidden">
-        <Heading
-        className="md:hidden flex flex-col"
-        heading={"Projects"}
-        paragraph={"Loading projects data..."}
-         />
-      </section>
-    )
-    }
+    ? projects.filter(p => p.featured)
+    : projects.filter(p => !p.featured);
 
   return (
     <section 
       ref={sectionRef}
       id="projects-section" 
-      className=" bg-black text-white  px-4 md:px-10"
+      className="bg-black text-white px-4 md:px-10"
     >
+      {/* Status banners */}
+      <div className="max-w-[1200px] mx-auto mb-4">
+        {isLoading && (
+          <p className="text-sm text-gray-400 text-center">Loading latest projects — showing sample content</p>
+        )}
+        {error && (
+          <p className="text-sm text-yellow-400 text-center">Unable to load projects — showing sample content</p>
+        )}
+      </div>
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <Heading heading={"Featured Projects"} paragraph={"A collection of projects that showcase my skills in modern web development, from concept to deployment."} />
+        <Heading 
+          heading={"Featured Projects"} 
+          paragraph={"A collection of projects that showcase my skills in modern web development, from concept to deployment."} 
+        />
 
         {/* Projects Grid */}
         <div className="my-12">
@@ -280,7 +302,7 @@ export default function ProjectsSection() {
           />
         </div>
 
-        {!filteredProjects && !isLoading && (
+        {!filteredProjects.length && !isLoading && (
           <div className="flex justify-center items-center h-full">
             <p>No featured projects found</p>
           </div>

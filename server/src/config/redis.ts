@@ -6,7 +6,6 @@ class RedisCache {
   private isConnected: boolean = false;
 
   constructor() {
-    // Normalize REDIS_URL: createClient expects a URL with protocol (redis:// or rediss://)
     const rawUrl = process.env.REDIS_URL ? process.env.REDIS_URL.trim() : undefined;
     const normalizedUrl = rawUrl
       ? rawUrl.includes('://')
@@ -121,12 +120,10 @@ class RedisCache {
     }
   }
 
-  // Cache key generators
   static generateKey(prefix: string, ...parts: (string | number)[]): string {
     return `${prefix}:${parts.join(':')}`;
   }
 
-  // Common cache keys
   static keys = {
     blogs: (params?: any) => RedisCache.generateKey('blogs', params ? JSON.stringify(params) : 'all'),
     blog: (id: string) => RedisCache.generateKey('blog', id),
@@ -147,7 +144,6 @@ class RedisCache {
   };
 }
 
-// Create singleton instance
 const redisCache = new RedisCache();
 
 export default redisCache;

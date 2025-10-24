@@ -16,22 +16,7 @@ interface ExperienceData {
 }
 
 export const ExperienceSection = () => {
-  const [activeExperience, setActiveExperience] = useState(0);
-  const [experiences, setExperiences] = useState<ExperienceData[]>([]);
-  const { data: experiencesData, isLoading, error } = useFeaturedExperiences();
-  const sectionRef = useRef<HTMLElement>(null);
-  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
-  const [isHovering, setIsHovering] = useState(false);
-  
-  useEffect(() => {
-    if (experiencesData?.data?.experiences && experiencesData.data.experiences.length > 0) {
-      setExperiences(experiencesData.data.experiences);
-    } else if (!isLoading && !error) {
-      setExperiences(mockExperiences);
-    }
-  }, [experiencesData, isLoading, error]);
-
-  const mockExperiences = [
+  const mockExperiences: ExperienceData[] = [
     {
       id: '1',
       title: "Senior Software Engineer",
@@ -82,6 +67,28 @@ export const ExperienceSection = () => {
     }
   ];
 
+  const [activeExperience, setActiveExperience] = useState(0);
+  const [experiences, setExperiences] = useState<ExperienceData[]>(mockExperiences);
+  const { data: experiencesData, isLoading, error } = useFeaturedExperiences();
+  const sectionRef = useRef<HTMLElement>(null);
+  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
+  
+  useEffect(() => {
+    if (experiencesData?.data?.experiences && experiencesData.data.experiences.length > 0) {
+      setExperiences(experiencesData.data.experiences);
+      setActiveExperience(0);
+    } else if (!isLoading && !error) {
+      // ensure we have fallback mock data when API returns empty
+      setExperiences(mockExperiences);
+      setActiveExperience(0);
+    } else if (error) {
+      // keep showing mock data on error but log for debug
+      console.warn('Failed to load experiences, using mock data', error);
+      if (experiences.length === 0) setExperiences(mockExperiences);
+    }
+  }, [experiencesData, isLoading, error]);
+
   // Autoplay functionality
   useEffect(() => {
     const startAutoplay = () => {
@@ -129,31 +136,7 @@ export const ExperienceSection = () => {
     }
   };
 
-  // If still loading or no experiences, show loading state
-  if (isLoading) {
-    return (
-      <section id="experience" className="relative overflow-hidden">
-        <Heading
-        className="md:hidden flex flex-col"
-        heading={"Experience"}
-        paragraph={"Loading experience data..."}
-         />
-      </section>
-    );
-  }
-
-  // If error and no experiences, show error state
-  if (error && experiences.length === 0) {
-    return (
-      <section id="experience" className="relative overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-4">
-          <h2 className="text-6xl font-medium mb-6 text-center">Experience</h2>
-          <p className="text-2xl text-gray-400 mb-24">Failed to load experience data.</p>
-        </div>
-      </section>
-    );
-  }
-
+  // Always render the section shell — show subtle status banners when loading or on error
   return (
     <section 
       id="experience" 
@@ -162,6 +145,21 @@ export const ExperienceSection = () => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
+      {/* Small status banners so content doesn't vanish */}
+      <div className="max-w-[1200px] mx-auto px-4">
+        {isLoading && (
+          <div className="mb-4">
+            <p className="text-sm text-gray-400">Loading latest experiences — showing sample content.</p>
+          </div>
+        )}
+        {error && (
+          <div className="mb-4">
+            <p className="text-sm text-yellow-400">Unable to load live experiences — showing sample content.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Background elements */}
       {/* Background elements */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px] -z-10"></div>
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] -z-10"></div>
