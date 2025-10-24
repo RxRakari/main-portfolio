@@ -6,9 +6,9 @@ dotenv.config();
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
 const adminData = {
-  username: 'heyraptomi',
-  email: 'kalejaiyecaleb@gmail.com',
-  password: '@Kalejaiye11',
+  username: 'heyadmin',
+  email: 'admin@gmail.com',
+  password: '@Admin11',
   role: 'admin'
 };
 
