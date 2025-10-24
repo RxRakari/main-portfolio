@@ -1,21 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import { PageHeader } from '../../components/ui/page-header';
 import { useGalleryItems } from '../../hooks/queries/use-portfolio-data';
-import EmptyState from '../../components/states/empty';
-import ErrorState from '../../components/states/error';
-import { BlogSkeleton } from '../../components/states/skeleton-loading';
 import { GalleryProps } from '../../types/gallery';
+
+const mockGalleryItems: GalleryProps[] = [
+  {
+    id: '1',
+    title: 'Modern Web Application',
+    category: 'Development',
+    description: 'Building scalable and performant web applications using modern technologies',
+    imageUrl: 'https://picsum.photos/800/600?random=1',
+  },
+  {
+    id: '2',
+    title: 'User Interface Design',
+    category: 'Design',
+    description: 'Creating intuitive and beautiful user interfaces that delight users',
+    imageUrl: 'https://picsum.photos/800/600?random=2',
+  },
+  {
+    id: '3',
+    title: 'Mobile Application',
+    category: 'Development',
+    description: 'Developing cross-platform mobile applications with React Native',
+    imageUrl: 'https://picsum.photos/800/600?random=3',
+  },
+  {
+    id: '4',
+    title: 'System Architecture',
+    category: 'Architecture',
+    description: 'Designing robust and scalable system architectures',
+    imageUrl: 'https://picsum.photos/800/600?random=4',
+  },
+  {
+    id: '5',
+    title: 'Code Quality',
+    category: 'Development',
+    description: 'Maintaining high code quality through testing and best practices',
+    imageUrl: 'https://picsum.photos/800/600?random=5',
+  },
+  {
+    id: '6',
+    title: 'User Experience',
+    category: 'Design',
+    description: 'Crafting seamless user experiences through thoughtful design',
+    imageUrl: 'https://picsum.photos/800/600?random=6',
+  }
+];
 
 export const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [galleryItems, setGallery] = useState<GalleryProps[] | any>();
+  const [galleryItems, setGallery] = useState<GalleryProps[]>(mockGalleryItems);
   const { data: galleryData, isLoading, error } = useGalleryItems();
 
   useEffect(() => {
-    if (galleryData?.data?.gallery) {
+    if (galleryData?.data?.gallery && galleryData.data.gallery.length > 0) {
       setGallery(galleryData.data.gallery);
+    } else if (error) {
+      console.warn('Failed to load gallery items, using mock data', error);
+      if (galleryItems.length === 0) setGallery(mockGalleryItems);
     }
-  }, [galleryData])
+  }, [galleryData, error, galleryItems.length]);
 
   const openImageModal = (index: number) => {
     setSelectedImage(index);
@@ -33,6 +78,16 @@ export const Gallery: React.FC = () => {
         heading="Gallery"
         paragraph="Some of the memories I've shared"
       />
+      
+      {/* Status banners */}
+      <div className="w-full max-w-[1200px] mx-auto px-4">
+        {isLoading && (
+          <p className="text-sm text-gray-400 text-center mb-4">Loading latest gallery items — showing sample content</p>
+        )}
+        {error && (
+          <p className="text-sm text-yellow-400 text-center mb-4">Unable to load gallery items — showing sample content</p>
+        )}
+      </div>
       
       {/* Gallery grid */}
       <div className="max-w-[1200px] mx-auto px-4 py-16 w-full">
@@ -59,22 +114,16 @@ export const Gallery: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {(!galleryItems || galleryItems.length === 0) && !isLoading && (
+          <div className="flex justify-center items-center py-20">
+            <p className="text-gray-400">No gallery items available</p>
+          </div>
+        )}
       </div>
 
-      {error && (
-        <ErrorState title={"Error loading gallery data"} message={"Please try again"} />
-      )}
-
-      {isLoading && (
-        <BlogSkeleton />
-      )}
-
-      {!galleryItems || galleryItems.length === 0 && (
-        <EmptyState title={"No gallery found"} message={"No gallery available at the moment"}  />
-      )}
-
       {/* Image modal */}
-      {selectedImage !== null && (
+      {selectedImage !== null && galleryItems && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
           onClick={closeImageModal}

@@ -68,6 +68,12 @@ export default function ProjectsSection() {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
 
   useEffect(() => {
+    if (projectsData?.length) {
+      setProjects(projectsData);
+    }
+  }, [projectsData]);
+
+  useEffect(() => {
     const ctx = gsap.context(() => {
       // Header animation
       gsap.fromTo(headerRef.current,

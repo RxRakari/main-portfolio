@@ -1,6 +1,7 @@
 export interface GalleryProps {
-        id: number,
-        image: string,
+        id: any,
+        image?: string,
+        imageUrl?: string;
         title:  string,
         category: string,
         description: string

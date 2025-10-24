@@ -17,8 +17,11 @@ class RedisCache {
       console.warn('WARN: REDIS_URL missing protocol, automatically prepending redis://');
     }
 
+    const password = process.env.REDIS_PASSWORD;
+
     this.client = createClient({
       url: normalizedUrl,
+      password: password,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 10) {
