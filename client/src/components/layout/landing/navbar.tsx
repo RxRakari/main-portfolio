@@ -93,7 +93,7 @@ export default function Navbar() {
         <div className="logo-wrapper">
             <span className="logo">R</span>
           </div>
-          <h4 className="text-[#e5e5e5] text-[14px] leading-[16px]">Caleb</h4>
+          <h4 className="text-[#e5e5e5] text-[14px] leading-[16px]">{bio.FirstName}</h4>
         </button>
 
         <button className="p-[12px] flex h-full text-sm items-center backdrop-blur-[10px] rounded-[33px] border border-[#fafafa0d] text-white">
